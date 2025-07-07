@@ -1,8 +1,7 @@
 interface IUserDetails {
-  Id: number;
+  Id: number | null;
   Email: string;
   DisplayName: string;
   ImgUrl: string;
-  Key?: number;
 }
-export {IUserDetails}
+export { IUserDetails };

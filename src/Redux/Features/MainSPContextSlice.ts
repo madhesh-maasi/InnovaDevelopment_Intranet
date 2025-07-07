@@ -1,16 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-wrapper-object-types*/
 import { createSlice } from "@reduxjs/toolkit";
-
-const mainData = {
+import { IUserDetails } from "../../Interface/CommonInterface";
+interface ImainData {
+  webUrl: string;
+  tenantUrl: String;
+  siteUrl: string;
+  value: any[];
+  currentUserDetails: IUserDetails;
+}
+const mainData: ImainData = {
   webUrl: "",
   tenantUrl: "",
   siteUrl: "",
   value: [],
   currentUserDetails: {
-    userName: "",
-    role: "",
-    email: "",
-    id: "",
+    Id: null,
+    ImgUrl: "",
+    DisplayName: "",
+    Email: "",
   },
 };
 
