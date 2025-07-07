@@ -1,0 +1,17 @@
+import { configureStore } from "@reduxjs/toolkit";
+import MainSPContext from "../Features/MainSPContextSlice";
+import QuickLinkSlice from "../Features/QuickLinkSlice";
+import FeedbackSlice from "../Features/FeedbackSlice";
+import InnovaTeamSlice from "../Features/InnovaTeamSlice";
+import MeetingSlice from "../Features/MeetingSlice";
+const store = configureStore({
+  reducer: {
+    MainSPContext: MainSPContext,
+    QuickLinkSlice:QuickLinkSlice,
+    FeedbackSlice:FeedbackSlice,
+    InnovaTeamSlice:InnovaTeamSlice,
+    MeetingSlice:MeetingSlice
+  },
+});
+
+export { store };

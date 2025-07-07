@@ -1,0 +1,35 @@
+.peoplePickerWrapper {
+  z-index: 2;
+  width: 100%;
+}
+
+.customPickerInput .ms-BasePicker-text {
+  border: 1px solid var(--input-fields-border-color);
+  padding: 0 4px;
+  background: #fff;
+}
+.customPickerInput .ms-SelectionZone{
+    background: #fff !important;
+    border-radius: 7px !important;
+    border: 1px solid #e7e7e7 !important;
+}
+ 
+.customPickerInput .ms-PickerItem-removeButton {
+  display: block;
+
+  &:focus {
+    background: #555;
+  }
+}
+
+.customPickerInput .ms-BasePicker-text:hover,
+.customPickerInput .ms-BasePicker-text:focus-within {
+  border: 1.5px solid var(--input-fields-border-hovor-color) !important;
+  background: var(--input-fields-bg-hovor-color) !important;
+}
+
+.customPickerInput .ms-BasePicker-input::placeholder {
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--input-placeholder-font-color);
+}

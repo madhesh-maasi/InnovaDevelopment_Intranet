@@ -1,0 +1,55 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "banner-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/banner/BannerWebPart.js",
+          "manifest": "./src/webparts/banner/BannerWebPart.manifest.json"
+        }
+      ]
+    },
+    "feedback-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/feedback/FeedbackWebPart.js",
+          "manifest": "./src/webparts/feedback/FeedbackWebPart.manifest.json"
+        }
+      ]
+    },
+    "innova-team-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/innovaTeam/InnovaTeamWebPart.js",
+          "manifest": "./src/webparts/innovaTeam/InnovaTeamWebPart.manifest.json"
+        }
+      ]
+    },
+    "meeting-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/meeting/MeetingWebPart.js",
+          "manifest": "./src/webparts/meeting/MeetingWebPart.manifest.json"
+        }
+      ]
+    },
+    "news-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/news/NewsWebPart.js",
+          "manifest": "./src/webparts/news/NewsWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "BannerWebPartStrings": "lib/webparts/banner/loc/{locale}.js",
+    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
+    "FeedbackWebPartStrings": "lib/webparts/feedback/loc/{locale}.js",
+    "InnovaTeamWebPartStrings": "lib/webparts/innovaTeam/loc/{locale}.js",
+    "MeetingWebPartStrings": "lib/webparts/meeting/loc/{locale}.js",
+    "NewsWebPartStrings": "lib/webparts/news/loc/{locale}.js"
+  }
+}

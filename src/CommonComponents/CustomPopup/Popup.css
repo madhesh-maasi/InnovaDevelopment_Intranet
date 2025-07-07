@@ -1,0 +1,28 @@
+.popupWrapper {
+  min-height: auto !important;
+  max-height: 90vh !important;
+  margin: 0px !important;
+  border-radius: 10px !important;
+}
+.p-dialog .p-dialog-content {
+  background-color: #ccc; /* Fix unwanted tint */
+}
+.p-dialog .p-dialog-header {
+  padding: 0px !important;
+  background-color: #ccc;
+  z-index: 100;
+}
+.p-dialog .p-dialog-footer {
+  padding: 10px 30px !important;
+  background-color: #ccc;
+  z-index: 100;
+}
+.p-component-overlay {
+  background-color: rgba(0, 0, 0, 0.4); /* dim effect */
+  transition: background-color 0.3s ease;
+  backdrop-filter: blur(2px); /* optional: soft blur */
+  z-index: 99 !important;
+}
+.p-dialog-header-icon .p-dialog-header-close .p-link {
+  margin-top: 2px;
+}

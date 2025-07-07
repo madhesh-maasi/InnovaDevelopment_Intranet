@@ -1,0 +1,405 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+
+import * as React from "react";
+import type { IFeedbackProps } from "./IFeedbackProps";
+import styles from "./Feedback.module.scss";
+
+import { sp } from "@pnp/sp/presets/all";
+import { graph } from "@pnp/graph/presets/all";
+import { Provider, useDispatch } from "react-redux";
+import { store } from "../../../Redux/Store/Store";
+
+import { DirectionalHint, TooltipHost } from "@fluentui/react";
+import {
+  IConversationType,
+  IFeedbacktype,
+} from "../../../Interface/FeedbackInterface";
+import {
+  addFeedbacks,
+  FetchConversations,
+  FetchFeedBacks,
+} from "../../../Services/FeedbackService/FeedbackService";
+import { setFeedbacksdata as setFeedbacksAction } from "../../../Redux/Features/FeedbackSlice";
+
+import CustomHeader from "../../../CommonComponents/webpartsHeader/CustomerHeader/CustomHeader";
+import CustomaddBtn from "../../../CommonComponents/webpartsHeader/CustomaddBtn/CustomaddBtn";
+import {
+  setCurrentUserDetails,
+  setMainSPContext,
+  setSiteUrl,
+  setTenantUrl,
+  setWebUrl,
+} from "../../../Redux/Features/MainSPContextSlice";
+import { useState } from "react";
+import { togglePopupVisibility } from "../../../CommonComponents/CustomPopup/togglePopup";
+import CustomInputField from "../../../CommonComponents/CustomInputField/CustomInputField";
+import CustomMultiInputField from "../../../CommonComponents/CustomMultiInputField/CustomMultiInputField";
+import Popup from "../../../CommonComponents/CustomPopup/Popup";
+import { Avatar } from "primereact/avatar";
+
+const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
+  const dispatch = useDispatch();
+  const [feedbacks, setFeedbacks] = useState<IFeedbacktype[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = React.useState(0);
+  const [comments, setComments] = useState("");
+  const [selectedFeedback, setSelectedFeedback] = useState({
+    Id: 0,
+    title: "",
+    description: "",
+  });
+  const [conversations, setConversations] = useState<IConversationType[]>([]);
+  console.log(conversations);
+
+  const itemsPerPage = 3;
+  const webUrl = context?.pageContext?.web?.absoluteUrl;
+  const siteUrl = context?.pageContext?.site?.serverRelativeUrl;
+  const tenantUrl = webUrl?.split("/sites")[0];
+
+  const setContext = async () => {
+    try {
+      const currentUserDetails = await sp.web.currentUser.get();
+      const currentUser = [
+        {
+          Id: currentUserDetails.Id,
+          Email: currentUserDetails.Email,
+          DisplayName: currentUserDetails.Title,
+          ImgUrl: `/_layouts/15/userphoto.aspx?size=S&accountname=${currentUserDetails.Email}`,
+        },
+      ];
+      dispatch(setCurrentUserDetails(currentUser));
+      if (webUrl) dispatch(setWebUrl(webUrl));
+      if (siteUrl) dispatch(setSiteUrl(siteUrl));
+      if (tenantUrl) dispatch(setTenantUrl(tenantUrl));
+    } catch (err) {
+      console.error("Error setting context:", err);
+    }
+  };
+  const initialPopupController = [
+    {
+      open: false,
+      popupTitle: "",
+      popupWidth: "50%",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
+    {
+      open: false,
+      popupTitle: "",
+      popupWidth: "50%",
+      defaultCloseBtn: false,
+      popupData: "",
+    },
+  ];
+  const [popupController, setPopupController] = useState(
+    initialPopupController
+  );
+  const handleClosePopup = (index: number): void => {
+    togglePopupVisibility(setPopupController, index, "close");
+  };
+
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    CommentsCount: 0,
+  });
+  const handleFormChange = (field: string, value: any) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+  const handleSubmitFuction = async () => {
+    setIsLoading(true);
+    const { title, description, CommentsCount } = formData;
+    try {
+      const payload = {
+        Title: title,
+        Description: description,
+        CommentCount: CommentsCount,
+      };
+      await addFeedbacks(payload, setFeedbacks, dispatch);
+      handleClosePopup(0);
+      setFormData({
+        title: "",
+        description: "",
+        CommentsCount: 0,
+      });
+    } catch (err) {
+      console.error("Upload failed:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const popupInputs: any[] = [
+    [
+      <>
+        <div className={styles.inputWrapper}>
+          <div className={styles.customwrapper}>
+            <CustomInputField
+              label="Title"
+              value={formData.title}
+              onChange={(e: any) => handleFormChange("title", e.target.value)}
+              placeholder="Title"
+            />
+          </div>
+          <div className={styles.customwrapper}>
+            <CustomMultiInputField
+              label="Description"
+              value={formData.description}
+              onChange={(e: any) =>
+                handleFormChange("description", e.target.value)
+              }
+              rows={2}
+              placeholder="Description"
+              autoResize={false}
+            />
+          </div>
+        </div>
+      </>,
+    ],
+    [
+      <div style={{ width: "100%", minHeight: "70vh" }}>
+        <div
+          className={styles.card}
+          key={1}
+          // style={{ backgroundColor: "#ccc" }}
+        >
+          <div className={styles.title}>{selectedFeedback.title}</div>
+          <TooltipHost
+            content={selectedFeedback.description}
+            tooltipProps={{
+              directionalHint: DirectionalHint.bottomCenter,
+            }}
+          >
+            <div style={{ fontSize: "12px" }}>
+              {selectedFeedback.description}
+            </div>
+          </TooltipHost>
+        </div>
+        <div className={styles.commentsWrapper}>
+          {conversations.map((comment: any) => (
+            <div className={styles.card}>
+              <div className={styles.commentContentWrapper}>
+                <Avatar
+                  image={comment?.CreatedBy?.ImgUrl}
+                  size="normal"
+                  shape="circle"
+                />
+                <span>{comment.comments}</span>
+              </div>
+              <div className={styles.dateTimeWrapper}>
+                <img src={require("../assets/Date.png")} />
+                <span>{comment.CreatedOn}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className={styles.commentInputBar}>
+          <CustomInputField
+            value={comments}
+            onChange={(e: any) => setComments(e.value)}
+            placeholder="Type Your Comments here...."
+          />
+          <div style={{ padding: "0 10px" }}>
+            <img
+              src={require("../assets/send.png")}
+              width="24px"
+              height="24px"
+            />
+          </div>
+        </div>
+      </div>,
+    ],
+  ];
+
+  const popupActions: any[] = [
+    [
+      {
+        text: "Cancel",
+        btnType: "closeBtn",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(0);
+          setFormData({
+            title: "",
+            description: "",
+            CommentsCount: 0,
+          });
+        },
+      },
+      {
+        text: "Submit",
+        btnType: "primaryBtn",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleSubmitFuction();
+        },
+      },
+    ],
+  ];
+  const getFeedbackData = async () => {
+    const list = await FetchFeedBacks();
+    setFeedbacks(list);
+    dispatch(setFeedbacksAction(list));
+  };
+
+  React.useEffect(() => {
+    setContext();
+    dispatch(setMainSPContext(context));
+    getFeedbackData();
+  }, []);
+
+  const totalPages = Math.ceil(feedbacks.length / itemsPerPage);
+  const paginatedData = feedbacks.slice(
+    currentPage * itemsPerPage,
+    (currentPage + 1) * itemsPerPage
+  );
+
+  const handlePageChange = (index: number) => {
+    setCurrentPage(index);
+  };
+
+  const nextSlide = () => {
+    setCurrentPage((prev) => (prev + 1) % totalPages);
+  };
+
+  return (
+    <div className={styles.feedbackContainer}>
+      <div className={styles.headerWrapper}>
+        <CustomHeader Header="Feedback" />
+        <CustomaddBtn
+          onClick={() => {
+            togglePopupVisibility(
+              setPopupController,
+              0,
+              "open",
+              `Feedback`,
+              "30%"
+            );
+          }}
+        />
+      </div>
+
+      {feedbacks.length > 0 ? (
+        <div className={styles.carouselWrapper}>
+          <div className={styles.cardsContainer}>
+            {paginatedData.map((item, index) => (
+              <div className={styles.card} key={index}>
+                <div className={styles.title}>{item.Title}</div>
+                <TooltipHost
+                  content={item.Description}
+                  tooltipProps={{
+                    directionalHint: DirectionalHint.bottomCenter,
+                  }}
+                >
+                  <p>{item.Description}</p>
+                </TooltipHost>
+                <div
+                  className={styles.commentCount}
+                  onClick={() => {
+                    togglePopupVisibility(
+                      setPopupController,
+                      1,
+                      "open",
+                      `Conversation`,
+                      "42%",
+                      true
+                    );
+                    setSelectedFeedback({
+                      Id: item.Id ? item.Id : 0,
+                      title: item.Title,
+                      description: item.Description,
+                    });
+                    FetchConversations(item.Id, setConversations);
+                  }}
+                >
+                  <i
+                    className="fa-regular fa-comment-dots"
+                    style={{ color: "green", fontSize: "14px" }}
+                  ></i>{" "}
+                  {item.CommentsCount}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className={styles.paginationDots}>
+            {Array.from({ length: totalPages }).map((_, idx) => (
+              <div
+                key={idx}
+                className={`${styles.dot} ${
+                  idx === currentPage ? styles.active : ""
+                }`}
+                onClick={() => handlePageChange(idx)}
+              />
+            ))}
+          </div>
+
+          <button onClick={nextSlide} className={styles.nextBtn}>
+            Next
+          </button>
+        </div>
+      ) : (
+        <div className={styles.noRecords}>No Records Found</div>
+      )}
+      <div>
+        {popupController?.map((popupData: any, index: number) => (
+          <Popup
+            key={index}
+            isLoading={isLoading}
+            PopupType={popupData.popupType}
+            onHide={() => {
+              const tempfeedindex = feedbacks.findIndex(
+                (f) => f.Id === selectedFeedback.Id
+              );
+
+              if (tempfeedindex !== -1) {
+                const updatedItem = {
+                  ...feedbacks[tempfeedindex],
+                  CommentsCount: conversations.length,
+                };
+                const updatedData = [...feedbacks];
+                updatedData[tempfeedindex] = updatedItem;
+                setFeedbacks(updatedData);
+              }
+
+              togglePopupVisibility(setPopupController, index, "close");
+            }}
+            popupTitle={popupData.popupTitle}
+            popupActions={popupActions[index]}
+            visibility={popupData.open}
+            content={popupInputs[index]}
+            popupWidth={popupData.popupWidth}
+            defaultCloseBtn={popupData.defaultCloseBtn || false}
+            confirmationTitle={
+              popupData.popupType !== "custom" ? popupData.popupTitle : ""
+            }
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default class Feedback extends React.Component<IFeedbackProps, {}> {
+  constructor(prop: IFeedbackProps) {
+    super(prop);
+    sp.setup({ spfxContext: this.props.context as unknown as any });
+    graph.setup({ spfxContext: this.props.context as unknown as any });
+  }
+
+  public render(): React.ReactElement<IFeedbackProps> {
+    return (
+      <Provider store={store}>
+        <FeedbackContent context={this.props.context} />
+      </Provider>
+    );
+  }
+}

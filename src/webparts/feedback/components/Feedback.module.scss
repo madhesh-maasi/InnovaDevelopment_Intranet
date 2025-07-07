@@ -1,0 +1,181 @@
+.feedbackContainer {
+  display: flex;
+  max-width: 100%;
+  max-height: 460px;
+  padding: 20px;
+  border-radius: 7px;
+  background-color: #eaeaea;
+  margin: 10px;
+  flex-direction: column;
+}
+
+.headerWrapper {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.noRecords {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 450px;
+  color: black;
+}
+.conversationHeader {
+  width: 100%;
+  color: #0070c9;
+}
+.inputWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  row-gap: 5px;
+  place-items: center;
+  margin-top: 10px;
+}
+.customwrapper {
+  width: 80%;
+}
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  text-align: left;
+
+  .title {
+    color: #1470af;
+    font-weight: 500;
+    padding-bottom: 5px;
+    font-size: 15px;
+  }
+  p {
+    margin: 0;
+    color: #333;
+    font-size: 12px;
+    display: -webkit-box;
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    cursor: pointer;
+    height: 2.6em;
+  }
+}
+
+.carouselWrapper {
+  width: 100%;
+  max-width: 500px;
+  margin-top: 10px;
+  text-align: center;
+  position: relative;
+
+  .cardsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      text-align: left;
+
+      .title {
+        color: #1470af;
+        font-weight: 500;
+        padding-bottom: 5px;
+        font-size: 17px;
+      }
+
+      p {
+        margin: 0;
+        color: #333;
+        font-size: 14px;
+        display: -webkit-box;
+        text-overflow: ellipsis;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        cursor: pointer;
+        height: 2.6em;
+      }
+
+      .commentCount {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        font-weight: bold;
+        font-size: 12px;
+        margin-top: 10px;
+
+        i {
+          font-size: 18px !important;
+          margin-right: 5px;
+        }
+      }
+    }
+  }
+
+  .paginationDots {
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+
+    .dot {
+      width: 15px;
+      height: 15px;
+      background: #ccc;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: 0.3s;
+
+      &.active {
+        background: #0070c9;
+      }
+    }
+  }
+
+  .nextBtn {
+    display: none; // Optional: show for manual next
+  }
+}
+.commentsWrapper {
+  width: 100%;
+  height: 425px;
+  overflow: auto;
+  .card {
+    background: #fff;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    margin-top: 5px;
+  }
+  .dateTimeWrapper {
+    display: flex;
+    justify-content: end;
+    gap: 1%;
+    align-items: center;
+    span {
+      font-size: 12px;
+    }
+  }
+  .commentContentWrapper {
+    display: flex;
+    gap: 2%;
+    span {
+      font-size: 14px;
+    }
+  }
+}
+.commentInputBar {
+  width: 100%;
+  display: flex;
+  background-color: #fff;
+  align-items: center;
+  border-radius: 8px;
+}

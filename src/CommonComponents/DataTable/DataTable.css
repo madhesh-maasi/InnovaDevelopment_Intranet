@@ -1,0 +1,48 @@
+ .p-datatable-wrapper{
+   border-radius: 8px;
+   margin-bottom: 30px;
+ 
+}
+.p-datatable-thead{
+   background-color: transparent;
+   color:#1470af;
+   justify-content: flex-start;
+      font-size: 16x;
+      font-weight: bold;  
+}
+
+.p-datatable-tbody{
+   
+   border-radius: 7px;
+   table-layout: fixed;
+}
+.p-column-header-content{
+   padding: 15px 5px;
+  }
+  .p-column-body-content{
+   padding: 10px;
+  }
+/* Make tbody non-table-looking */
+.p-datatable .p-datatable-tbody > tr.card-row {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  display: flex;
+  margin-bottom: 16px;
+  padding: 16px;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Make table cells act like blocks */
+.p-datatable .p-datatable-tbody > tr.card-row > td {
+  display: block;
+  flex: 1;
+  padding: 10px 12px;
+  border: none !important;
+  width: 100%;
+  box-sizing: border-box;
+}

@@ -1,0 +1,21 @@
+.innovaTeamContainer {
+  display: flex;
+  max-width: 100%;
+  min-height: 450px;
+  padding: 20px;
+  border-radius: 7px;
+  background-color: #eaeaea;
+  margin: 10px;
+  flex-direction: column;
+}
+.headerSection {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.headerRight {
+  display: flex;
+  width: 50%;
+  gap: 3%;
+  justify-content: end;
+}
