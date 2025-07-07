@@ -8,7 +8,7 @@ import styles from "./Feedback.module.scss";
 
 import { sp } from "@pnp/sp/presets/all";
 import { graph } from "@pnp/graph/presets/all";
-import { Provider, useDispatch } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import { store } from "../../../Redux/Store/Store";
 
 import { DirectionalHint, TooltipHost } from "@fluentui/react";
@@ -17,9 +17,11 @@ import {
   IFeedbacktype,
 } from "../../../Interface/FeedbackInterface";
 import {
+  addConversations,
   addFeedbacks,
   FetchConversations,
   FetchFeedBacks,
+  updateFeedback,
 } from "../../../Services/FeedbackService/FeedbackService";
 import { setFeedbacksdata as setFeedbacksAction } from "../../../Redux/Features/FeedbackSlice";
 
@@ -52,12 +54,13 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
   });
   const [conversations, setConversations] = useState<IConversationType[]>([]);
   console.log(conversations);
-
+  const currentuser = useSelector(
+    (state: any) => state.MainSPContext.currentUserDetails
+  );
   const itemsPerPage = 3;
   const webUrl = context?.pageContext?.web?.absoluteUrl;
   const siteUrl = context?.pageContext?.site?.serverRelativeUrl;
   const tenantUrl = webUrl?.split("/sites")[0];
-
   const setContext = async () => {
     try {
       const currentUserDetails = await sp.web.currentUser.get();
@@ -133,6 +136,21 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
       setIsLoading(false);
     }
   };
+  const handleCommentSubmit = async () => {
+    if (!comments.trim()) {
+      alert("Please enter a comment before sending.");
+      return;
+    }
+    await addConversations(
+      selectedFeedback?.Id,
+      comments,
+      setConversations,
+      currentuser
+    );
+    console.log("Sending comment:", comments);
+    setComments("");
+  };
+
   const popupInputs: any[] = [
     [
       <>
@@ -200,10 +218,10 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
         <div className={styles.commentInputBar}>
           <CustomInputField
             value={comments}
-            onChange={(e: any) => setComments(e.value)}
+            onChange={(e: any) => setComments(e.target.value)}
             placeholder="Type Your Comments here...."
           />
-          <div style={{ padding: "0 10px" }}>
+          <div style={{ padding: "0 10px" }} onClick={handleCommentSubmit}>
             <img
               src={require("../assets/send.png")}
               width="24px"
@@ -269,7 +287,23 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
   const nextSlide = () => {
     setCurrentPage((prev) => (prev + 1) % totalPages);
   };
+  const onCommentClose = async () => {
+    const tempfeedindex = feedbacks.findIndex(
+      (f) => f.Id === selectedFeedback.Id
+    );
 
+    if (tempfeedindex !== -1) {
+      const updatedItem = {
+        ...feedbacks[tempfeedindex],
+        CommentsCount: conversations.length,
+      };
+      const updatedData = [...feedbacks];
+      updatedData[tempfeedindex] = updatedItem;
+      setFeedbacks(updatedData);
+      await updateFeedback(selectedFeedback.Id, conversations.length);
+      setConversations([]);
+    }
+  };
   return (
     <div className={styles.feedbackContainer}>
       <div className={styles.headerWrapper}>
@@ -356,20 +390,7 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
             isLoading={isLoading}
             PopupType={popupData.popupType}
             onHide={() => {
-              const tempfeedindex = feedbacks.findIndex(
-                (f) => f.Id === selectedFeedback.Id
-              );
-
-              if (tempfeedindex !== -1) {
-                const updatedItem = {
-                  ...feedbacks[tempfeedindex],
-                  CommentsCount: conversations.length,
-                };
-                const updatedData = [...feedbacks];
-                updatedData[tempfeedindex] = updatedItem;
-                setFeedbacks(updatedData);
-              }
-
+              onCommentClose();
               togglePopupVisibility(setPopupController, index, "close");
             }}
             popupTitle={popupData.popupTitle}

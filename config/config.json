@@ -41,6 +41,14 @@
           "manifest": "./src/webparts/news/NewsWebPart.manifest.json"
         }
       ]
+    },
+    "company-value-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/companyValue/CompanyValueWebPart.js",
+          "manifest": "./src/webparts/companyValue/CompanyValueWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -50,6 +58,7 @@
     "FeedbackWebPartStrings": "lib/webparts/feedback/loc/{locale}.js",
     "InnovaTeamWebPartStrings": "lib/webparts/innovaTeam/loc/{locale}.js",
     "MeetingWebPartStrings": "lib/webparts/meeting/loc/{locale}.js",
-    "NewsWebPartStrings": "lib/webparts/news/loc/{locale}.js"
+    "NewsWebPartStrings": "lib/webparts/news/loc/{locale}.js",
+    "CompanyValueWebPartStrings": "lib/webparts/companyValue/loc/{locale}.js"
   }
 }
