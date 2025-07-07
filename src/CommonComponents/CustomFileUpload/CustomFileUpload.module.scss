@@ -1,8 +1,82 @@
-.customfileupload {
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-  border-radius: 8px;
-  row-gap: 3px;
+.customFileUploadWrapper {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    width: 100%;
+    // max-width: 350px;
+}
+
+.label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.uploadContainer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.uploadButton {
+    background: linear-gradient(90deg, #0078d4 0%, #005a9e 100%);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 18px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.07);
+}
+
+.uploadButton:hover,
+.uploadButton:focus {
+    background: linear-gradient(90deg, #005a9e 0%, #0078d4 100%);
+    outline: none;
+}
+
+.fileInput {
+    display: none;
+}
+
+.fileInfo {
+    display: flex;
+    align-items: center;
+    background: #f3f3f3;
+    border-radius: 5px;
+    padding: 4px 10px;
+    gap: 8px;
+    font-size: 0.97rem;
+}
+
+.fileName {
+    color: #333;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.75rem;
+}
+
+.clearButton {
+    background: none;
+    border: none;
+    color: #d13438;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0 4px;
+    border-radius: 50%;
+    transition: background 0.15s;
+}
+
+.clearButton:hover,
+.clearButton:focus {
+    background: #ffeaea;
+    outline: none;
 }

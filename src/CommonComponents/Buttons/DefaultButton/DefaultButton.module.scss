@@ -1,44 +1,46 @@
 .DefaultButtonWrapper {
-  padding: 6px 15px !important;
-  border-radius: 0px !important;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  height: 30px !important;
-  font-size: 14px !important;
-  font-family: "interMedium", sans-serif !important;
+    padding: 6px 15px !important;
+    border-radius: 0px !important;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    height: 30px !important;
+    font-size: 14px !important;
+    font-family: "interMedium", sans-serif !important;
 }
+
 .primary {
-  @extend .DefaultButtonWrapper;
-  background-color: #1470af !important;
-  color: #fff !important;
-  border: 0 !important;
-  height: 30px !important;
-  text-transform: none !important;
-  border-radius: 5px;
-  img {
-      width: 22px;
-      height: 22px;
-      object-fit: contain !important;
-      padding: 0 !important;
-      margin: 0 !important;
+    @extend .DefaultButtonWrapper;
+    background-color: #1470af !important;
+    color: #fff !important;
+    border: 0 !important;
+    height: 30px !important;
+    text-transform: none !important;
+    border-radius: 5px;
+    img {
+        width: 22px;
+        height: 22px;
+        object-fit: contain !important;
+        padding: 0 !important;
+        margin: 0 !important;
     }
 }
+
 .closeBtn {
-  @extend .DefaultButtonWrapper;
-  background-color: #d7d7da !important;
-  color: #000 !important;
-  border: 0 !important;
-  height: 30px !important;
-  border-radius: 5px;
-  text-transform: none !important;
-  img {
-      width: 22px;
-      height: 22px;
-      object-fit: contain !important;
-      padding: 0 !important;
-      margin: 0 !important;
+    @extend .DefaultButtonWrapper;
+    background-color: #bfbfbf !important;
+    color: #000 !important;
+    border: 0 !important;
+    height: 30px !important;
+    border-radius: 5px;
+    text-transform: none !important;
+    img {
+        width: 22px;
+        height: 22px;
+        object-fit: contain !important;
+        padding: 0 !important;
+        margin: 0 !important;
     }
 }

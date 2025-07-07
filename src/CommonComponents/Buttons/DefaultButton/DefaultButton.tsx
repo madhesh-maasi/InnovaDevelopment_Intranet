@@ -9,7 +9,7 @@ interface Props extends ButtonProps {
   endIcon?: any;
   startIcon?: any;
   disabled?: boolean;
-  btnType: "primaryBtn" |  "closeBtn";
+  btnType: "primaryBtn" | "closeBtn";
   onlyIcon?: boolean;
   title?: string;
 }
@@ -46,7 +46,7 @@ const DefaultButton = ({
         padding: "10px 20px",
         whiteSpace: "nowrap",
         fontSize: "14px",
-        borderRadius:"5px"
+        borderRadius: "5px !important",
       }}
     >
       {text}

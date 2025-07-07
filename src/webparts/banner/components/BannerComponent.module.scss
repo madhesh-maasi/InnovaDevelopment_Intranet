@@ -1,87 +1,104 @@
 .bannerContainer {
-  display: flex;
-  width: 100%;
-  height: 350px;
-  background-image: url("../assets/images/banner_background.jpg");
-  background-size: 108%;
-  background-position: center;
+    display: flex;
+    width: 100%;
+    height: 350px;
+    background-image: url("../assets/images/banner_background.jpg");
+    background-size: 108%;
+    background-position: center;
 }
+
 .bannerContainer::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.45); /* Adjust opacity as needed */
-  z-index: 1;
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.45);
+    /* Adjust opacity as needed */
+    z-index: 1;
 }
+
 .customwrapper {
-  width: 80%;
+    width: 95%;
 }
+
 .welcomeCardContainer {
-  display: flex;
-  width: 70%;
-  gap: 5%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.037);
-  backdrop-filter: blur(4px);
-  place-items: center;
-  align-content: center;
-  z-index: 2;
-  row-gap: 5px;
-  border-bottom-right-radius: 32% 93%;
-  border-right: 3px solid #888787;
+    display: flex;
+    width: 70%;
+    gap: 5%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.037);
+    backdrop-filter: blur(4px);
+    place-items: center;
+    align-content: center;
+    z-index: 2;
+    row-gap: 5px;
+    border-bottom-right-radius: 32% 93%;
+    border-right: 3px solid #888787;
 }
+
 .welcomeCard {
-  display: flex;
-  width: 75%;
-  row-gap: 16px;
-  flex-direction: column;
+    display: flex;
+    width: 75%;
+    row-gap: 16px;
+    flex-direction: column;
 }
+
 .welcomeNote {
-  font-weight: 500;
-  color: #fff;
-  font-size: 32px;
+    font-weight: 500;
+    color: #fff;
+    font-size: 32px;
 }
+
 .description {
-  font-size: 18px;
-  color: #fff;
+    font-size: 18px;
+    color: #fff;
 }
+
 .quickLinkContainer {
-  width: 28%;
-  height: 100%;
-  z-index: 2;
+    width: 28%;
+    height: 100%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
 .quickLinkHeader {
-  width: 100%;
-  display: flex;
-  color: #fff;
-  font-size: 18px;
-  place-content: space-between;
+    width: 100%;
+    display: flex;
+    color: #fff;
+    font-size: 18px;
+    place-content: space-between;
 }
+
 .addbtn {
-  background-color: transparent;
-  padding: 0 5px;
-  border-radius: 5px;
-  backdrop-filter: blur(1px);
-  border: 1px solid rgba(255, 255, 255, 0.549);
-  box-shadow: inset 0 6px 6px rgba(186, 185, 185, 0.4),
-    /* top soft */ inset 0 3px 3px rgba(186, 185, 185, 0.25),
-    /* top closer */ inset 0 -6px 6px rgba(169, 168, 168, 0.4),
-    /* bottom soft */ inset 0 -3px 3px rgba(169, 168, 168, 0.25); /* bottom closer */
+    background-color: transparent;
+    padding: 0 5px;
+    border-radius: 5px;
+    backdrop-filter: blur(1px);
+    border: 1px solid rgba(255, 255, 255, 0.549);
+    box-shadow: inset 0 6px 6px rgba(186, 185, 185, 0.4), /* top soft */
+    inset 0 3px 3px rgba(186, 185, 185, 0.25), /* top closer */
+    inset 0 -6px 6px rgba(169, 168, 168, 0.4), /* bottom soft */
+    inset 0 -3px 3px rgba(169, 168, 168, 0.25);
+    cursor: pointer;
+    /* bottom closer */
 }
+
 .quickLinkcardsContainer {
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5%;
-  height: 270px;
-  row-gap: 15px;
-  padding: 15px 0;
-  overflow: auto;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5%;
+    height: 270px;
+    row-gap: 15px;
+    margin: 16px 0;
+    overflow: auto;
 }
+
 .quickLinksCard {
-  width: 30%;
-  height: 70px;
+    width: 30%;
+    height: 70px;
 }
