@@ -1,81 +1,98 @@
 .flexCenter {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
 .flexEnd {
-  display: flex;
-  align-items: center;
-  justify-content: end;
+    display: flex;
+    align-items: center;
+    justify-content: end;
 }
+
 .contentWrapper {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 40px;
-  max-height: max-content;
-  row-gap: 5px;
-  width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 40px;
+    max-height: max-content;
+    row-gap: 5px;
+    width: 100%;
 }
+
 .conversationHeader {
-  width: 100%;
-  color: #0070c9;
-  padding: 10px;
-  font-size: 16px;
+    width: 100%;
+    color: #0070c9;
+    padding: 10px;
+    font-size: 16px;
 }
 
 .popupWrapper {
-  border-radius: 10px !important;
-  overflow: hidden;
-  backdrop-filter: blur(5px);
-  background-color: rgba(255, 255, 255, 0.8) !important;
-  box-shadow: 0 4px 40px rgba(0, 0, 0, 0.15) !important;
+    background: rgba(255, 255, 255, 0.8);
+    /* semi-transparent white */
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), /* optional outer shadow for depth */
+    inset 0 2px 4px 0 rgba(255, 255, 255, 0.4), /* inner white shadow (from Figma) */
+    inset 0 -2px 4px 0 rgba(0, 0, 0, 0.2);
+    /* inner black shadow (from Figma) */
+    backdrop-filter: blur(10px);
+    /* background blur */
+    -webkit-backdrop-filter: blur(10px);
+    /* for Safari */
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    /* subtle border for glass look */
 }
+
 .popupHeader,
 .AlertPopupHeader,
 .popupHeaderWithoutCloseIcon {
-  width: 100%;
-  padding: 28px 36px 16px 36px;
-  display: flex;
-  justify-content: center;
-
-  .header {
-    font-size: 22px;
-    font-weight: 600;
-    color: #1470af;
-    position: relative;
-    text-align: center;
-
-    &::after {
-      content: "";
-      display: block;
-      width: 40px;
-      height: 3px;
-      background-color: #1470af;
-      margin: 6px auto 0 auto;
-      border-radius: 2px;
+    width: 100%;
+    padding: 12px;
+    display: flex;
+    justify-content: center;
+    .header {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1470af;
+        position: relative;
+        text-align: center;
+        &::after {
+            content: "";
+            display: block;
+            width: 40px;
+            height: 3px;
+            background-color: #1470af;
+            margin: 6px auto 0 auto;
+            border-radius: 2px;
+        }
     }
-  }
 }
+
 .popupHeaderWithoutCloseIcon {
-  padding: 20px 30px 10px 30px;
+    padding: 20px 30px 10px 30px;
 }
+
 .popupFooter {
-  display: flex;
-  justify-content: flex-end;
-  gap: 14px;
-  padding: 0 20px;
-  margin-top: 10px;
-  margin-bottom: 10px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 14px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
+
 .popupFooterConfirmation {
-  margin: 10px 0;
-  margin-bottom: 20px;
+    margin: 10px 0;
+    margin-bottom: 20px;
 }
+
 .loaderWrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 150px;
+}
+
+.p-dialog .p-dialog-header {
+    border: unset !important;
 }

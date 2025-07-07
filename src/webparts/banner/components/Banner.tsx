@@ -158,7 +158,7 @@ const BannerContent: React.FC<IBannerProps> = ({
             onFileSelect={(file: File) => handleQuickLinkChange("Logo", file)}
           />
           {quickLinkForm.Logo && (
-            <div style={{ marginTop: "10px", fontWeight: 500 }}>
+            <div style={{ marginTop: "10px", fontWeight: 400 }}>
               Selected File: {quickLinkForm.Logo.name}
             </div>
           )}
@@ -216,7 +216,7 @@ const BannerContent: React.FC<IBannerProps> = ({
         </div>
       </div>
       <div className={styles.quickLinkContainer}>
-        <div style={{ padding: "30px 50px" }}>
+        <div>
           <div className={styles.quickLinkHeader}>
             <div>
               <u>Quick links</u>
