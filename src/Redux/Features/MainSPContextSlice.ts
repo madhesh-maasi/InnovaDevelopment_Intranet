@@ -2,14 +2,14 @@
 /* eslint-disable @typescript-eslint/no-wrapper-object-types*/
 import { createSlice } from "@reduxjs/toolkit";
 import { IUserDetails } from "../../Interface/CommonInterface";
-interface ImainData {
+export interface IMainData {
   webUrl: string;
   tenantUrl: String;
   siteUrl: string;
   value: any[];
   currentUserDetails: IUserDetails;
 }
-const mainData: ImainData = {
+const mainData: IMainData = {
   webUrl: "",
   tenantUrl: "",
   siteUrl: "",

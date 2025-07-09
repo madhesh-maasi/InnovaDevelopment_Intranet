@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import * as moment from "moment";
 import { SPLists } from "../../Config/config";
 import { setFeedbacksdata } from "../../Redux/Features/FeedbackSlice";
@@ -25,14 +29,34 @@ const addFeedbacks = async (payload: any, setFeedbacks: any, dispatch: any) => {
   await SpServices.SPAddItem({
     Listname: SPLists.FeedbackList,
     RequestJSON: payload,
-  }).then(() => {
-    setFeedbacks((prev: any[]) => [payload, ...prev]);
+  }).then((res: any) => {
+    const tempfeedback = {
+      Id: res?.data?.Id,
+      Title: payload.Title,
+      Description: payload.Description,
+      CommentsCount: payload.CommentCount,
+    };
+    setFeedbacks((prev: any[]) => [tempfeedback, ...prev]);
     dispatch(setFeedbacksdata);
   });
+};
+const updateFeedback = async (feedbackId: number, commentsCount: number) => {
+  try {
+    await sp.web.lists.getByTitle("FeedBack").items.getById(feedbackId).update({
+      CommentCount: commentsCount,
+    });
+
+    console.log(
+      `Feedback item ${feedbackId} updated with comment count: ${commentsCount}`
+    );
+  } catch (error) {
+    console.error("Error updating feedback comment count:", error);
+  }
 };
 const addConversations = async (
   feedbackId: any,
   comment: any,
+  conversations: any,
   setConversation: any,
   currentUser: any
 ) => {
@@ -42,7 +66,7 @@ const addConversations = async (
       Comments: comment,
       FeedbackOfId: feedbackId,
     },
-  }).then((conversation: any) => {
+  }).then(async (conversation: any) => {
     const formatedData = {
       Id: conversation?.data?.ID,
       comments: conversation?.data?.Comments,
@@ -52,8 +76,9 @@ const addConversations = async (
         "YYYY-MM-DD HH:mm:ss"
       ),
     };
-    setConversation((prev: any) => [...prev, formatedData]);
-
+    let tempData = [...conversations, formatedData];
+    await setConversation((prev: any) => [...tempData]);
+    updateFeedback(feedbackId, tempData.length);
     console.log("Updated Conversation", conversation);
   });
 };
@@ -80,19 +105,6 @@ const FetchConversations = async (FeedbackId: any, setConversation?: any) => {
 
   console.log("Filtered Conversations:", formatedData);
   return filteredItems;
-};
-const updateFeedback = async (feedbackId: number, commentsCount: number) => {
-  try {
-    await sp.web.lists.getByTitle("FeedBack").items.getById(feedbackId).update({
-      CommentCount: commentsCount,
-    });
-
-    console.log(
-      `Feedback item ${feedbackId} updated with comment count: ${commentsCount}`
-    );
-  } catch (error) {
-    console.error("Error updating feedback comment count:", error);
-  }
 };
 
 export {

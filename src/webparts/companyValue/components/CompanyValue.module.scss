@@ -1,10 +1,47 @@
 .companyValueContainer {
   display: flex;
-  max-width: 100%;
-  height: 460px;
+  flex-direction: column;
+  background-color: #eaeaea;
   padding: 20px;
   border-radius: 7px;
-  background-color: #eaeaea;
   margin: 10px;
-  flex-direction: column;
+  row-gap: 35px;
+  max-width: 100%;
+  min-height: 520px;
+}
+.valueCard {
+  display: flex;
+  align-items: center;
+  gap: 3%;
+  span {
+    font-size: 18px;
+    color: #1470af;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    margin: 0;
+    color: #444;
+  }
+}
+
+.leftAlign {
+  flex-direction: row;
+}
+
+.rightAlign {
+  flex-direction: row-reverse;
+  text-align: left;
+  justify-content: space-between;
+}
+
+.icon {
+  width: 75px;
+  height: 75px;
+  margin-top: 0.5rem;
+}
+
+.textWrapper {
+  max-width: 80%;
 }

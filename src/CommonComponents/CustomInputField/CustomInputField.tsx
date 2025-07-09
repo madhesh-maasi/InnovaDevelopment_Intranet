@@ -10,6 +10,7 @@ interface CustomInputFieldProps {
   placeholder?: string;
   disabled?: boolean;
   maxLength?: number;
+  onKeyDown?: any;
 }
 
 const CustomInputField: React.FC<CustomInputFieldProps> = ({
@@ -20,6 +21,7 @@ const CustomInputField: React.FC<CustomInputFieldProps> = ({
   placeholder = "",
   disabled = false,
   maxLength,
+  onKeyDown,
 }) => {
   return (
     <div className={styles.customInputWrapper}>
@@ -32,6 +34,7 @@ const CustomInputField: React.FC<CustomInputFieldProps> = ({
         disabled={disabled}
         maxLength={maxLength}
         className={styles.inputText}
+        onKeyDown={onKeyDown}
       />
     </div>
   );

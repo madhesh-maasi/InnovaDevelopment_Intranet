@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
-import { Button, ButtonProps } from "@mui/material";
-import styles from "./DefaultButton.module.scss";
 import { memo } from "react";
+import { Button } from "primereact/button";
+import styles from "./DefaultButton.module.scss";
+import "./DefaultButton.css";
 
-interface Props extends ButtonProps {
+interface Props {
   text: any;
   endIcon?: any;
   startIcon?: any;
@@ -12,6 +13,10 @@ interface Props extends ButtonProps {
   btnType: "primaryBtn" | "closeBtn";
   onlyIcon?: boolean;
   title?: string;
+  onClick?: () => void;
+  type?: "button" | "submit" | "reset";
+  style?: React.CSSProperties;
+  className?: string;
 }
 
 const DefaultButton = ({
@@ -19,10 +24,13 @@ const DefaultButton = ({
   btnType,
   endIcon,
   startIcon,
-  disabled,
-  title,
+  disabled = false,
+  title = "",
   onlyIcon = false,
-  ...rest
+  onClick,
+  type = "button",
+  style,
+  className = "",
 }: Props): JSX.Element => {
   // Define a mapping object for btnType to CSS classes
   const btnTypeClassMap: Record<Props["btnType"], string> = {
@@ -30,27 +38,26 @@ const DefaultButton = ({
     closeBtn: styles.closeBtn,
   };
 
-  // Dynamically select the CSS class based on btnType
-  const buttonClass = `${styles.DefaultButtonWrapper} ${btnTypeClassMap[btnType]}`;
+  const buttonClass = `${styles.DefaultButtonWrapper} ${btnTypeClassMap[btnType]} ${className}`;
 
   return (
     <Button
-      title={title !== "" ? title : ""}
+      tooltip={title}
+      tooltipOptions={{ position: "top" }}
       className={buttonClass}
-      variant="outlined"
-      {...rest}
-      endIcon={endIcon}
-      startIcon={startIcon}
+      onClick={onClick}
       disabled={disabled}
-      sx={{
+      iconPos="left"
+      icon={onlyIcon ? startIcon : undefined}
+      label={onlyIcon ? "" : text}
+      type={type}
+      style={{
         padding: "10px 20px",
         whiteSpace: "nowrap",
         fontSize: "14px",
-        borderRadius: "5px !important",
+        ...style,
       }}
-    >
-      {text}
-    </Button>
+    />
   );
 };
 
