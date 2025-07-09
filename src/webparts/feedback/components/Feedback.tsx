@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-use-before-define */
 
 import * as React from "react";
 import type { IFeedbackProps } from "./IFeedbackProps";
@@ -114,10 +115,15 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
       [field]: value,
     }));
   };
+
   const handleSubmitFuction = async () => {
-    setIsLoading(true);
     const { title, description, CommentsCount } = formData;
+    if (!title || !description) {
+      console.error("All fields are required.");
+      return;
+    }
     try {
+      setIsLoading(true);
       const payload = {
         Title: title,
         Description: description,
@@ -144,9 +150,11 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
     await addConversations(
       selectedFeedback?.Id,
       comments,
+      conversations,
       setConversations,
       currentuser
     );
+    await onCommentClose("onSubmit");
     console.log("Sending comment:", comments);
     setComments("");
   };
@@ -179,7 +187,7 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
       </>,
     ],
     [
-      <div style={{ width: "100%", minHeight: "70vh" }}>
+      <div style={{ width: "100%", minHeight: "69vh", padding: "0 10px" }}>
         <div
           className={styles.card}
           key={1}
@@ -197,42 +205,48 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
             </div>
           </TooltipHost>
         </div>
-        <div className={styles.commentsWrapper}>
-          {conversations.map((comment: any) => (
-            <div className={styles.card}>
-              <div className={styles.commentContentWrapper}>
-                <Avatar
-                  image={comment?.CreatedBy?.ImgUrl}
-                  size="normal"
-                  shape="circle"
-                />
-                <span>{comment.comments}</span>
+        <div style={{ height: "65vh" }}>
+          <div className={styles.commentsWrapper}>
+            {conversations.map((comment: any) => (
+              <div className={styles.card}>
+                <div className={styles.commentContentWrapper}>
+                  <Avatar
+                    image={comment?.CreatedBy?.ImgUrl}
+                    size="normal"
+                    shape="circle"
+                  />
+                  <span>{comment.comments}</span>
+                </div>
+                <div className={styles.dateTimeWrapper}>
+                  <img src={require("../assets/Date.png")} />
+                  <span>{comment.CreatedOn}</span>
+                </div>
               </div>
-              <div className={styles.dateTimeWrapper}>
-                <img src={require("../assets/Date.png")} />
-                <span>{comment.CreatedOn}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className={styles.commentInputBar}>
-          <CustomInputField
-            value={comments}
-            onChange={(e: any) => setComments(e.target.value)}
-            placeholder="Type Your Comments here...."
-          />
-          <div style={{ padding: "0 10px" }} onClick={handleCommentSubmit}>
-            <img
-              src={require("../assets/send.png")}
-              width="24px"
-              height="24px"
+            ))}
+          </div>
+          <div className={styles.commentInputBar}>
+            <CustomInputField
+              value={comments}
+              onChange={(e: any) => setComments(e.target.value)}
+              placeholder="Type Your Comments here...."
+              onKeyDown={(e: any) => {
+                if (e.key == "Enter") {
+                  handleCommentSubmit();
+                }
+              }}
             />
+            <div style={{ padding: "0 10px" }} onClick={handleCommentSubmit}>
+              <img
+                src={require("../assets/send.png")}
+                width="24px"
+                height="24px"
+              />
+            </div>
           </div>
         </div>
       </div>,
     ],
   ];
-
   const popupActions: any[] = [
     [
       {
@@ -287,21 +301,39 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
   const nextSlide = () => {
     setCurrentPage((prev) => (prev + 1) % totalPages);
   };
-  const onCommentClose = async () => {
-    const tempfeedindex = feedbacks.findIndex(
-      (f) => f.Id === selectedFeedback.Id
-    );
+  const onCommentClose = async (type: any) => {
+    if (type === "onClose") {
+      const tempfeedindex = feedbacks.findIndex(
+        (f) => f.Id === selectedFeedback.Id
+      );
 
-    if (tempfeedindex !== -1) {
-      const updatedItem = {
-        ...feedbacks[tempfeedindex],
-        CommentsCount: conversations.length,
-      };
-      const updatedData = [...feedbacks];
-      updatedData[tempfeedindex] = updatedItem;
-      setFeedbacks(updatedData);
-      await updateFeedback(selectedFeedback.Id, conversations.length);
-      setConversations([]);
+      if (tempfeedindex !== -1) {
+        const updatedItem = {
+          ...feedbacks[tempfeedindex],
+          CommentsCount: conversations.length,
+        };
+        const updatedData = [...feedbacks];
+        updatedData[tempfeedindex] = updatedItem;
+        setFeedbacks(updatedData);
+        await updateFeedback(selectedFeedback.Id, conversations.length);
+        setConversations([]);
+      }
+    }
+    if (type === "onSubmit") {
+      const tempfeedindex = feedbacks.findIndex(
+        (f) => f.Id === selectedFeedback.Id
+      );
+
+      if (tempfeedindex !== -1) {
+        const updatedItem = {
+          ...feedbacks[tempfeedindex],
+          CommentsCount: conversations.length,
+        };
+        const updatedData = [...feedbacks];
+        updatedData[tempfeedindex] = updatedItem;
+        setFeedbacks(updatedData);
+        // await updateFeedback(selectedFeedback.Id, conversations.length + 1);
+      }
     }
   };
   return (
@@ -390,7 +422,9 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
             isLoading={isLoading}
             PopupType={popupData.popupType}
             onHide={() => {
-              onCommentClose();
+              if (selectedFeedback) {
+                onCommentClose("onClose");
+              }
               togglePopupVisibility(setPopupController, index, "close");
             }}
             popupTitle={popupData.popupTitle}

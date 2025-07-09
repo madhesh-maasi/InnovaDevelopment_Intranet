@@ -35,7 +35,7 @@
   margin-top: 10px;
 }
 .customwrapper {
-  width: 80%;
+  width: 95%;
 }
 .card {
   background: #fff;
@@ -145,7 +145,7 @@
 }
 .commentsWrapper {
   width: 100%;
-  height: 425px;
+  height: 87%;
   overflow: auto;
   .card {
     background: #fff;
@@ -178,4 +178,10 @@
   background-color: #fff;
   align-items: center;
   border-radius: 8px;
+}
+.commentsContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }

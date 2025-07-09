@@ -41,49 +41,6 @@ import { togglePopupVisibility } from "../../../CommonComponents/CustomPopup/tog
 import Popup from "../../../CommonComponents/CustomPopup/Popup";
 import CustomInputField from "../../../CommonComponents/CustomInputField/CustomInputField";
 import CustomMultiInputField from "../../../CommonComponents/CustomMultiInputField/CustomMultiInputField";
-import { Sidebar } from "primereact/sidebar";
-import { Button } from "primereact/button";
-import { Label } from "@fluentui/react";
-const NewsSidebar = () => {
-  const [templatePopup, setTemplatePopup] = useState({ condition: false });
-
-  const openSidebar = () => {
-    setTemplatePopup({ condition: true });
-  };
-
-  const closeSidebar = () => {
-    setTemplatePopup({ condition: false });
-  };
-
-  return (
-    <div>
-      <Button label="Open Sidebar" onClick={openSidebar} />
-
-      <Sidebar
-        position="right"
-        style={{ width: "90vw" }}
-        visible={templatePopup.condition}
-        onHide={closeSidebar}
-        header={
-          <div>
-            <Label
-              style={{
-                fontSize: 24,
-                lineHeight: "48px",
-                margin: 0,
-                fontWeight: 600,
-              }}
-            >
-              News & Announcements Template
-            </Label>
-          </div>
-        }
-      >
-        <p>This is your sidebar content. Add your template UI here.</p>
-      </Sidebar>
-    </div>
-  );
-};
 
 const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
   const dispatch = useDispatch();
@@ -223,7 +180,7 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
   };
   const popupInputs: any[] = [
     [
-      <div key={0}>
+      <div className={styles.popupCustomWrapper} key={0}>
         <CustomPeoplePicker
           selectedItem={selectedUser}
           personSelectionLimit={1}
@@ -232,11 +189,14 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
           placeholder="Select User"
         />
         <CustomInputField
+          label="Role"
           value={input.role}
           readonly={true}
+          disabled={true}
           placeholder="Role"
         />
         <CustomMultiInputField
+          label="Job Description"
           value={input.jobDescription}
           onChange={(e: any) =>
             handleInputChange("jobDescription", e.target.value)
@@ -293,14 +253,16 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
               placeholder="Role"
             />
           </div>
+          <div style={{ width: "180px", height: "100%" }}>
+            <CustomPeoplePicker
+              selectedItem={selectedUser}
+              personSelectionLimit={1}
+              onChange={onUserSelect}
+              filter={true}
+              placeholder="Search By User"
+            />
+          </div>
 
-          <CustomPeoplePicker
-            selectedItem={selectedUser}
-            personSelectionLimit={1}
-            onChange={onUserSelect}
-            filter={true}
-            placeholder="Search By User"
-          />
           <CustomaddBtn
             onClick={() => {
               togglePopupVisibility(
@@ -361,7 +323,6 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
           />
         ))}
       </div>
-      <NewsSidebar />
     </div>
   );
 };

@@ -170,7 +170,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
   const popupInputs: any[] = [
     [
       <>
-        <div className={styles.customwrapper}>
+        <div className={styles.custompickerwrapper}>
           <CustomDropdown
             value={formData.fileType}
             options={getOptions().map((type) => ({ label: type, value: type }))}

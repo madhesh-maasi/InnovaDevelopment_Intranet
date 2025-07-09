@@ -6,8 +6,6 @@ import {
   PropertyPaneTextField,
 } from "@microsoft/sp-property-pane";
 import { BaseClientSideWebPart } from "@microsoft/sp-webpart-base";
-import { IReadonlyTheme } from "@microsoft/sp-component-base";
-
 import * as strings from "CompanyValueWebPartStrings";
 import CompanyValue from "./components/CompanyValue";
 import { ICompanyValueProps } from "./components/ICompanyValueProps";

@@ -4,6 +4,7 @@ const SPLists = {
   InnovaTeamList: "InnovaTeam",
   MeetingList: "Meeting",
   ConversationList: "Conversation",
+  CompanyValueList: "CompanyValue",
 };
 const SPLibrary = {
   MeetingLibrary: "MeetingAttachments",

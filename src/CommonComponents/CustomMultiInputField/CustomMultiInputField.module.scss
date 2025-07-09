@@ -1,25 +1,24 @@
 .customMultiInputWrapper {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    // row-gap: 2px;
-    background-color: #ffffff;
-    padding: 12px;
-    border-radius: 4px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  // row-gap: 2px;
+  background-color: #ffffff;
+  padding: 12px;
+  border-radius: 4px;
 }
 
 .label {
-    font-weight: 500;
-    color: #A4A4A4;
-    font-size: 14px;
+  color: #a4a4a4;
+  font-size: 12px;
 }
 
 .textarea {
-    width: 100%;
-    min-height: 80px;
-    font-size: 14px;
-    resize: none;
-    border: unset !important;
-    outline: none !important;
-    box-shadow: none !important;
+  width: 100%;
+  min-height: 80px;
+  font-size: 14px;
+  resize: none;
+  border: unset !important;
+  outline: none !important;
+  box-shadow: none !important;
 }

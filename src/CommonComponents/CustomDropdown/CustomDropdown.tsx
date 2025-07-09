@@ -47,16 +47,14 @@ const CustomDropdown: React.FC<ICustomDropDownProps> = ({
   );
 
   return (
-    <div>
-      <Dropdown
-        value={value}
-        onChange={handleChange}
-        options={options}
-        optionLabel="label"
-        placeholder={placeholder}
-        className="w-full md:w-14rem"
-      />
-    </div>
+    <Dropdown
+      value={value}
+      onChange={handleChange}
+      options={options}
+      optionLabel="label"
+      placeholder={placeholder}
+      className="w-full md:w-14rem"
+    />
   );
 };
 
