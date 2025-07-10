@@ -1,0 +1,14 @@
+[class^="titleSubcell"] {
+    display: none !important;
+}
+
+[class^="mainHeader"] {
+    align-items: center !important;
+}
+
+.ms-HorizontalNavItem-link .is-selected {
+    border: unset !important;
+    background-color: #F2FAFF !important;
+    color: #1470AF !important;
+    padding: 12px 24px;
+}
