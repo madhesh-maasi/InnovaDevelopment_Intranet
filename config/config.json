@@ -73,6 +73,14 @@
           "manifest": "./src/webparts/innovaTeamView/InnovaTeamViewWebPart.manifest.json"
         }
       ]
+    },
+    "navigation-extension-application-customizer": {
+      "components": [
+        {
+          "entrypoint": "./lib/extensions/navigationExtension/NavigationExtensionApplicationCustomizer.js",
+          "manifest": "./src/extensions/navigationExtension/NavigationExtensionApplicationCustomizer.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -86,6 +94,7 @@
     "CompanyValueWebPartStrings": "lib/webparts/companyValue/loc/{locale}.js",
     "NewsViewWebPartStrings": "lib/webparts/newsView/loc/{locale}.js",
     "MeetingViewWebPartStrings": "lib/webparts/meetingView/loc/{locale}.js",
-    "InnovaTeamViewWebPartStrings": "lib/webparts/innovaTeamView/loc/{locale}.js"
+    "InnovaTeamViewWebPartStrings": "lib/webparts/innovaTeamView/loc/{locale}.js",
+    "NavigationExtensionApplicationCustomizerStrings": "lib/extensions/navigationExtension/loc/{locale}.js"
   }
 }
