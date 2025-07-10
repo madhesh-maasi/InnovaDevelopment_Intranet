@@ -124,17 +124,20 @@ const News: React.FC<INewsProps> = ({ context }) => {
         )}
       </div>
       {newsItems.length > 0 ? (
-        <div
-          className={styles.seeMoreWrapper}
-          onClick={() =>
-            window.open(
-              "https://www.google.com",
-              "_blank",
-              "noopener,noreferrer"
-            )
-          }
-        >
-          See more
+        <div className={styles.seeMoreWrapper}>
+          <span
+            onClick={() =>
+              window.open(
+                `${
+                  window.location.origin
+                }${"/sites/InnovaDevelopments/SitePages/NewsView.aspx"}`,
+                "_blank",
+                "noopener,noreferrer"
+              )
+            }
+          >
+            See more
+          </span>
         </div>
       ) : (
         <div></div>

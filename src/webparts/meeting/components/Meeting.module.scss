@@ -4,9 +4,11 @@
   min-height: 450px;
   padding: 20px;
   border-radius: 7px;
-  background-color: #eaeaea;
   margin: 10px;
   flex-direction: column;
+  backdrop-filter: blur(1px);
+  background-color: #ffffffa6;
+  border: 2px solid #ffffff;
 }
 .linkWrapper {
   display: flex;
@@ -48,9 +50,12 @@
   font-weight: 500;
   font-size: 16px;
   align-items: flex-end;
-  color: #1470af !important;
-  text-decoration: underline;
-  cursor: pointer;
+
+  span {
+    color: #1470af !important;
+    text-decoration: underline;
+    cursor: pointer;
+  }
 }
 .meetingCardsContainer {
   display: flex;

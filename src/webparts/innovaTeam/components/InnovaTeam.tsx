@@ -299,17 +299,20 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
             </DataTable>
           }
         />
-        <div
-          className={styles.seeMoreWrapper}
-          onClick={() =>
-            window.open(
-              "https://www.google.com",
-              "_blank",
-              "noopener,noreferrer"
-            )
-          }
-        >
-          See more
+        <div className={styles.seeMoreWrapper}>
+          <span
+            onClick={() =>
+              window.open(
+                `${
+                  window.location.origin
+                }${"/sites/InnovaDevelopments/SitePages/InnovaTeamView.aspx"}`,
+                "_blank",
+                "noopener,noreferrer"
+              )
+            }
+          >
+            See more
+          </span>
         </div>
       </div>
       <div>

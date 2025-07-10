@@ -1,13 +1,15 @@
 .companyValueContainer {
   display: flex;
   flex-direction: column;
-  background-color: #eaeaea;
   padding: 20px;
   border-radius: 7px;
   margin: 10px;
   row-gap: 35px;
   max-width: 100%;
   min-height: 520px;
+  backdrop-filter: blur(1px);
+  background-color: #ffffffa6;
+  border: 2px solid #ffffff;
 }
 .valueCard {
   display: flex;

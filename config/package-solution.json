@@ -36,7 +36,13 @@
         "title": "innova-development Feature",
         "description": "The feature that activates elements of the innova-development solution.",
         "id": "0be0d4bd-56cb-49c0-b0a1-e38ad3bb08f2",
-        "version": "1.0.0.0"
+        "version": "1.0.0.0",
+        "assets": {
+          "elementManifests": [
+            "elements.xml",
+            "ClientSideInstance.xml"
+          ]
+        }
       }
     ]
   },

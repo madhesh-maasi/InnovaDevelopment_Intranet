@@ -187,7 +187,10 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
       </>,
     ],
     [
-      <div style={{ width: "100%", minHeight: "69vh", padding: "0 10px" }}>
+      <div
+        key={1}
+        style={{ width: "100%", minHeight: "69vh", padding: "0 10px" }}
+      >
         <div
           className={styles.card}
           key={1}
@@ -207,11 +210,10 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
         </div>
         <div style={{ height: "65vh" }}>
           <div className={styles.commentsWrapper}>
-            {conversations.map((comment: any) => {
-              debugger;
+            {conversations.map((comment: any, i: any) => {
               if (comment?.CreatedBy?.Email === currentuser[0]?.Email) {
                 return (
-                  <div className={styles.card}>
+                  <div key={i} className={styles.currentuser}>
                     <div
                       className={styles.commentContentWrapper}
                       style={{ justifyContent: "end" }}
@@ -219,16 +221,27 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
                       <span style={{ fontWeight: "500" }}>
                         {comment.comments}
                       </span>
+                      <div>
+                        <Avatar
+                          image={comment?.CreatedBy?.ImgUrl}
+                          size="normal"
+                          shape="circle"
+                        />
+                      </div>
                     </div>
                     <div className={styles.dateTimeWrapper}>
-                      <img src={require("../assets/Date.png")} />
+                      <img
+                        src={require("../assets/Date.png")}
+                        width="12px"
+                        height="12px"
+                      />
                       <span>{comment.CreatedOn}</span>
                     </div>
                   </div>
                 );
               } else {
                 return (
-                  <div className={styles.card}>
+                  <div key={i} className={styles.card}>
                     <div className={styles.commentContentWrapper}>
                       <Avatar
                         image={comment?.CreatedBy?.ImgUrl}
@@ -238,7 +251,11 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
                       <span>{comment.comments}</span>
                     </div>
                     <div className={styles.dateTimeWrapper}>
-                      <img src={require("../assets/Date.png")} />
+                      <img
+                        src={require("../assets/Date.png")}
+                        width="12px"
+                        height="12px"
+                      />
                       <span>{comment.CreatedOn}</span>
                     </div>
                   </div>
@@ -252,7 +269,7 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
               onChange={(e: any) => setComments(e.target.value)}
               placeholder="Type Your Comments here...."
               onKeyDown={(e: any) => {
-                if (e.key == "Enter") {
+                if (e.key === "Enter") {
                   handleCommentSubmit();
                 }
               }}
@@ -411,7 +428,7 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
                   <i
                     className="fa-regular fa-comment-dots"
                     style={{ color: "green", fontSize: "14px" }}
-                  ></i>{" "}
+                  />{" "}
                   {item.CommentsCount}
                 </div>
               </div>
