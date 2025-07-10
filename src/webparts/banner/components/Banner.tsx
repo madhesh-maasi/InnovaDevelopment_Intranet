@@ -216,7 +216,7 @@ const BannerContent: React.FC<IBannerProps> = ({
         </div>
       </div>
       <div className={styles.quickLinkContainer}>
-        <div>
+        <div style={{ width: "100%" }}>
           <div className={styles.quickLinkHeader}>
             <div>
               <u>Quick links</u>
@@ -237,15 +237,19 @@ const BannerContent: React.FC<IBannerProps> = ({
             </div>
           </div>
           <div className={styles.quickLinkcardsContainer}>
-            {quickLinks.map((link, i) => (
-              <div key={i} className={styles.quickLinksCard}>
-                <Quicklinks
-                  Title={link.Title}
-                  Link={link.Link}
-                  Logo={link.Logo}
-                />
-              </div>
-            ))}
+            {quickLinks.length > 0 ? (
+              quickLinks.map((link, i) => (
+                <div key={i} className={styles.quickLinksCard}>
+                  <Quicklinks
+                    Title={link.Title}
+                    Link={link.Link}
+                    Logo={link.Logo}
+                  />
+                </div>
+              ))
+            ) : (
+              <div className={styles.noRecords}>No Links Found</div>
+            )}
           </div>
         </div>
       </div>

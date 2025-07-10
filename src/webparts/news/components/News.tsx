@@ -94,31 +94,52 @@ const News: React.FC<INewsProps> = ({ context }) => {
         <CustomaddBtn onClick={() => setShowPanel(true)} />
       </div>
       <div className={styles.newsWrapper}>
-        <div className={styles.newscardsContainer}>
-          {newsItems.map((item, index) => (
-            <div
-              className={styles.card}
-              key={index}
-              onClick={() => window.open(item.siteUrl, "_blank")}
-            >
-              <div className={styles.imgWrapper}>
-                <img src={item.thumbnail?.url} />
+        {newsItems.length > 0 ? (
+          <div className={styles.newscardsContainer}>
+            {newsItems.map((item, index) => (
+              <div
+                className={styles.card}
+                key={index}
+                onClick={() => window.open(item.siteUrl, "_blank")}
+              >
+                <div className={styles.imgWrapper}>
+                  <img src={item.thumbnail?.url} />
+                </div>
+                <div style={{ width: "70%" }}>
+                  <div className={styles.title}>{item.title}</div>
+                  <TooltipHost
+                    content={item.description}
+                    tooltipProps={{
+                      directionalHint: DirectionalHint.bottomCenter,
+                    }}
+                  >
+                    <p>{item.description}</p>
+                  </TooltipHost>
+                </div>
               </div>
-              <div style={{ width: "70%" }}>
-                <div className={styles.title}>{item.title}</div>
-                <TooltipHost
-                  content={item.description}
-                  tooltipProps={{
-                    directionalHint: DirectionalHint.bottomCenter,
-                  }}
-                >
-                  <p>{item.description}</p>
-                </TooltipHost>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className={styles.noRecords}>No News Record Found</div>
+        )}
       </div>
+      {newsItems.length > 0 ? (
+        <div
+          className={styles.seeMoreWrapper}
+          onClick={() =>
+            window.open(
+              "https://www.google.com",
+              "_blank",
+              "noopener,noreferrer"
+            )
+          }
+        >
+          See more
+        </div>
+      ) : (
+        <div></div>
+      )}
+
       {showPanel && (
         <AddNewsPanel
           context={context}

@@ -49,6 +49,30 @@
           "manifest": "./src/webparts/companyValue/CompanyValueWebPart.manifest.json"
         }
       ]
+    },
+    "news-view-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/newsView/NewsViewWebPart.js",
+          "manifest": "./src/webparts/newsView/NewsViewWebPart.manifest.json"
+        }
+      ]
+    },
+    "meeting-view-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/meetingView/MeetingViewWebPart.js",
+          "manifest": "./src/webparts/meetingView/MeetingViewWebPart.manifest.json"
+        }
+      ]
+    },
+    "innova-team-view-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/innovaTeamView/InnovaTeamViewWebPart.js",
+          "manifest": "./src/webparts/innovaTeamView/InnovaTeamViewWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -59,6 +83,9 @@
     "InnovaTeamWebPartStrings": "lib/webparts/innovaTeam/loc/{locale}.js",
     "MeetingWebPartStrings": "lib/webparts/meeting/loc/{locale}.js",
     "NewsWebPartStrings": "lib/webparts/news/loc/{locale}.js",
-    "CompanyValueWebPartStrings": "lib/webparts/companyValue/loc/{locale}.js"
+    "CompanyValueWebPartStrings": "lib/webparts/companyValue/loc/{locale}.js",
+    "NewsViewWebPartStrings": "lib/webparts/newsView/loc/{locale}.js",
+    "MeetingViewWebPartStrings": "lib/webparts/meetingView/loc/{locale}.js",
+    "InnovaTeamViewWebPartStrings": "lib/webparts/innovaTeamView/loc/{locale}.js"
   }
 }

@@ -279,34 +279,55 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
       </div>
       <div className={styles.meetingCardsContainer}>
         {meetingData.length > 0 ? (
-          meetingData.map((item, index) => (
-            <div key={index} className={styles.meetingCard}>
-              <div className={styles.img}>
-                {item.Type === "Video" ? (
-                  <img
-                    src={videoImgUrl}
-                    width="35px"
-                    height="35px"
-                    alt="Video"
-                  />
-                ) : (
-                  <img src={linkImgUrl} width="35px" height="35px" alt="Link" />
-                )}
-              </div>
-              <div className={styles.details}>
-                <div className={styles.type}>
-                  <a href={item?.FileUrl} target="_blank" rel="noreferrer">
-                    {item.Type === "Video"
-                      ? item?.FileName || "Video"
-                      : item.FileName || "Link"}
-                  </a>
+          <>
+            <div style={{ overflow: "auto" }}>
+              {meetingData.map((item, index) => (
+                <div key={index} className={styles.meetingCard}>
+                  <div className={styles.img}>
+                    {item.Type === "Video" ? (
+                      <img
+                        src={videoImgUrl}
+                        width="35px"
+                        height="35px"
+                        alt="Video"
+                      />
+                    ) : (
+                      <img
+                        src={linkImgUrl}
+                        width="35px"
+                        height="35px"
+                        alt="Link"
+                      />
+                    )}
+                  </div>
+                  <div className={styles.details}>
+                    <div className={styles.type}>
+                      <a href={item?.FileUrl} target="_blank" rel="noreferrer">
+                        {item.Type === "Video"
+                          ? item?.FileName || "Video"
+                          : item.FileName || "Link"}
+                      </a>
+                    </div>
+                    <div className={styles.date}>
+                      {moment(item?.Date).format("YYYY-MM-DD HH:mm:ss")}
+                    </div>
+                  </div>
                 </div>
-                <div className={styles.date}>
-                  {moment(item?.Date).format("YYYY-MM-DD HH:mm:ss")}
-                </div>
-              </div>
+              ))}
             </div>
-          ))
+            <div
+              className={styles.seeMoreWrapper}
+              onClick={() =>
+                window.open(
+                  "https://www.google.com",
+                  "_blank",
+                  "noopener,noreferrer"
+                )
+              }
+            >
+              See more
+            </div>
+          </>
         ) : (
           <div className={styles.noRecords}>No Records Found</div>
         )}

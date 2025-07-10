@@ -10,8 +10,8 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 import { Message } from "primereact/message";
-import { sp } from "@pnp/sp/presets/all";
-import * as moment from "moment";
+import { ColumnControl, sp } from "@pnp/sp/presets/all";
+// import * as moment from "moment";
 import {
   getLibraryFileDetails,
   uploadThumbnail,
@@ -37,8 +37,8 @@ export const AddNewsPanel: React.FC<IProps> = ({
   const [newsForm, setNewsForm] = useState<INewsTemplate>({
     Title: "",
     Description: "",
-    StartDate: "",
-    EndDate: "",
+    StartDate: new Date(),
+    EndDate: new Date(),
     Thumbnail: { fileName: "", url: "", file: null },
   });
   const [error, setError] = useState("");
@@ -114,7 +114,7 @@ export const AddNewsPanel: React.FC<IProps> = ({
       // Upload thumbnail
       const thumbId = await uploadThumbnail(newsForm.Thumbnail);
       if (!thumbId) {
-        setError("Failed to upload thumbnail.");
+        setError("Failed to upload thumbnail");
         return;
       }
       if (!selectedTemplate?.EncodedAbsUrl) {
@@ -122,66 +122,78 @@ export const AddNewsPanel: React.FC<IProps> = ({
         return;
       }
 
-      const _templateUrl = selectedTemplate.EncodedAbsUrl.replace(
-        domainUrl,
-        ""
-      );
-      await sp.web.currentUser.get().then(async (user: any) => {
+      const _templateUrl =
+        selectedTemplate.EncodedAbsUrl.split(domainUrl).slice(-1)[0];
+      let _pageName = newsForm.Title.trim();
+
+      sp.web.currentUser.get().then(async (user: any) => {
         let source = await sp.web.loadClientsidePage(_templateUrl);
-        let _pageName = `${newsForm.Title.replace(/\s+/g, "-")}.aspx`;
+
         let dest: any = await sp.web.addClientsidePage(
           _pageName,
           _pageName,
           "Article"
         );
-        let _targetId = dest["json"].Id;
-        await source.copyTo(dest, false);
-        const page = await sp.web.loadClientsidePage(
-          dest["json"].AbsoluteUrl.replace(window.location.origin, "")
-        );
 
+        let _targetId = dest["json"].Id;
+
+        await source.copyTo(dest, false);
+
+        const page: any = await sp.web.loadClientsidePage(
+          dest["json"].AbsoluteUrl.split(window.location.origin).slice(-1)[0]
+        );
+        const destsiteUrl = dest["json"].AbsoluteUrl;
         await page.setBannerImage(source.bannerImageUrl);
         await page.setAuthorById(user.Id);
-        const titleWebPart: any = await page.findControl((c: any) => {
-          return (
-            c["json"].position.zoneIndex == 1 &&
-            (c["title"] === "Title area" || c["title"] === "Banner")
-          );
-        });
-        if (titleWebPart) {
+
+        const titleWebPart: ColumnControl<any> = await page.findControl(
+          (c: any) => {
+            return (
+              c["json"].position.zoneIndex == 1 &&
+              (c["title"] === "Title area" || c["title"] === "Banner")
+            );
+          }
+        );
+
+        if (titleWebPart.column) {
           await titleWebPart.column.remove();
         }
+
         await page.save(false);
-        const pageUrl = `${context.pageContext.web.absoluteUrl}/SitePages/${_pageName}`;
-        const pageItem = await sp.web.lists
+
+        // const pageItem = await sp.web.lists
+        //   .getByTitle("Site Pages")
+        //   .items.filter(`FileLeafRef eq '${_pageName}'`)
+        //   .top(1)
+        //   .get();
+
+        // if (!pageItem.length) {
+        //   setError("Failed to find the page item to update metadata.");
+        //   return;
+        // }
+        const item = sp.web.lists
           .getByTitle("Site Pages")
-          .items.filter(`FileLeafRef eq '${_pageName}'`)
-          .top(1)
-          .get();
+          .items.getById(_targetId);
 
-        if (!pageItem.length) {
-          setError("Failed to find the page item to update metadata.");
-          return;
-        }
+        // Step 1: Update Description using validateUpdateListItem
+        await item.validateUpdateListItem([
+          {
+            FieldName: "Description",
+            FieldValue: newsForm.Description,
+          },
+        ]);
 
-        const pageItemId = pageItem[0].Id;
-
-        await sp.web.lists
-          .getByTitle("Site Pages")
-          .items.getById(pageItemId)
+        // Step 2: Update other fields using update()
+        await item
           .update({
             Title: newsForm.Title,
-            Description: newsForm.Description,
-            StartDate: newsForm.StartDate
-              ? moment(newsForm.StartDate).format("MM/DD/YYYY")
-              : null,
-            EndDate: newsForm.EndDate
-              ? moment(newsForm.EndDate).format("MM/DD/YYYY")
-              : null,
+            StartDate: newsForm.StartDate ? newsForm.StartDate : null,
+            EndDate: newsForm.EndDate ? newsForm.EndDate : null,
             ThumbnailAttachmentsOfId: thumbId,
-            PageType: "News",
+            PageType: "NewsPage",
           })
-          .then(async () => {
+          .then(async (updatedNews: any) => {
+            console.log("Updated News", updatedNews);
             setNewsItem((prevItems: INewsItem[]) => [
               ...prevItems,
               {
@@ -191,11 +203,15 @@ export const AddNewsPanel: React.FC<IProps> = ({
                 thumbnail: {
                   id: thumbId,
                   fileName: newsForm?.Thumbnail?.fileName || "",
-                  url: `${window.location.origin}/ThumbnailAttachments/${newsForm?.Thumbnail?.fileName}`,
+                  url: newsForm?.Thumbnail?.url,
                 },
-                siteUrl: pageUrl,
+                siteUrl: destsiteUrl,
               },
             ]);
+            await window.open(
+              `${page["json"].AbsoluteUrl}?Mode=Edit`,
+              "_blank"
+            );
           });
       });
     } catch (err) {
@@ -289,11 +305,9 @@ export const AddNewsPanel: React.FC<IProps> = ({
                     newsForm?.StartDate ? new Date(newsForm.StartDate) : null
                   }
                   onChange={(e) =>
-                    setNewsForm((prev) => ({
+                    setNewsForm((prev: any) => ({
                       ...prev,
-                      StartDate: e.value
-                        ? moment(e.value).format("YYYY-MM-DD")
-                        : "",
+                      StartDate: e.value ? e.value : "",
                     }))
                   }
                   showIcon
@@ -303,11 +317,9 @@ export const AddNewsPanel: React.FC<IProps> = ({
                 <Calendar
                   value={newsForm?.EndDate ? new Date(newsForm.EndDate) : null}
                   onChange={(e) =>
-                    setNewsForm((prev) => ({
+                    setNewsForm((prev: any) => ({
                       ...prev,
-                      EndDate: e.value
-                        ? moment(e.value).format("YYYY-MM-DD")
-                        : "",
+                      EndDate: e.value ? e.value : "",
                     }))
                   }
                   showIcon

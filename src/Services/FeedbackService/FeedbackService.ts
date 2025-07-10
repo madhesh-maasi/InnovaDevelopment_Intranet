@@ -14,6 +14,7 @@ const FetchFeedBacks = async () => {
     Listname: SPLists.FeedbackList,
     Orderby: "ID",
     Orderbydecorasc: false,
+    Topcount: 9,
   });
   const formatted = items.map((item: any) => {
     return {

@@ -25,11 +25,16 @@ const addInnovaTeam = async (
   setTableData((prev: any[]) => [...prev, localStateData]);
   dispatch(setInnovaTeam(localStateData));
 };
-const FetchInnovaTeamData = async () => {
+const FetchInnovaTeamData = async (Type?: any) => {
+  const isView = Type === "View";
+
   const TeamData = await SpServices.SPReadItems({
     Listname: SPLists.InnovaTeamList,
     Expand: "TeamMember",
     Select: "*,TeamMember/ID,TeamMember/EMail,TeamMember/Title",
+    Orderby: "ID",
+    Orderbydecorasc: false,
+    Topcount: isView ? 5000 : 3,
   });
   const formatted = TeamData.map((data: any) => {
     return {

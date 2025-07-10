@@ -78,11 +78,15 @@ const addToMeetingList = async (
   dispatch(setMeetingItem(localStateData));
 };
 
-const FetchMeetingsData = async (): Promise<IMeetingItem[]> => {
+const FetchMeetingsData = async (Type?: any): Promise<IMeetingItem[]> => {
+  const isView = Type === "View";
   const items = await SpServices.SPReadItems({
     Listname: SPLists.MeetingList,
     Expand: "MeetingAttachmentsOf",
     Select: "ID,Title,Link,Created,MeetingAttachmentsOf/Id,LinkName",
+    Orderby: "ID",
+    Orderbydecorasc: false,
+    Topcount: isView ? 5000 : 5,
   });
 
   const formatted: IMeetingItem[] = [];

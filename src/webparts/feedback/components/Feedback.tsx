@@ -44,6 +44,9 @@ import { Avatar } from "primereact/avatar";
 
 const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
   const dispatch = useDispatch();
+  const currentuser = useSelector(
+    (state: any) => state.MainSPContext.currentUserDetails
+  );
   const [feedbacks, setFeedbacks] = useState<IFeedbacktype[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = React.useState(0);
@@ -55,9 +58,6 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
   });
   const [conversations, setConversations] = useState<IConversationType[]>([]);
   console.log(conversations);
-  const currentuser = useSelector(
-    (state: any) => state.MainSPContext.currentUserDetails
-  );
   const itemsPerPage = 3;
   const webUrl = context?.pageContext?.web?.absoluteUrl;
   const siteUrl = context?.pageContext?.site?.serverRelativeUrl;
@@ -207,22 +207,44 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
         </div>
         <div style={{ height: "65vh" }}>
           <div className={styles.commentsWrapper}>
-            {conversations.map((comment: any) => (
-              <div className={styles.card}>
-                <div className={styles.commentContentWrapper}>
-                  <Avatar
-                    image={comment?.CreatedBy?.ImgUrl}
-                    size="normal"
-                    shape="circle"
-                  />
-                  <span>{comment.comments}</span>
-                </div>
-                <div className={styles.dateTimeWrapper}>
-                  <img src={require("../assets/Date.png")} />
-                  <span>{comment.CreatedOn}</span>
-                </div>
-              </div>
-            ))}
+            {conversations.map((comment: any) => {
+              debugger;
+              if (comment?.CreatedBy?.Email === currentuser[0]?.Email) {
+                return (
+                  <div className={styles.card}>
+                    <div
+                      className={styles.commentContentWrapper}
+                      style={{ justifyContent: "end" }}
+                    >
+                      <span style={{ fontWeight: "500" }}>
+                        {comment.comments}
+                      </span>
+                    </div>
+                    <div className={styles.dateTimeWrapper}>
+                      <img src={require("../assets/Date.png")} />
+                      <span>{comment.CreatedOn}</span>
+                    </div>
+                  </div>
+                );
+              } else {
+                return (
+                  <div className={styles.card}>
+                    <div className={styles.commentContentWrapper}>
+                      <Avatar
+                        image={comment?.CreatedBy?.ImgUrl}
+                        size="normal"
+                        shape="circle"
+                      />
+                      <span>{comment.comments}</span>
+                    </div>
+                    <div className={styles.dateTimeWrapper}>
+                      <img src={require("../assets/Date.png")} />
+                      <span>{comment.CreatedOn}</span>
+                    </div>
+                  </div>
+                );
+              }
+            })}
           </div>
           <div className={styles.commentInputBar}>
             <CustomInputField

@@ -21,7 +21,7 @@ export interface INewsTemplate {
   UniqueId?: string;
   Description: string;
   BannerImageUrl?: string;
-  StartDate: string;
-  EndDate: string;
+  StartDate: Date;
+  EndDate: Date;
   Thumbnail?: IThumbnail | null;
 }

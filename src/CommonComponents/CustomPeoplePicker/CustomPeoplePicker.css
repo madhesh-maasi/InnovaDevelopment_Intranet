@@ -8,6 +8,12 @@
 .ms-BasePicker-text.text-73 {
   border: none;
 }
+.ms-BasePicker-text.text-72 {
+  border: none !important;
+}
+.ms-BasePicker-text {
+  border: none !important;
+}
 .ms-BasePicker-text.text-77::after {
   pointer-events: none;
   content: "";
