@@ -5,7 +5,7 @@
 import { sp } from "@pnp/sp";
 import { INewsItem, IThumbnail } from "../../Interface/NewsInterface";
 
-const fetchNewsItems = async (setNewsItems: any) => {
+const fetchNewsItems = async (setNewsItems: any, Type?: any) => {
   const thumbnailItems = await sp.web.lists
     .getByTitle("thumbnailAttachments")
     .items.expand("File")
@@ -15,18 +15,33 @@ const fetchNewsItems = async (setNewsItems: any) => {
     fileName: f.File.Name,
     url: f.File.ServerRelativeUrl,
   }));
+  let pages;
+  if (Type === "View") {
+    pages = await sp.web.lists
+      .getByTitle("Site Pages")
+      .items.orderBy("ID", false)
+      .filter("PageType eq 'NewsPage'")
+      .expand("ThumbnailAttachmentsOf")
+      .select(
+        "*,Title,FileRef,EncodedAbsUrl,ServerRedirectedEmbedUri,UniqueId,ThumbnailAttachmentsOf/ID"
+      )
+      .top(5000)
+      .get();
+  } else {
+    pages = await sp.web.lists
+      .getByTitle("Site Pages")
+      .items.orderBy("ID", false)
+      .filter("PageType eq 'NewsPage'")
+      .expand("ThumbnailAttachmentsOf")
+      .select(
+        "*,Title,FileRef,EncodedAbsUrl,ServerRedirectedEmbedUri,UniqueId,ThumbnailAttachmentsOf/ID"
+      )
+      .top(3)
+      .get();
+  }
 
-  const pages = await sp.web.lists
-    .getByTitle("Site Pages")
-    .items.filter("PageType eq 'NewsPage'")
-    .expand("ThumbnailAttachmentsOf")
-    .select(
-      "*,Title,FileRef,EncodedAbsUrl,ServerRedirectedEmbedUri,UniqueId,ThumbnailAttachmentsOf/ID"
-    )
-    .top(5000)
-    .get();
   console.log("items of sitepages", pages);
-  const items: INewsItem[] = pages.map((page) => ({
+  const items: INewsItem[] = await pages.map((page) => ({
     id: page.Id,
     title: page.Title,
     description: page.Description,

@@ -40,16 +40,29 @@
   height: 450px;
   align-items: center;
 }
+.seeMoreWrapper {
+  display: flex;
+  justify-content: end;
+  margin-top: 0px;
+  padding: 0px;
+  font-weight: 500;
+  font-size: 16px;
+  align-items: flex-end;
+  color: #1470af !important;
+  text-decoration: underline;
+  cursor: pointer;
+}
 .meetingCardsContainer {
   display: flex;
   flex-direction: column;
   padding-top: 12px;
   height: 450px;
+  justify-content: space-between;
 }
 .meetingCard {
   display: flex;
   background: white;
-  border-radius: 10px;
+  border-radius: 4px;
   padding: 12px;
   margin-bottom: 8px;
   align-items: center;

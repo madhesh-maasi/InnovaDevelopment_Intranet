@@ -1,7 +1,7 @@
 .feedbackContainer {
   display: flex;
   max-width: 100%;
-  max-height: 460px;
+  height: 500px;
   padding: 20px;
   border-radius: 7px;
   background-color: #eaeaea;
@@ -66,11 +66,14 @@
 
 .carouselWrapper {
   width: 100%;
-  max-width: 500px;
+
   margin-top: 10px;
   text-align: center;
   position: relative;
-
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
   .cardsContainer {
     display: flex;
     flex-direction: column;
@@ -78,7 +81,7 @@
 
     .card {
       background: #fff;
-      border-radius: 12px;
+      border-radius: 4px;
       padding: 10px;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
       text-align: left;
@@ -149,7 +152,7 @@
   overflow: auto;
   .card {
     background: #fff;
-    border-radius: 5px;
+    border-radius: 4px;
     padding: 10px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     text-align: left;

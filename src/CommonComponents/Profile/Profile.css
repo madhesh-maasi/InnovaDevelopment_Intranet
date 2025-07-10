@@ -1,5 +1,17 @@
-.profile{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+.profile {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.p-avatar.p-avatar-lg {
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.5rem;
+}
+.p-avatar-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35%;
 }

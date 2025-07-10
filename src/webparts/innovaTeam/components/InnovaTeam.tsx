@@ -287,18 +287,30 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
             >
               <Column
                 header="Team Member"
-                style={{ width: "20%" }}
+                style={{ width: "25%" }}
                 body={(rowData) => <Profile TeamMember={rowData?.TeamMember} />}
               />
-              <Column field="Role" header="Role" style={{ width: "20%" }} />
+              <Column field="Role" header="Role" style={{ width: "27%" }} />
               <Column
                 field="JobDescription"
                 header="Job description"
-                style={{ width: "20%" }}
+                style={{ width: "48%" }}
               />
             </DataTable>
           }
         />
+        <div
+          className={styles.seeMoreWrapper}
+          onClick={() =>
+            window.open(
+              "https://www.google.com",
+              "_blank",
+              "noopener,noreferrer"
+            )
+          }
+        >
+          See more
+        </div>
       </div>
       <div>
         {popupController?.map((popupData: any, index: number) => (
