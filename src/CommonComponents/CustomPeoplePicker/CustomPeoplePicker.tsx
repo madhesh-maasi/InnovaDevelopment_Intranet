@@ -12,6 +12,7 @@ import { memo, useState, useEffect } from "react";
 import styles from "./CustomPeoplePicker.module.scss";
 import "./CustomPeoplePicker.css";
 interface ICustomPeoplePickerProps {
+  label?: string;
   selectedItem?: any[];
   onChange?: (value: any[], filter?: boolean) => void;
   placeholder?: string;
@@ -23,6 +24,7 @@ interface ICustomPeoplePickerProps {
 }
 
 const CustomPeoplePicker: React.FC<ICustomPeoplePickerProps> = ({
+  label,
   selectedItem = [],
   onChange,
   placeholder = "Search by User",
@@ -54,7 +56,10 @@ const CustomPeoplePicker: React.FC<ICustomPeoplePickerProps> = ({
   );
 
   return (
-    <div className={styles.customPickerInput}>
+    <div
+      className={label ? "customPickerInputForPopup" : styles.customPickerInput}
+    >
+      {label && <label className={styles.label}>{label}</label>}
       <PeoplePicker
         key={pickerKey}
         context={context}

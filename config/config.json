@@ -81,6 +81,30 @@
           "manifest": "./src/extensions/navigationExtension/NavigationExtensionApplicationCustomizer.manifest.json"
         }
       ]
+    },
+    "department-banner-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/departmentBanner/DepartmentBannerWebPart.js",
+          "manifest": "./src/webparts/departmentBanner/DepartmentBannerWebPart.manifest.json"
+        }
+      ]
+    },
+    "tableof-content-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/tableofContent/TableofContentWebPart.js",
+          "manifest": "./src/webparts/tableofContent/TableofContentWebPart.manifest.json"
+        }
+      ]
+    },
+    "subdepartment-quick-links-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/subdepartmentQuickLinks/SubdepartmentQuickLinksWebPart.js",
+          "manifest": "./src/webparts/subdepartmentQuickLinks/SubdepartmentQuickLinksWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -95,6 +119,9 @@
     "NewsViewWebPartStrings": "lib/webparts/newsView/loc/{locale}.js",
     "MeetingViewWebPartStrings": "lib/webparts/meetingView/loc/{locale}.js",
     "InnovaTeamViewWebPartStrings": "lib/webparts/innovaTeamView/loc/{locale}.js",
-    "NavigationExtensionApplicationCustomizerStrings": "lib/extensions/navigationExtension/loc/{locale}.js"
+    "NavigationExtensionApplicationCustomizerStrings": "lib/extensions/navigationExtension/loc/{locale}.js",
+    "DepartmentBannerWebPartStrings": "lib/webparts/departmentBanner/loc/{locale}.js",
+    "TableofContentWebPartStrings": "lib/webparts/tableofContent/loc/{locale}.js",
+    "SubdepartmentQuickLinksWebPartStrings": "lib/webparts/subdepartmentQuickLinks/loc/{locale}.js"
   }
 }

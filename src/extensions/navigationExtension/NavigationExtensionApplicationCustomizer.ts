@@ -1,3 +1,5 @@
+/*eslint-disable @typescript-eslint/no-var-requires*/
+
 import { Log } from "@microsoft/sp-core-library";
 import { BaseApplicationCustomizer } from "@microsoft/sp-application-base";
 // import { Dialog } from "@microsoft/sp-dialog";
@@ -21,15 +23,45 @@ export default class NavigationExtensionApplicationCustomizer extends BaseApplic
   public onInit(): Promise<void> {
     Log.info(LOG_SOURCE, `Initialized ${strings.Title}`);
 
-    // let message: string = this.properties.testMessage;
-    // if (!message) {
-    //   message = "(No properties were provided.)";
-    // }
+    const logoPath = require("../navigationExtension/assests/Innova_final_logo.jpg");
 
-    //  Place your js logics here!!!
-    // Dialog.alert(`Hello from ${strings.Title}:\n\n${message}`).catch(() => {
-    //   /* handle error */
-    // });
+    const replaceLogos = () => {
+      const logoImg = document.querySelector<HTMLImageElement>(
+        'a[aria-label*="Innova Developments"] img'
+      );
+      const logoImgOnScroll = document.querySelector<HTMLImageElement>(
+        "a.shyLogoWrapper-131 img"
+      );
+
+      if (logoImg) {
+        logoImg.src = logoPath;
+        logoImg.alt = "Innova Development Logo";
+      } else {
+        console.warn("Main logo not found.");
+      }
+
+      if (logoImgOnScroll) {
+        logoImgOnScroll.src = logoPath;
+        logoImgOnScroll.alt = "Innova Development Logo";
+      } else {
+        console.warn("Sticky logo not found.");
+      }
+    };
+
+    // Run initially after delay
+    setTimeout(() => {
+      replaceLogos();
+    }, 3000);
+
+    // Watch for DOM changes to handle scroll/re-rendered headers
+    const observer = new MutationObserver(() => {
+      replaceLogos();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
 
     return Promise.resolve();
   }

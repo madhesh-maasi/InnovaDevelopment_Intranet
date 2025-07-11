@@ -2,6 +2,11 @@
   z-index: 2;
   width: 100%;
 }
+.label {
+  color: #a4a4a4;
+  font-size: 12px;
+}
+
 .customPickerInput .ms-BasePicker-text {
   border: 1px solid var(--input-fields-border-color);
   padding: 0 4px;

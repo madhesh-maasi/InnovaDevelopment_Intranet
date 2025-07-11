@@ -19,7 +19,7 @@ export interface INewsTemplate {
   EncodedAbsUrl?: string;
   ServerRedirectedEmbedUri?: string;
   UniqueId?: string;
-  Description: string;
+  Description?: string;
   BannerImageUrl?: string;
   StartDate: Date;
   EndDate: Date;

@@ -13,7 +13,7 @@ interface Props {
   btnType: "primaryBtn" | "closeBtn";
   onlyIcon?: boolean;
   title?: string;
-  onClick?: () => void;
+  onClick?: any;
   type?: "button" | "submit" | "reset";
   style?: React.CSSProperties;
   className?: string;
@@ -55,6 +55,7 @@ const DefaultButton = ({
         padding: "10px 20px",
         whiteSpace: "nowrap",
         fontSize: "14px",
+        borderRadius: "4px !important",
         ...style,
       }}
     />

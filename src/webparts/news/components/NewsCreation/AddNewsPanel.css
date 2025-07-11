@@ -66,3 +66,37 @@
   margin-top: 1.5rem;
   gap: 1rem;
 }
+.newstemplateContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 84.75vh;
+}
+.card {
+  background: #fff;
+  border-radius: 4px;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  margin-top: 15px;
+}
+.title {
+  color: #1470af;
+  font-weight: 500;
+  padding-bottom: 5px;
+  font-size: 15px;
+  display: flex;
+  justify-content: center;
+}
+.iframeContainer {
+  width: 100%;
+  height: 94.5%;
+  border: 1px solid rgb(204, 204, 204);
+  border-radius: 4px;
+  margin-top: 15px;
+}
+.buttonFooter {
+  display: flex;
+  justify-content: end;
+  gap: 3%;
+}

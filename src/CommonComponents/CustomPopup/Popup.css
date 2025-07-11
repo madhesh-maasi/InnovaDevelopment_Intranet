@@ -13,9 +13,13 @@
   z-index: 100;
 }
 .p-dialog .p-dialog-footer {
-  padding: 10px 30px !important;
+  padding: 10px 18px !important;
   background-color: #ccc;
   z-index: 100;
+}
+.p-dialog .p-dialog-footer button {
+  margin: 0;
+  width: auto;
 }
 .p-component-overlay {
   background-color: rgba(0, 0, 0, 0.4); /* dim effect */

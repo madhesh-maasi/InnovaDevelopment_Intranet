@@ -63,7 +63,6 @@ const uploadThumbnail = async (thumbnail: any) => {
   return item?.Id;
 };
 const getLibraryFileDetails = async (itemId: number) => {
-  debugger;
   try {
     const libItem = await sp.web.lists
       .getByTitle("ThumbnailAttachments")

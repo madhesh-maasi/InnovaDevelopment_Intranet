@@ -4,6 +4,7 @@
 }
 .p-column-title {
   color: #1470af;
+  font-size: 17px;
 }
 .p-datatable-thead {
   color: #1470af !important;
@@ -30,6 +31,8 @@
   border-width: 1px 0 0 0;
   padding: 0.5rem 1rem;
   background-color: #fff !important;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 .p-datatable-tbody {
   border-radius: 7px;
