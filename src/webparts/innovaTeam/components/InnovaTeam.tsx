@@ -5,10 +5,7 @@
 import * as React from "react";
 import type { IInnovaTeamProps } from "./IInnovaTeamProps";
 import styles from "./InnovaTeam.module.scss";
-
 import { sp } from "@pnp/sp/presets/all";
-import { graph } from "@pnp/graph/presets/all";
-
 import { Provider, useDispatch } from "react-redux";
 import { store } from "../../../Redux/Store/Store";
 
@@ -182,6 +179,7 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
     [
       <div className={styles.popupCustomWrapper} key={0}>
         <CustomPeoplePicker
+          label="Team Member"
           selectedItem={selectedUser}
           personSelectionLimit={1}
           onChange={onUserSelect}
@@ -342,18 +340,8 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
   );
 };
 
-export default class InnovaTeam extends React.Component<IInnovaTeamProps, {}> {
-  constructor(prop: IInnovaTeamProps) {
-    super(prop);
-    sp.setup({ spfxContext: this.props.context as unknown as any });
-    graph.setup({ spfxContext: this.props.context as unknown as any });
-  }
-
-  public render(): React.ReactElement<IInnovaTeamProps> {
-    return (
-      <Provider store={store}>
-        <InnovaTeamContent context={this.props.context} />
-      </Provider>
-    );
-  }
-}
+export default (props: IInnovaTeamProps): JSX.Element => (
+  <Provider store={store}>
+    <InnovaTeamContent context={props.context} />
+  </Provider>
+);

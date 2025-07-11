@@ -1,14 +1,29 @@
 .ms-SelectionZone {
   background: #fff !important;
   border-radius: 4px !important;
-  border: 1px solid #ced4da !important;
   height: 30px;
   width: 100%;
+  padding-left: 10px;
+  border: 1px solid #ced4da !important;
+}
+.customPickerInputForPopup {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  padding: 12px;
+  border-radius: 4px !important;
+}
+.customPickerInputForPopup .ms-SelectionZone {
+  border: none !important;
 }
 .ms-BasePicker-text.text-73 {
   border: none;
 }
 .ms-BasePicker-text.text-72 {
+  border: none !important;
+}
+.ms-BasePicker-text.text-105::after {
   border: none !important;
 }
 .ms-BasePicker-text {
@@ -34,4 +49,5 @@
 .ms-BasePicker-text.text-74 {
   border: none;
   height: 100%;
+  /* padding-left: 10px; */
 }

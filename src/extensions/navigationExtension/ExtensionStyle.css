@@ -1,14 +1,25 @@
 [class^="titleSubcell"] {
-    display: none !important;
+  display: none !important;
 }
 
 [class^="mainHeader"] {
-    align-items: center !important;
+  align-items: center !important;
 }
 
 .ms-HorizontalNavItem-link .is-selected {
-    border: unset !important;
-    background-color: #F2FAFF !important;
-    color: #1470AF !important;
-    padding: 12px 24px;
+  border: unset !important;
+  background-color: #f2faff !important;
+  color: #1470af !important;
+  padding: 12px 24px;
+}
+span[data-automationid="SiteHeaderTitle"] a {
+  display: none !important;
+}
+a[class^="shyTitle"] {
+  display: none !important;
+}
+.shyLogoImg-132.shyLogoImg-132.shyLogoImg-132.shyLogoImg-132.shyLogoImg-132 {
+  max-height: 48px !important;
+  max-width: 144px !important;
+  width: auto;
 }

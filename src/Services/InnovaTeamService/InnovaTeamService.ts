@@ -22,7 +22,7 @@ const addInnovaTeam = async (
     Role: payload.FileName,
     JobDescription: payload.FileUrl,
   };
-  setTableData((prev: any[]) => [...prev, localStateData]);
+  setTableData((prev: any[]) => [localStateData, ...prev]);
   dispatch(setInnovaTeam(localStateData));
 };
 const FetchInnovaTeamData = async (Type?: any) => {

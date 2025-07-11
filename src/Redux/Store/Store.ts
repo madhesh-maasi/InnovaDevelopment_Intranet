@@ -4,13 +4,15 @@ import QuickLinkSlice from "../Features/QuickLinkSlice";
 import FeedbackSlice from "../Features/FeedbackSlice";
 import InnovaTeamSlice from "../Features/InnovaTeamSlice";
 import MeetingSlice from "../Features/MeetingSlice";
+import TableOfContentSlice from "../Features/TableOfContentSlice";
 const store = configureStore({
   reducer: {
     MainSPContext: MainSPContext,
-    QuickLinkSlice:QuickLinkSlice,
-    FeedbackSlice:FeedbackSlice,
-    InnovaTeamSlice:InnovaTeamSlice,
-    MeetingSlice:MeetingSlice
+    QuickLinkSlice: QuickLinkSlice,
+    FeedbackSlice: FeedbackSlice,
+    InnovaTeamSlice: InnovaTeamSlice,
+    MeetingSlice: MeetingSlice,
+    TableOfContent: TableOfContentSlice,
   },
 });
 

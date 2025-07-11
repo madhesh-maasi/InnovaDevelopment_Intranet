@@ -2,8 +2,6 @@
   display: flex !important;
   background-color: #fff !important;
   border-radius: 5px !important;
-  width: 25px;
-  height: 25px;
   justify-content: center;
   align-items: center;
 }
@@ -26,5 +24,10 @@
 .titleTag {
   color: #1470af;
   font-size: 12px;
+  font-weight: 400;
+}
+.titleTagforDept {
+  margin-top: 3px;
+  font-size: 16px;
   font-weight: 400;
 }

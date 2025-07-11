@@ -5,6 +5,8 @@ const SPLists = {
   MeetingList: "Meeting",
   ConversationList: "Conversation",
   CompanyValueList: "CompanyValue",
+  TableOfContentList: "TableOfContent",
+  SubDepartmentQuickLinkList: "SubDepartmentQuickLinks",
 };
 const SPLibrary = {
   MeetingLibrary: "MeetingAttachments",

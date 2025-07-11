@@ -146,8 +146,9 @@ const News: React.FC<INewsProps> = ({ context }) => {
       {showPanel && (
         <AddNewsPanel
           context={context}
-          onClose={() => {
+          onClose={(setLoading?: any) => {
             setShowPanel(false);
+            setLoading(false);
             fetchNewsItems(setNewsItems);
           }}
           setNewsItem={setNewsItems}

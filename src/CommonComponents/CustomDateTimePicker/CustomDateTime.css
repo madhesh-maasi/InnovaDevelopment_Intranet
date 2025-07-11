@@ -1,0 +1,17 @@
+.customDatePickerWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  padding: 12px;
+  border-radius: 4px !important;
+}
+.label {
+  color: #a4a4a4;
+  font-size: 12px;
+}
+.p-datepicker-trigger {
+  color: #1470af;
+  background-color: transparent;
+  border: unset;
+}
