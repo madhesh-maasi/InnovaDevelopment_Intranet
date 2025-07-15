@@ -68,7 +68,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-
+  width: 100%;
   color: black;
 }
 .quickLinkHeader {
@@ -102,7 +102,6 @@
   row-gap: 15px;
   margin: 16px 0;
   overflow: auto;
-  justify-content: center;
 }
 
 .quickLinksCard {

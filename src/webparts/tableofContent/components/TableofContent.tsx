@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-floating-promises */
-
 import * as React from "react";
 import styles from "./TableofContent.module.scss";
 import type { ITableofContentProps } from "./ITableofContentProps";
@@ -16,6 +15,7 @@ import {
   setTenantUrl,
   setWebUrl,
 } from "../../../Redux/Features/MainSPContextSlice";
+import { Toast } from "primereact/toast";
 import CustomHeader from "../../../CommonComponents/webpartsHeader/CustomerHeader/CustomHeader";
 import CustomaddBtn from "../../../CommonComponents/webpartsHeader/CustomaddBtn/CustomaddBtn";
 import CustomDataTable from "../../../CommonComponents/DataTable/DataTable";
@@ -35,7 +35,8 @@ import {
 } from "../../../Services/TableOfContentService/TableOfContentService";
 import { setTableOfContent } from "../../../Redux/Features/TableOfContentSlice";
 import { DirectionalHint, TooltipHost } from "@fluentui/react";
-import "../assets/css/style.css";
+import "../../../Config/style.css";
+// import "../assets/css/style.css";
 const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
   const dispatch = useDispatch();
   const [input, setInput] = React.useState<any>({
@@ -44,12 +45,14 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
     DepartmentProcess: "",
     SOP: "",
   });
+  const [deleteItemId, setDeleteItemId] = useState<any>();
   const [allData, setAllData] = React.useState<ITableOfContentType[]>([]);
   const webUrl = context?.pageContext?.web?.absoluteUrl;
   const siteUrl = context?.pageContext?.site?.serverRelativeUrl;
   const tenantUrl = webUrl?.split("/sites")[0];
   const [isLoading, setIsLoading] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+  const toastRef = React.useRef<any>(null);
   const initialPopupController = [
     {
       open: false,
@@ -79,6 +82,7 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
       DepartmentProcess: "",
       SOP: "",
     });
+    setDeleteItemId(0);
   };
   const handleInputChange = (field: string, value: any) => {
     setInput((prev: any) => ({
@@ -112,22 +116,31 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
   };
   const handleSubmitFuction = async () => {
     setIsLoading(true);
-    const { RoleGuide, DepartmentProcess, SOP } = input;
+    const { RoleGuide, DepartmentProcess } = input;
 
     try {
-      if (!RoleGuide || !DepartmentProcess || !SOP) {
-        console.error("Missing required fields");
+      if (!RoleGuide || !DepartmentProcess) {
+        toastRef.current?.show({
+          severity: "warn",
+          summary: "Missing Fields",
+          detail: "Please fill out all required fields before submitting.",
+          life: 10000,
+        });
         return;
       }
       const payload = {
         RoleGuide: RoleGuide,
         DepartmentProcess: DepartmentProcess,
-        SOP: SOP,
       };
       if (isEdit) {
-        await updateTableOfContent(input?.Id, payload, getTableOfContentData);
+        await updateTableOfContent(
+          input?.Id,
+          payload,
+          getTableOfContentData,
+          toastRef
+        );
       } else {
-        await addTableOfContent(payload, setAllData, dispatch);
+        await addTableOfContent(payload, setAllData, dispatch, toastRef);
       }
       handleClosePopup(0);
       setInput({
@@ -161,17 +174,18 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
           placeholder=" Enter Department Process"
           autoResize={false}
         />
-        <CustomMultiInputField
-          label="SOP*"
-          value={input.SOP}
-          onChange={(e: any) => handleInputChange("SOP", e.target.value)}
-          rows={2}
-          placeholder=" Enter SOP Link"
-          autoResize={false}
-        />
+      </div>,
+    ],
+    [
+      <div key={1} className={styles.DeletePopupWrapper}>
+        Are you sure you want to delete this item?
       </div>,
     ],
   ];
+  const handleDelete = () => {
+    deleteTableOfContent(deleteItemId, setAllData, allData, toastRef);
+    handleClosePopup(1);
+  };
   const popupActions: any[] = [
     [
       {
@@ -195,10 +209,29 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
         },
       },
     ],
+    [
+      {
+        text: "No",
+        btnType: "closeBtn",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleClosePopup(1);
+        },
+      },
+      {
+        text: "Yes",
+        btnType: "primaryBtn",
+        disabled: false,
+        endIcon: false,
+        startIcon: false,
+        onClick: () => {
+          handleDelete();
+        },
+      },
+    ],
   ];
-  const handleDelete = (rowData: any) => {
-    deleteTableOfContent(rowData?.Id, setAllData, allData);
-  };
   const handleEdit = (rowData: any) => {
     setIsEdit(true);
     setInput({
@@ -222,147 +255,166 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
   }, []);
 
   return (
-    <div className={styles.TableOfContainer}>
-      <div className={styles.headerSection}>
-        <div style={{ width: "50%" }}>
-          <CustomHeader Header="Table of content" />
+    <>
+      <Toast ref={toastRef} position="top-right" baseZIndex={9999} />
+      <div className={styles.TableOfContainer}>
+        <div className={styles.headerSection}>
+          <div style={{ width: "50%" }}>
+            <CustomHeader Header="Table of content" />
+          </div>
+          <div className={styles.headerRight}>
+            <CustomaddBtn
+              onClick={() => {
+                setIsEdit(false);
+                togglePopupVisibility(
+                  setPopupController,
+                  0,
+                  "open",
+                  `Table of content`,
+                  "30%"
+                );
+              }}
+            />
+          </div>
         </div>
-        <div className={styles.headerRight}>
-          <CustomaddBtn
-            onClick={() => {
-              setIsEdit(false);
-              togglePopupVisibility(
-                setPopupController,
-                0,
-                "open",
-                `Table of content`,
-                "30%"
-              );
-            }}
-          />
-        </div>
-      </div>
 
-      <div className={styles.tableContentWrapper}>
-        <CustomDataTable
-          table={
-            <DataTable
-              value={allData}
-              style={{ width: "100%", padding: "20px" }}
-              tableStyle={{ tableLayout: "fixed" }}
-            >
-              <Column
-                field="RoleGuide"
-                header="Role guide"
-                style={{ width: "20%" }}
-              />
-              <Column
-                field="DepartmentProcess"
-                header="Department Process"
-                style={{ width: "35%" }}
-                body={(rowdata: any) => {
-                  return (
-                    <TooltipHost
-                      content={rowdata.DepartmentProcess}
-                      tooltipProps={{
-                        directionalHint: DirectionalHint.bottomCenter,
-                      }}
-                    >
-                      <div
-                        style={{
-                          whiteSpace: "nowrap",
-                          width: "100%",
-                          textOverflow: "ellipsis",
-                          overflow: "hidden",
-                          padding: "5px 0px",
+        <div className={styles.tableContentWrapper}>
+          <CustomDataTable
+            table={
+              <DataTable
+                value={allData}
+                style={{ width: "100%", padding: "20px" }}
+                tableStyle={{ tableLayout: "fixed" }}
+              >
+                <Column
+                  field="RoleGuide"
+                  header="Role guide"
+                  style={{ width: "20%" }}
+                />
+                <Column
+                  field="DepartmentProcess"
+                  header="Department Process"
+                  style={{ width: "35%" }}
+                  body={(rowdata: any) => {
+                    return (
+                      <TooltipHost
+                        content={rowdata.DepartmentProcess}
+                        tooltipProps={{
+                          directionalHint: DirectionalHint.bottomCenter,
                         }}
                       >
-                        {rowdata.DepartmentProcess}
-                      </div>
-                    </TooltipHost>
-                  );
-                }}
-              />
-              <Column
-                field="SOP"
-                header="SOP"
-                style={{ width: "35%" }}
-                body={(rowdata: any) => {
-                  return (
-                    <TooltipHost
-                      content={rowdata.SOP}
-                      tooltipProps={{
-                        directionalHint: DirectionalHint.bottomCenter,
-                      }}
-                    >
-                      <div
-                        style={{
-                          whiteSpace: "nowrap",
-                          width: "100%",
-                          textOverflow: "ellipsis",
-                          overflow: "hidden",
-                          padding: "5px 0px",
+                        <div
+                          style={{
+                            whiteSpace: "nowrap",
+                            width: "100%",
+                            textOverflow: "ellipsis",
+                            overflow: "hidden",
+                            padding: "5px 0px",
+                          }}
+                        >
+                          {rowdata.DepartmentProcess}
+                        </div>
+                      </TooltipHost>
+                    );
+                  }}
+                />
+                <Column
+                  field="SOP"
+                  header="SOP"
+                  style={{ width: "35%" }}
+                  body={(rowdata: any) => {
+                    return (
+                      <TooltipHost
+                        content={rowdata.SOP}
+                        tooltipProps={{
+                          directionalHint: DirectionalHint.bottomCenter,
                         }}
                       >
-                        {rowdata.SOP}
-                      </div>
-                    </TooltipHost>
-                  );
-                }}
-              />
-              <Column
-                header="Action"
-                style={{ width: "10%" }}
-                body={(rowData: any) => (
-                  <div style={{ display: "flex", gap: "10%" }}>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#1470af"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      className="lucide lucide-pencil-icon lucide-pencil"
-                      onClick={() => handleEdit(rowData)}
-                    >
-                      <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
-                      <path d="m15 5 4 4" />
-                    </svg>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="red"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      className="lucide lucide-trash2-icon lucide-trash-2"
-                      onClick={() => handleDelete(rowData)}
-                    >
-                      <path d="M10 11v6" />
-                      <path d="M14 11v6" />
-                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
-                      <path d="M3 6h18" />
-                      <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                    </svg>
-                    {/* <button 
+                        <div
+                          style={{
+                            whiteSpace: "nowrap",
+                            width: "100%",
+                            textOverflow: "ellipsis",
+                            overflow: "hidden",
+                            padding: "5px 0px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          <a
+                            href={rowdata.SOP + "?web=1"}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            data-interception="off"
+                          >
+                            {rowdata.SOP}
+                          </a>
+                        </div>
+                      </TooltipHost>
+                    );
+                  }}
+                />
+                <Column
+                  header="Action"
+                  style={{ width: "10%" }}
+                  body={(rowData: any) => (
+                    <div style={{ display: "flex", gap: "10%" }}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#1470af"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        className="lucide lucide-pencil-icon lucide-pencil"
+                        onClick={() => handleEdit(rowData)}
+                      >
+                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                        <path d="m15 5 4 4" />
+                      </svg>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="red"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        className="lucide lucide-trash2-icon lucide-trash-2"
+                        onClick={() => {
+                          setDeleteItemId(rowData?.Id);
+                          togglePopupVisibility(
+                            setPopupController,
+                            1,
+                            "open",
+                            `Delete`,
+                            "30%"
+                          );
+                        }}
+                      >
+                        <path d="M10 11v6" />
+                        <path d="M14 11v6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                        <path d="M3 6h18" />
+                        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      </svg>
+                      {/* <button 
                     // onClick={() => handleEdit(rowData)}
                     >✏️</button>
                     <button
                     //  onClick={() => handleDelete(rowData)}
                       >🗑️</button> */}
-                  </div>
-                )}
-              />
-            </DataTable>
-          }
-        />
-        {/* <div className={styles.seeMoreWrapper}>
+                    </div>
+                  )}
+                />
+              </DataTable>
+            }
+          />
+          {/* <div className={styles.seeMoreWrapper}>
           <span
             onClick={() =>
               window.open(
@@ -377,32 +429,33 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
             See more
           </span>
         </div> */}
+        </div>
+        <div>
+          {popupController?.map((popupData: any, index: number) => (
+            <Popup
+              key={index}
+              isLoading={isLoading}
+              PopupType={popupData.popupType}
+              onHide={() => {
+                togglePopupVisibility(setPopupController, index, "close");
+                setIsEdit(false);
+              }}
+              popupTitle={
+                popupData.popupType !== "confimation" && popupData.popupTitle
+              }
+              popupActions={popupActions[index]}
+              visibility={popupData.open}
+              content={popupInputs[index]}
+              popupWidth={popupData.popupWidth}
+              defaultCloseBtn={popupData.defaultCloseBtn || false}
+              confirmationTitle={
+                popupData.popupType !== "custom" ? popupData.popupTitle : ""
+              }
+            />
+          ))}
+        </div>
       </div>
-      <div>
-        {popupController?.map((popupData: any, index: number) => (
-          <Popup
-            key={index}
-            isLoading={isLoading}
-            PopupType={popupData.popupType}
-            onHide={() => {
-              togglePopupVisibility(setPopupController, index, "close");
-              setIsEdit(false);
-            }}
-            popupTitle={
-              popupData.popupType !== "confimation" && popupData.popupTitle
-            }
-            popupActions={popupActions[index]}
-            visibility={popupData.open}
-            content={popupInputs[index]}
-            popupWidth={popupData.popupWidth}
-            defaultCloseBtn={popupData.defaultCloseBtn || false}
-            confirmationTitle={
-              popupData.popupType !== "custom" ? popupData.popupTitle : ""
-            }
-          />
-        ))}
-      </div>
-    </div>
+    </>
   );
 };
 

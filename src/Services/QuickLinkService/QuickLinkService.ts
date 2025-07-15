@@ -26,7 +26,8 @@ const getQuickLinks = async () => {
 const addQuickLinks = async (
   payload: any,
   setQuickLinks: any,
-  dispatch: any
+  dispatch: any,
+  toastRef: any
 ) => {
   try {
     const addedItem = await SpServices.SPAddItem({
@@ -44,8 +45,14 @@ const addQuickLinks = async (
       ListID: itemId,
       FileName: payload.Logo.name,
       Attachments: payload.Logo,
+    }).then(() => {
+      toastRef?.current?.show({
+        severity: "success",
+        summary: "Success",
+        detail: "QuickLink added successfully!",
+        life: 3000,
+      });
     });
-
     const updated = await getQuickLinks();
     setQuickLinks(updated);
     dispatch(setQuickLinks(updated));

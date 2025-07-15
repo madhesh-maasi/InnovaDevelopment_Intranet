@@ -8,7 +8,7 @@ import styles from "./InnovaTeam.module.scss";
 import { sp } from "@pnp/sp/presets/all";
 import { Provider, useDispatch } from "react-redux";
 import { store } from "../../../Redux/Store/Store";
-
+import { Toast } from "primereact/toast";
 import {
   setCurrentUserDetails,
   setMainSPContext,
@@ -41,7 +41,7 @@ import CustomMultiInputField from "../../../CommonComponents/CustomMultiInputFie
 
 const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
   const dispatch = useDispatch();
-
+  const toastRef = React.useRef<any>(null);
   const [role, setRole] = React.useState<string | undefined>();
   const [input, setInput] = React.useState<any>({
     selectedUser: null,
@@ -87,7 +87,7 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
       .filter(
         (role): role is string => typeof role === "string" && role.trim() !== ""
       );
-    return ["Role", ...Array.from(new Set(roles))];
+    return ["All", ...Array.from(new Set(roles))];
   };
 
   const onUserSelect = async (users: any, filter: boolean) => {
@@ -114,7 +114,7 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
   };
   const onChangeFunction = (selectedRole: string) => {
     setRole(selectedRole);
-    if (!selectedRole || selectedRole === "Role") {
+    if (!selectedRole || selectedRole === "All") {
       setTableData(allData);
       return;
     }
@@ -150,10 +150,16 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
   const handleSubmitFuction = async () => {
     setIsLoading(true);
     const { selectedUser, role, jobDescription } = input;
-    console.log(selectedUser, "user");
+    // console.log(selectedUser, "user");
     try {
       if (!selectedUser?.Id || !role) {
         console.error("Missing required fields");
+        toastRef.current?.show({
+          severity: "warn",
+          summary: "Missing Fields",
+          detail: "Please fill out all required fields before submitting.",
+          life: 3000,
+        });
         return;
       }
       const payload = {
@@ -161,7 +167,7 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
         TeamMember: selectedUser,
         JobDescription: jobDescription,
       };
-      await addInnovaTeam(payload, setTableData, dispatch);
+      await addInnovaTeam(payload, setTableData, dispatch, toastRef);
       await getInnovaTeamData();
       handleClosePopup(0);
       setInput({
@@ -179,7 +185,7 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
     [
       <div className={styles.popupCustomWrapper} key={0}>
         <CustomPeoplePicker
-          label="Team Member"
+          label="Team Member*"
           selectedItem={selectedUser}
           personSelectionLimit={1}
           onChange={onUserSelect}
@@ -187,14 +193,14 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
           placeholder="Select User"
         />
         <CustomInputField
-          label="Role"
+          label="Role*"
           value={input.role}
           readonly={true}
           disabled={true}
           placeholder="Role"
         />
         <CustomMultiInputField
-          label="Job Description"
+          label="Job Description*"
           value={input.jobDescription}
           onChange={(e: any) =>
             handleInputChange("jobDescription", e.target.value)
@@ -237,106 +243,111 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
   }, []);
 
   return (
-    <div className={styles.innovaTeamContainer}>
-      <div className={styles.headerSection}>
-        <div style={{ width: "50%" }}>
-          <CustomHeader Header="Innova Team" />
-        </div>
-        <div className={styles.headerRight}>
-          <div style={{ width: "180px" }}>
-            <CustomDropdown
-              value={role}
-              options={getOptions()}
-              onChange={onChangeFunction}
-              placeholder="Role"
-            />
+    <>
+      <Toast ref={toastRef} position="top-right" baseZIndex={1} />
+      <div className={styles.innovaTeamContainer}>
+        <div className={styles.headerSection}>
+          <div style={{ width: "50%" }}>
+            <CustomHeader Header="Innova Team" />
           </div>
-          <div style={{ width: "180px", height: "100%" }}>
-            <CustomPeoplePicker
-              selectedItem={selectedUser}
-              personSelectionLimit={1}
-              onChange={onUserSelect}
-              filter={true}
-              placeholder="Search By User"
-            />
-          </div>
+          <div className={styles.headerRight}>
+            <div style={{ width: "180px" }}>
+              <CustomDropdown
+                value={role}
+                options={getOptions()}
+                onChange={onChangeFunction}
+                placeholder="Role"
+              />
+            </div>
+            <div style={{ width: "180px", height: "100%" }}>
+              <CustomPeoplePicker
+                selectedItem={selectedUser}
+                personSelectionLimit={1}
+                onChange={onUserSelect}
+                filter={true}
+                placeholder="Search By User"
+              />
+            </div>
 
-          <CustomaddBtn
-            onClick={() => {
-              togglePopupVisibility(
-                setPopupController,
-                0,
-                "open",
-                `Add Role`,
-                "30%"
-              );
-            }}
+            <CustomaddBtn
+              onClick={() => {
+                togglePopupVisibility(
+                  setPopupController,
+                  0,
+                  "open",
+                  `Add Role`,
+                  "30%"
+                );
+              }}
+            />
+          </div>
+        </div>
+
+        <div>
+          <CustomDataTable
+            table={
+              <DataTable
+                value={tableData}
+                style={{ minWidth: "100%", padding: "20px" }}
+                rows={3}
+              >
+                <Column
+                  header="Team Member"
+                  style={{ width: "25%" }}
+                  body={(rowData) => (
+                    <Profile TeamMember={rowData?.TeamMember} />
+                  )}
+                />
+                <Column field="Role" header="Role" style={{ width: "27%" }} />
+                <Column
+                  field="JobDescription"
+                  header="Job description"
+                  style={{ width: "48%" }}
+                />
+              </DataTable>
+            }
           />
-        </div>
-      </div>
-
-      <div>
-        <CustomDataTable
-          table={
-            <DataTable
-              value={tableData}
-              style={{ minWidth: "100%", padding: "20px" }}
-              rows={3}
+          <div className={styles.seeMoreWrapper}>
+            <span
+              onClick={() =>
+                window.open(
+                  `${
+                    window.location.origin
+                  }${"/sites/InnovaDevelopments/SitePages/InnovaTeamView.aspx"}`,
+                  "_blank",
+                  "noopener,noreferrer"
+                )
+              }
             >
-              <Column
-                header="Team Member"
-                style={{ width: "25%" }}
-                body={(rowData) => <Profile TeamMember={rowData?.TeamMember} />}
-              />
-              <Column field="Role" header="Role" style={{ width: "27%" }} />
-              <Column
-                field="JobDescription"
-                header="Job description"
-                style={{ width: "48%" }}
-              />
-            </DataTable>
-          }
-        />
-        <div className={styles.seeMoreWrapper}>
-          <span
-            onClick={() =>
-              window.open(
-                `${
-                  window.location.origin
-                }${"/sites/InnovaDevelopments/SitePages/InnovaTeamView.aspx"}`,
-                "_blank",
-                "noopener,noreferrer"
-              )
-            }
-          >
-            See more
-          </span>
+              See more
+            </span>
+          </div>
+        </div>
+        <div>
+          {popupController?.map((popupData: any, index: number) => (
+            <Popup
+              key={index}
+              isLoading={isLoading}
+              PopupType={popupData.popupType}
+              onHide={() => {
+                togglePopupVisibility(setPopupController, index, "close");
+              }}
+              popupTitle={
+                popupData.popupType !== "confimation" && popupData.popupTitle
+              }
+              popupActions={popupActions[index]}
+              visibility={popupData.open}
+              content={popupInputs[index]}
+              popupWidth={popupData.popupWidth}
+              defaultCloseBtn={popupData.defaultCloseBtn || false}
+              confirmationTitle={
+                popupData.popupType !== "custom" ? popupData.popupTitle : ""
+              }
+            />
+          ))}
         </div>
       </div>
-      <div>
-        {popupController?.map((popupData: any, index: number) => (
-          <Popup
-            key={index}
-            isLoading={isLoading}
-            PopupType={popupData.popupType}
-            onHide={() => {
-              togglePopupVisibility(setPopupController, index, "close");
-            }}
-            popupTitle={
-              popupData.popupType !== "confimation" && popupData.popupTitle
-            }
-            popupActions={popupActions[index]}
-            visibility={popupData.open}
-            content={popupInputs[index]}
-            popupWidth={popupData.popupWidth}
-            defaultCloseBtn={popupData.defaultCloseBtn || false}
-            confirmationTitle={
-              popupData.popupType !== "custom" ? popupData.popupTitle : ""
-            }
-          />
-        ))}
-      </div>
-    </div>
+    </>
   );
 };
 

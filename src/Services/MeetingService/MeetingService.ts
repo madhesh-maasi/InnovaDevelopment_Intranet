@@ -29,7 +29,7 @@ const uploadToMeetingAttachments = async (videoFile: any) => {
 
     // Await the metadata directly, no mixing of .then()
     const item = await (await fileAddResult.file.getItem())(); // Await the proxy call
-    console.log("Uploaded Data", item);
+    // console.log("Uploaded Data", item);
 
     const fileDetails = await fileAddResult.file.select(
       "Name",
@@ -37,7 +37,7 @@ const uploadToMeetingAttachments = async (videoFile: any) => {
       "ServerRelativeUrl",
       "TimeCreated"
     )();
-    console.log("FileDetails", fileDetails);
+    // console.log("FileDetails", fileDetails);
     const metadata = {
       FileType: "Video",
       Id: item?.ID, // Use the awaited object here
@@ -45,7 +45,7 @@ const uploadToMeetingAttachments = async (videoFile: any) => {
       FileUrl: `${window.location.origin}${fileDetails?.ServerRelativeUrl}`,
       UploadedDate: fileDetails?.TimeCreated,
     };
-    console.log("Returned upload metadata:", metadata);
+    // console.log("Returned upload metadata:", metadata);
     return metadata;
   } catch (error) {
     console.error("Error uploading file and extracting metadata:", error);
@@ -55,7 +55,8 @@ const uploadToMeetingAttachments = async (videoFile: any) => {
 const addToMeetingList = async (
   payloadData: any,
   setMeetingsData: any,
-  dispatch: any
+  dispatch: any,
+  toastRef?: any
 ) => {
   const requestPayload = {
     Title: payloadData.FileType,
@@ -67,6 +68,13 @@ const addToMeetingList = async (
   await SpServices.SPAddItem({
     Listname: SPLists.MeetingList,
     RequestJSON: requestPayload,
+  }).then(() => {
+    toastRef?.current?.show({
+      severity: "success",
+      summary: "Success",
+      detail: "Meeting data added successfully!",
+      life: 3000,
+    });
   });
   const localStateData = {
     Type: payloadData.FileType,
@@ -92,7 +100,7 @@ const FetchMeetingsData = async (Type?: any): Promise<IMeetingItem[]> => {
   const formatted: IMeetingItem[] = [];
 
   for (const item of items) {
-    console.log("Data from meeting", items);
+    // console.log("Data from meeting", items);
 
     if (item.Title === "Link") {
       formatted.push({
@@ -107,7 +115,7 @@ const FetchMeetingsData = async (Type?: any): Promise<IMeetingItem[]> => {
         Filter: `Id eq ${item.MeetingAttachmentsOf?.Id}`,
         Select: "FileLeafRef,FileRef",
       });
-      console.log("FileItems", fileItem);
+      // console.log("FileItems", fileItem);
 
       const file = fileItem.find((file) => file.FileLeafRef === item.LinkName); // or item.FileName
       formatted.push({

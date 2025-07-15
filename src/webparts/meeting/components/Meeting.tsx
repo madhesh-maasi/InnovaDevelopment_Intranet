@@ -33,13 +33,13 @@ import {
 import { setMeetingItem } from "../../../Redux/Features/MeetingSlice";
 import { IMeetingItem } from "../../../Interface/MeetingInterface";
 import * as moment from "moment";
-
+import { Toast } from "primereact/toast";
 const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
   const dispatch = useDispatch();
   const webUrl = context?.pageContext?.web?.absoluteUrl;
   const siteUrl = context?.pageContext?.site?.serverRelativeUrl;
   const tenantUrl = webUrl?.split("/sites")[0];
-
+  const toastRef = React.useRef<any>(null);
   const setContext = async () => {
     try {
       const currentUserDetails = await sp.web.currentUser.get();
@@ -51,6 +51,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
           ImgUrl: `/_layouts/15/userphoto.aspx?size=S&accountname=${currentUserDetails.Email}`,
         },
       ];
+
       dispatch(setCurrentUserDetails(currentUser));
       if (webUrl) dispatch(setWebUrl(webUrl));
       if (siteUrl) dispatch(setSiteUrl(siteUrl));
@@ -126,12 +127,18 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
       if (fileType === "Video") {
         if (!videoFile) {
           console.error("No video file selected.");
+          toastRef.current?.show({
+            severity: "warn",
+            summary: "Missing Fields",
+            detail: " please select video file before submitting",
+            life: 3000,
+          });
           return;
         }
 
         const file = await uploadToMeetingAttachments(videoFile);
         if (file) {
-          await addToMeetingList(file, setMeetingsData, dispatch);
+          await addToMeetingList(file, setMeetingsData, dispatch, toastRef);
           await loadMeetings();
           handleClosePopup(0);
         } else {
@@ -139,7 +146,12 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
         }
       } else if (fileType === "Link") {
         if (!linkUrl || !linkName) {
-          console.error("Link name or URL is missing.");
+          toastRef.current?.show({
+            severity: "warn",
+            summary: "Missing Fields",
+            detail: " Link name or URL is missing,please fill required fields.",
+            life: 3000,
+          });
           return;
         }
 
@@ -149,7 +161,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
           FileName: linkName,
           Id: null,
         };
-        await addToMeetingList(payload, setMeetingsData, dispatch);
+        await addToMeetingList(payload, setMeetingsData, dispatch, toastRef);
         await loadMeetings();
         handleClosePopup(0);
       }
@@ -183,7 +195,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
           <div className={styles.linkWrapper}>
             <div className={styles.customwrapper}>
               <CustomInputField
-                label="Link Name"
+                label="Link Name*"
                 value={formData.linkName}
                 onChange={(e: any) =>
                   handleFormChange("linkName", e.target.value)
@@ -193,7 +205,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
             </div>
             <div className={styles.customwrapper}>
               <CustomMultiInputField
-                label="Link URL"
+                label="Link URL*"
                 value={formData.linkUrl}
                 onChange={(e: any) =>
                   handleFormChange("linkUrl", e.target.value)
@@ -262,103 +274,110 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
   }, []);
 
   return (
-    <div className={styles.meetingContainer}>
-      <div className={styles["header-wrapper"]}>
-        <CustomHeader Header={"Meeting"} />
-        <CustomaddBtn
-          onClick={() => {
-            togglePopupVisibility(
-              setPopupController,
-              0,
-              "open",
-              `Meeting`,
-              "30%"
-            );
-          }}
-        />
-      </div>
-      <div className={styles.meetingCardsContainer}>
-        {meetingData.length > 0 ? (
-          <>
-            <div style={{ overflow: "auto" }}>
-              {meetingData.map((item, index) => (
-                <div key={index} className={styles.meetingCard}>
-                  <div className={styles.img}>
-                    {item.Type === "Video" ? (
-                      <img
-                        src={videoImgUrl}
-                        width="35px"
-                        height="35px"
-                        alt="Video"
-                      />
-                    ) : (
-                      <img
-                        src={linkImgUrl}
-                        width="35px"
-                        height="35px"
-                        alt="Link"
-                      />
-                    )}
-                  </div>
-                  <div className={styles.details}>
-                    <div className={styles.type}>
-                      <a href={item?.FileUrl} target="_blank" rel="noreferrer">
-                        {item.Type === "Video"
-                          ? item?.FileName || "Video"
-                          : item.FileName || "Link"}
-                      </a>
-                    </div>
-                    <div className={styles.date}>
-                      {moment(item?.Date).format("YYYY-MM-DD HH:mm:ss")}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className={styles.seeMoreWrapper}>
-              <span
-                onClick={() =>
-                  window.open(
-                    `${
-                      window.location.origin
-                    }${"/sites/InnovaDevelopments/SitePages/MeetingView.aspx"}`,
-                    "_blank",
-                    "noopener,noreferrer"
-                  )
-                }
-              >
-                See more
-              </span>
-            </div>
-          </>
-        ) : (
-          <div className={styles.noRecords}>No Records Found</div>
-        )}
-      </div>
-      <div>
-        {popupController?.map((popupData: any, index: number) => (
-          <Popup
-            key={index}
-            isLoading={isLoading}
-            PopupType={popupData.popupType}
-            onHide={() => {
-              togglePopupVisibility(setPopupController, index, "close");
+    <>
+      <Toast ref={toastRef} position="top-right" baseZIndex={1} />
+      <div className={styles.meetingContainer}>
+        <div className={styles["header-wrapper"]}>
+          <CustomHeader Header={"Meeting"} />
+          <CustomaddBtn
+            onClick={() => {
+              togglePopupVisibility(
+                setPopupController,
+                0,
+                "open",
+                `Meeting`,
+                "30%"
+              );
             }}
-            popupTitle={
-              popupData.popupType !== "confimation" && popupData.popupTitle
-            }
-            popupActions={popupActions[index]}
-            visibility={popupData.open}
-            content={popupInputs[index]}
-            popupWidth={popupData.popupWidth}
-            defaultCloseBtn={popupData.defaultCloseBtn || false}
-            confirmationTitle={
-              popupData.popupType !== "custom" ? popupData.popupTitle : ""
-            }
           />
-        ))}
+        </div>
+        <div className={styles.meetingCardsContainer}>
+          {meetingData.length > 0 ? (
+            <>
+              <div style={{ overflow: "auto" }}>
+                {meetingData.map((item, index) => (
+                  <div key={index} className={styles.meetingCard}>
+                    <div className={styles.img}>
+                      {item.Type === "Video" ? (
+                        <img
+                          src={videoImgUrl}
+                          width="35px"
+                          height="35px"
+                          alt="Video"
+                        />
+                      ) : (
+                        <img
+                          src={linkImgUrl}
+                          width="35px"
+                          height="35px"
+                          alt="Link"
+                        />
+                      )}
+                    </div>
+                    <div className={styles.details}>
+                      <div className={styles.type}>
+                        <a
+                          href={item?.FileUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {item.Type === "Video"
+                            ? item?.FileName || "Video"
+                            : item.FileName || "Link"}
+                        </a>
+                      </div>
+                      <div className={styles.date}>
+                        {moment(item?.Date).format("YYYY-MM-DD HH:mm:ss")}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className={styles.seeMoreWrapper}>
+                <span
+                  onClick={() =>
+                    window.open(
+                      `${
+                        window.location.origin
+                      }${"/sites/InnovaDevelopments/SitePages/MeetingView.aspx"}`,
+                      "_blank",
+                      "noopener,noreferrer"
+                    )
+                  }
+                >
+                  See more
+                </span>
+              </div>
+            </>
+          ) : (
+            <div className={styles.noRecords}>No Records Found</div>
+          )}
+        </div>
+        <div>
+          {popupController?.map((popupData: any, index: number) => (
+            <Popup
+              key={index}
+              isLoading={isLoading}
+              PopupType={popupData.popupType}
+              onHide={() => {
+                togglePopupVisibility(setPopupController, index, "close");
+              }}
+              popupTitle={
+                popupData.popupType !== "confimation" && popupData.popupTitle
+              }
+              popupActions={popupActions[index]}
+              visibility={popupData.open}
+              content={popupInputs[index]}
+              popupWidth={popupData.popupWidth}
+              defaultCloseBtn={popupData.defaultCloseBtn || false}
+              confirmationTitle={
+                popupData.popupType !== "custom" ? popupData.popupTitle : ""
+              }
+            />
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

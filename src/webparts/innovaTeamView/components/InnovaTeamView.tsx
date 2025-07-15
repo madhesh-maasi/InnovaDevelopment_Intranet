@@ -29,7 +29,7 @@ import { IUserDetails } from "../../../Interface/CommonInterface";
 import CustomHeader from "../../../CommonComponents/webpartsHeader/CustomerHeader/CustomHeader";
 import CustomDropdown from "../../../CommonComponents/CustomDropdown/CustomDropdown";
 import CustomPeoplePicker from "../../../CommonComponents/CustomPeoplePicker/CustomPeoplePicker";
-import CustomaddBtn from "../../../CommonComponents/webpartsHeader/CustomaddBtn/CustomaddBtn";
+// import CustomaddBtn from "../../../CommonComponents/webpartsHeader/CustomaddBtn/CustomaddBtn";
 import CustomDataTable from "../../../CommonComponents/DataTable/DataTable";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
@@ -151,7 +151,7 @@ const InnovaTeamContent: React.FC<IInnovaTeamViewProps> = ({ context }) => {
   const handleSubmitFuction = async () => {
     setIsLoading(true);
     const { selectedUser, role, jobDescription } = input;
-    console.log(selectedUser, "user");
+    // console.log(selectedUser, "user");
     try {
       if (!selectedUser?.Id || !role) {
         console.error("Missing required fields");
@@ -261,7 +261,7 @@ const InnovaTeamContent: React.FC<IInnovaTeamViewProps> = ({ context }) => {
             />
           </div>
 
-          <CustomaddBtn
+          {/* <CustomaddBtn
             onClick={() => {
               togglePopupVisibility(
                 setPopupController,
@@ -271,7 +271,7 @@ const InnovaTeamContent: React.FC<IInnovaTeamViewProps> = ({ context }) => {
                 "30%"
               );
             }}
-          />
+          /> */}
         </div>
       </div>
 

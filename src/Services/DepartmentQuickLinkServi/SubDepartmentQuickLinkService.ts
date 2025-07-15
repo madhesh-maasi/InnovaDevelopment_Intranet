@@ -28,7 +28,8 @@ const getSubDepartmentQuickLinks = async () => {
 
 const addSubDepartmentQuickLinks = async (
   payload: any,
-  setSubDepartmentQuickLinks: any
+  setSubDepartmentQuickLinks: any,
+  toastRef?: any
 ) => {
   try {
     const addedItem = await SpServices.SPAddItem({
@@ -38,19 +39,33 @@ const addSubDepartmentQuickLinks = async (
         Link: payload.Link,
       },
     });
+
     const itemId = addedItem?.data?.Id;
     if (!itemId) throw new Error("Failed to create item");
+
     await SpServices.SPAddAttachment({
       ListName: SPLists.SubDepartmentQuickLinkList,
       ListID: itemId,
       FileName: payload.Logo.name,
       Attachments: payload.Logo,
     });
+    toastRef?.current?.show({
+      severity: "success",
+      summary: "Success",
+      detail: "QuickLink added successfully!",
+      life: 3000,
+    });
 
     const updated = await getSubDepartmentQuickLinks();
     setSubDepartmentQuickLinks(updated);
   } catch (error) {
     console.error("Error adding QuickLink with attachment:", error);
+    toastRef?.current?.show({
+      severity: "error",
+      summary: "Failed",
+      detail: "QuickLink not added!",
+      life: 3000,
+    });
   }
 };
 

@@ -18,7 +18,7 @@ span[data-automationid="SiteHeaderTitle"] a {
 a[class^="shyTitle"] {
   display: none !important;
 }
-.shyLogoImg-132.shyLogoImg-132.shyLogoImg-132.shyLogoImg-132.shyLogoImg-132 {
+[class*="shyLogoImg-"] {
   max-height: 48px !important;
   max-width: 144px !important;
   width: auto;

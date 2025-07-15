@@ -1,5 +1,7 @@
 /*eslint-disable @typescript-eslint/no-var-requires*/
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { Log } from "@microsoft/sp-core-library";
 import { BaseApplicationCustomizer } from "@microsoft/sp-application-base";
 // import { Dialog } from "@microsoft/sp-dialog";
@@ -26,34 +28,29 @@ export default class NavigationExtensionApplicationCustomizer extends BaseApplic
     const logoPath = require("../navigationExtension/assests/Innova_final_logo.jpg");
 
     const replaceLogos = () => {
-      const logoImg = document.querySelector<HTMLImageElement>(
-        'a[aria-label*="Innova Developments"] img'
-      );
-      const logoImgOnScroll = document.querySelector<HTMLImageElement>(
-        "a.shyLogoWrapper-131 img"
+      // Target BOTH normal and sticky logos using shared attributes
+      const logoImages = document.querySelectorAll<HTMLImageElement>(
+        'a[aria-label="Innova Developments home"][data-navigationcomponent="SiteHeader"] img'
       );
 
-      if (logoImg) {
-        logoImg.src = logoPath;
-        logoImg.alt = "Innova Development Logo";
-      } else {
-        console.warn("Main logo not found.");
+      if (!logoImages || logoImages.length === 0) {
+        console.warn("No logo images found.");
+        return;
       }
 
-      if (logoImgOnScroll) {
-        logoImgOnScroll.src = logoPath;
-        logoImgOnScroll.alt = "Innova Development Logo";
-      } else {
-        console.warn("Sticky logo not found.");
-      }
+      logoImages.forEach((logo, index) => {
+        logo.src = logoPath;
+        logo.alt = "Innova Development Logo";
+        // console.log(`Replaced logo ${index + 1}`);
+      });
     };
 
-    // Run initially after delay
+    // Replace logos after a short delay
     setTimeout(() => {
       replaceLogos();
-    }, 3000);
+    }, 1000);
 
-    // Watch for DOM changes to handle scroll/re-rendered headers
+    // Watch DOM for new logos (like sticky header)
     const observer = new MutationObserver(() => {
       replaceLogos();
     });

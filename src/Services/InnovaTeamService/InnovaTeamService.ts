@@ -6,7 +6,8 @@ import { setInnovaTeam } from "../../Redux/Features/InnovaTeamSlice";
 const addInnovaTeam = async (
   payload: any,
   setTableData: any,
-  dispatch: any
+  dispatch: any,
+  toastRef?: any
 ) => {
   const requestPayload = {
     Title: payload.Title,
@@ -24,6 +25,12 @@ const addInnovaTeam = async (
   };
   setTableData((prev: any[]) => [localStateData, ...prev]);
   dispatch(setInnovaTeam(localStateData));
+  toastRef?.current?.show({
+    severity: "success",
+    summary: "Success",
+    detail: "Details added successfully!",
+    life: 3000,
+  });
 };
 const FetchInnovaTeamData = async (Type?: any) => {
   const isView = Type === "View";
