@@ -26,7 +26,12 @@ const FetchFeedBacks = async () => {
   });
   return formatted;
 };
-const addFeedbacks = async (payload: any, setFeedbacks: any, dispatch: any) => {
+const addFeedbacks = async (
+  payload: any,
+  setFeedbacks: any,
+  dispatch: any,
+  toastRef?: any
+) => {
   await SpServices.SPAddItem({
     Listname: SPLists.FeedbackList,
     RequestJSON: payload,
@@ -39,6 +44,12 @@ const addFeedbacks = async (payload: any, setFeedbacks: any, dispatch: any) => {
     };
     setFeedbacks((prev: any[]) => [tempfeedback, ...prev]);
     dispatch(setFeedbacksdata);
+    toastRef?.current?.show({
+      severity: "success",
+      summary: "Success",
+      detail: "Feedback added successfully!",
+      life: 3000,
+    });
   });
 };
 const updateFeedback = async (feedbackId: number, commentsCount: number) => {
@@ -47,9 +58,9 @@ const updateFeedback = async (feedbackId: number, commentsCount: number) => {
       CommentCount: commentsCount,
     });
 
-    console.log(
-      `Feedback item ${feedbackId} updated with comment count: ${commentsCount}`
-    );
+    // console.log(
+    //   `Feedback item ${feedbackId} updated with comment count: ${commentsCount}`
+    // );
   } catch (error) {
     console.error("Error updating feedback comment count:", error);
   }
@@ -80,7 +91,7 @@ const addConversations = async (
     let tempData = [...conversations, formatedData];
     await setConversation((prev: any) => [...tempData]);
     updateFeedback(feedbackId, tempData.length);
-    console.log("Updated Conversation", conversation);
+    // console.log("Updated Conversation", conversation);
   });
 };
 
@@ -104,7 +115,7 @@ const FetchConversations = async (FeedbackId: any, setConversation?: any) => {
 
   if (setConversation) setConversation(formatedData);
 
-  console.log("Filtered Conversations:", formatedData);
+  // console.log("Filtered Conversations:", formatedData);
   return filteredItems;
 };
 

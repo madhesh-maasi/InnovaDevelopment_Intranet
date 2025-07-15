@@ -4,7 +4,6 @@
 import * as React from "react";
 import styles from "./SubdepartmentQuickLinks.module.scss";
 import type { ISubdepartmentQuickLinksProps } from "./ISubdepartmentQuickLinksProps";
-import "../assets/css/style.css";
 import CustomHeader from "../../../CommonComponents/webpartsHeader/CustomerHeader/CustomHeader";
 import CustomaddBtn from "../../../CommonComponents/webpartsHeader/CustomaddBtn/CustomaddBtn";
 import { togglePopupVisibility } from "../../../CommonComponents/CustomPopup/togglePopup";
@@ -23,13 +22,14 @@ import {
   setTenantUrl,
   setWebUrl,
 } from "../../../Redux/Features/MainSPContextSlice";
+import { Toast } from "primereact/toast";
 import { useState } from "react";
 import { IQuickLink } from "../../../Interface/BannerInterface";
 import CustomInputField from "../../../CommonComponents/CustomInputField/CustomInputField";
 import CustomMultiInputField from "../../../CommonComponents/CustomMultiInputField/CustomMultiInputField";
 import CustomFileUpload from "../../../CommonComponents/CustomFileUpload/CustomFileUpload";
 import Quicklinks from "../../../CommonComponents/QuickLinks/Quicklinks";
-import "../assets/css/style.css";
+import "../../../Config/style.css";
 const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
   context,
 }) => {
@@ -40,6 +40,7 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
   const webUrl = context?.pageContext?.web?.absoluteUrl;
   const siteUrl = context?.pageContext?.site?.serverRelativeUrl;
   const tenantUrl = webUrl?.split("/sites")[0];
+  const toastRef = React.useRef<any>(null);
   const setContext = async () => {
     try {
       const currentUserDetails = await sp.web.currentUser.get();
@@ -100,7 +101,12 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
     const { Title, Link, Logo } = quickLinkForm;
 
     if (!Title || !Link || !Logo) {
-      console.error("All fields are required.");
+      toastRef.current?.show({
+        severity: "warn",
+        summary: "Missing Fields",
+        detail: "Please fill out all required fields before submitting.",
+        life: 3000,
+      });
       return;
     }
 
@@ -111,8 +117,13 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
         Link,
         Logo,
       };
-      console.log("Submitting subdepartment QuickLink:", payload);
-      await addSubDepartmentQuickLinks(payload, setSubDepartmentQuickLinks);
+      // console.log("Submitting subdepartment QuickLink:", payload);
+      await addSubDepartmentQuickLinks(
+        payload,
+        setSubDepartmentQuickLinks,
+        toastRef
+      );
+
       handleClosePopup(0);
       setQuickLinkForm({
         Title: "",
@@ -131,7 +142,7 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
       <>
         <div className={styles.customwrapper}>
           <CustomInputField
-            label="Link Name"
+            label="Link Name*"
             value={quickLinkForm.Title}
             onChange={(e: any) =>
               handleQuickLinkChange("Title", e.target.value)
@@ -142,7 +153,7 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
 
         <div className={styles.customwrapper}>
           <CustomMultiInputField
-            label="Link URL"
+            label="Link URL*"
             value={quickLinkForm.Link}
             onChange={(e: any) => handleQuickLinkChange("Link", e.target.value)}
             rows={1}
@@ -154,7 +165,7 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
         <div className={styles.customwrapper}>
           <CustomFileUpload
             accept="image/*"
-            label="Upload Logo"
+            label="Upload Logo*"
             onFileSelect={(file: File) => handleQuickLinkChange("Logo", file)}
           />
           {quickLinkForm.Logo && (
@@ -202,65 +213,68 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
     fetchQuickLinks();
   }, []);
   return (
-    <div className={styles.subQuickLinksContainer}>
-      <div className={styles.headerSection}>
-        <div style={{ width: "50%" }}>
-          <CustomHeader Header="Sub-departments" />
+    <>
+      <Toast ref={toastRef} position="top-right" baseZIndex={1} />
+      <div className={styles.subQuickLinksContainer}>
+        <div className={styles.headerSection}>
+          <div style={{ width: "50%" }}>
+            <CustomHeader Header="Sub-departments" />
+          </div>
+          <div className={styles.headerRight}>
+            <CustomaddBtn
+              onClick={() => {
+                togglePopupVisibility(
+                  setPopupController,
+                  0,
+                  "open",
+                  `Table of content`,
+                  "30%"
+                );
+              }}
+            />
+          </div>
         </div>
-        <div className={styles.headerRight}>
-          <CustomaddBtn
-            onClick={() => {
-              togglePopupVisibility(
-                setPopupController,
-                0,
-                "open",
-                `Table of content`,
-                "30%"
-              );
-            }}
-          />
+        <div className={styles.cardsContainer}>
+          {subDepartmentQuickLinks.length > 0 ? (
+            subDepartmentQuickLinks.map((link, i) => (
+              <div key={i} className={styles.quickLinksCard}>
+                <Quicklinks
+                  Module="SubDepartment"
+                  Title={link.Title}
+                  Link={link.Link}
+                  Logo={link.Logo}
+                />
+              </div>
+            ))
+          ) : (
+            <div className={styles.noRecords}>No Links Found</div>
+          )}
+        </div>
+        <div>
+          {popupController?.map((popupData: any, index: number) => (
+            <Popup
+              key={index}
+              isLoading={isLoading}
+              PopupType={popupData.popupType}
+              onHide={() => {
+                togglePopupVisibility(setPopupController, index, "close");
+              }}
+              popupTitle={
+                popupData.popupType !== "confimation" && popupData.popupTitle
+              }
+              popupActions={popupActions[index]}
+              visibility={popupData.open}
+              content={popupInputs[index]}
+              popupWidth={popupData.popupWidth}
+              defaultCloseBtn={popupData.defaultCloseBtn || false}
+              confirmationTitle={
+                popupData.popupType !== "custom" ? popupData.popupTitle : ""
+              }
+            />
+          ))}
         </div>
       </div>
-      <div className={styles.cardsContainer}>
-        {subDepartmentQuickLinks.length > 0 ? (
-          subDepartmentQuickLinks.map((link, i) => (
-            <div key={i} className={styles.quickLinksCard}>
-              <Quicklinks
-                Module="SubDepartment"
-                Title={link.Title}
-                Link={link.Link}
-                Logo={link.Logo}
-              />
-            </div>
-          ))
-        ) : (
-          <div className={styles.noRecords}>No Links Found</div>
-        )}
-      </div>
-      <div>
-        {popupController?.map((popupData: any, index: number) => (
-          <Popup
-            key={index}
-            isLoading={isLoading}
-            PopupType={popupData.popupType}
-            onHide={() => {
-              togglePopupVisibility(setPopupController, index, "close");
-            }}
-            popupTitle={
-              popupData.popupType !== "confimation" && popupData.popupTitle
-            }
-            popupActions={popupActions[index]}
-            visibility={popupData.open}
-            content={popupInputs[index]}
-            popupWidth={popupData.popupWidth}
-            defaultCloseBtn={popupData.defaultCloseBtn || false}
-            confirmationTitle={
-              popupData.popupType !== "custom" ? popupData.popupTitle : ""
-            }
-          />
-        ))}
-      </div>
-    </div>
+    </>
   );
 };
 export default (props: ISubdepartmentQuickLinksProps): JSX.Element => (

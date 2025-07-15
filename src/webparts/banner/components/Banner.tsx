@@ -5,11 +5,13 @@
 import * as React from "react";
 import type { IBannerProps } from "./IBannerProps";
 import "../assets/css/style.css";
+import "../../../Config/style.css";
 import styles from "./BannerComponent.module.scss";
 import { sp } from "@pnp/sp/presets/all";
 import { graph } from "@pnp/graph/presets/all";
 import { store } from "../../../Redux/Store/Store";
 import { Provider, useDispatch } from "react-redux";
+import { Toast } from "primereact/toast";
 import {
   setCurrentUserDetails,
   setMainSPContext,
@@ -36,6 +38,7 @@ const BannerContent: React.FC<IBannerProps> = ({
   userDisplayName,
 }) => {
   const dispatch = useDispatch();
+  const toastRef = React.useRef<any>(null);
   const [quickLinks, setQuickLinks] = React.useState<IQuickLink[]>([]);
   const webUrl = context?.pageContext?.web?.absoluteUrl;
   const siteUrl = context?.pageContext?.site?.serverRelativeUrl;
@@ -101,6 +104,12 @@ const BannerContent: React.FC<IBannerProps> = ({
 
     if (!Title || !Link || !Logo) {
       console.error("All fields are required.");
+      toastRef.current?.show({
+        severity: "warn",
+        summary: "Missing Fields",
+        detail: " please fill all the required fields before submitting",
+        life: 3000,
+      });
       return;
     }
 
@@ -111,8 +120,8 @@ const BannerContent: React.FC<IBannerProps> = ({
         Link,
         Logo,
       };
-      console.log("Submitting QuickLink:", payload);
-      await addQuickLinks(payload, setQuickLinks, dispatch);
+      // console.log("Submitting QuickLink:", payload);
+      await addQuickLinks(payload, setQuickLinks, dispatch, toastRef);
       handleClosePopup(0);
       setQuickLinkForm({
         Title: "",
@@ -131,7 +140,7 @@ const BannerContent: React.FC<IBannerProps> = ({
       <>
         <div className={styles.customwrapper}>
           <CustomInputField
-            label="Link Name"
+            label="Link Name*"
             value={quickLinkForm.Title}
             onChange={(e: any) =>
               handleQuickLinkChange("Title", e.target.value)
@@ -142,7 +151,7 @@ const BannerContent: React.FC<IBannerProps> = ({
 
         <div className={styles.customwrapper}>
           <CustomMultiInputField
-            label="Link URL"
+            label="Link URL*"
             value={quickLinkForm.Link}
             onChange={(e: any) => handleQuickLinkChange("Link", e.target.value)}
             rows={1}
@@ -154,7 +163,7 @@ const BannerContent: React.FC<IBannerProps> = ({
         <div className={styles.customwrapper}>
           <CustomFileUpload
             accept="image/*"
-            label="Upload Logo"
+            label="Upload Logo*"
             onFileSelect={(file: File) => handleQuickLinkChange("Logo", file)}
           />
           {quickLinkForm.Logo && (
@@ -208,6 +217,7 @@ const BannerContent: React.FC<IBannerProps> = ({
 
   return (
     <div className={styles.bannerContainer}>
+      <Toast ref={toastRef} />
       <div className={styles.welcomeCardContainer}>
         <div style={{ width: "5%" }}></div>
         <div className={styles.welcomeCard}>

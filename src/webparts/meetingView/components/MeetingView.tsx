@@ -22,7 +22,7 @@ import CustomInputField from "../../../CommonComponents/CustomInputField/CustomI
 import CustomMultiInputField from "../../../CommonComponents/CustomMultiInputField/CustomMultiInputField";
 import CustomFileUpload from "../../../CommonComponents/CustomFileUpload/CustomFileUpload";
 import CustomHeader from "../../../CommonComponents/webpartsHeader/CustomerHeader/CustomHeader";
-import CustomaddBtn from "../../../CommonComponents/webpartsHeader/CustomaddBtn/CustomaddBtn";
+// import CustomaddBtn from "../../../CommonComponents/webpartsHeader/CustomaddBtn/CustomaddBtn";
 import { useEffect, useState } from "react";
 import "../assets/css/style.css";
 import {
@@ -265,7 +265,7 @@ const MeetingContent: React.FC<IMeetingViewProps> = ({ context }) => {
     <div className={styles.meetingContainer}>
       <div className={styles["header-wrapper"]}>
         <CustomHeader Header={"Meeting"} />
-        <CustomaddBtn
+        {/* <CustomaddBtn
           onClick={() => {
             togglePopupVisibility(
               setPopupController,
@@ -275,7 +275,7 @@ const MeetingContent: React.FC<IMeetingViewProps> = ({ context }) => {
               "30%"
             );
           }}
-        />
+        /> */}
       </div>
       <div className={styles.meetingCardsContainer}>
         {meetingData.length > 0 ? (

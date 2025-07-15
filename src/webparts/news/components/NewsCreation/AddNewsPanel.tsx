@@ -9,6 +9,7 @@ import { Message } from "primereact/message";
 import { ColumnControl, sp } from "@pnp/sp/presets/all";
 import { ProgressSpinner } from "primereact/progressspinner";
 // import * as moment from "moment";
+import { Toast } from "primereact/toast";
 import {
   getLibraryFileDetails,
   uploadThumbnail,
@@ -36,6 +37,7 @@ export const AddNewsPanel: React.FC<IProps> = ({
   const [step, setStep] = useState<"template" | "form">("template");
   const [templates, setTemplates] = useState<INewsTemplate[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<any | null>(null);
+  const toastRef = React.useRef<any>(null);
   const [newsForm, setNewsForm] = useState<INewsTemplate>({
     Title: "",
     StartDate: new Date(),
@@ -93,7 +95,7 @@ export const AddNewsPanel: React.FC<IProps> = ({
       );
 
       setTemplates(formattedTemplates);
-      console.log("Loaded Templates:", formattedTemplates);
+      // console.log("Loaded Templates:", formattedTemplates);
     } catch (e) {
       console.error("Error loading templates", e);
     }
@@ -101,11 +103,10 @@ export const AddNewsPanel: React.FC<IProps> = ({
 
   const createPage = async () => {
     debugger;
-    console.log("news Form Data", newsForm);
+    // console.log("news Form Data", newsForm);
 
     try {
       setError("");
-      setLoading(true);
       // Basic validation
       if (
         !newsForm?.Title?.trim() ||
@@ -113,7 +114,13 @@ export const AddNewsPanel: React.FC<IProps> = ({
         !newsForm?.EndDate ||
         !newsForm?.Thumbnail
       ) {
-        setError("Please fill all required fields and upload a thumbnail.");
+        setError("Please fill out all required fields before submitting.");
+        toastRef.current?.show({
+          severity: "warn",
+          summary: "Missing Fields",
+          detail: "Please fill out all required fields before submitting.",
+          life: 3000,
+        });
         return;
       }
       const start = new Date(newsForm.StartDate);
@@ -122,12 +129,25 @@ export const AddNewsPanel: React.FC<IProps> = ({
       if (start >= end) {
         console.warn("Start Date must be before End Date.");
         setError("Start Date must be before End Date.");
+        toastRef.current?.show({
+          severity: "warn",
+          summary: "Wrong details",
+          detail: "Start Date must be before End Date",
+          life: 3000,
+        });
         return;
       }
+      setLoading(true);
       // Upload thumbnail
       const thumbId = await uploadThumbnail(newsForm.Thumbnail);
       if (!thumbId) {
         setError("Failed to upload thumbnail");
+        toastRef.current?.show({
+          severity: "error",
+          summary: "Failed",
+          detail: "Failed to upload thumbnail",
+          life: 3000,
+        });
         return;
       }
       if (!selectedTemplate?.EncodedAbsUrl) {
@@ -197,6 +217,12 @@ export const AddNewsPanel: React.FC<IProps> = ({
             PageType: "NewsPage",
           })
           .then(async (updatedNews: any) => {
+            toastRef?.current?.show({
+              severity: "success",
+              summary: "Success",
+              detail: "News Page created successfully!",
+              life: 3000,
+            });
             console.log("Updated News", updatedNews);
             setNewsItem((prevItems: INewsItem[]) => [
               ...prevItems,
@@ -230,196 +256,200 @@ export const AddNewsPanel: React.FC<IProps> = ({
   }, []);
 
   return (
-    <Sidebar
-      position="right"
-      visible
-      onHide={onClose}
-      style={{ width: "90vw" }}
-    >
-      {loading ? (
-        <div
-          style={{
-            display: "flex",
-            height: "100%",
-            justifyContent: "center",
-            marginTop: 16,
-            alignItems: "center",
-          }}
-        >
-          <ProgressSpinner />
-        </div>
-      ) : (
-        <div style={{ display: "flex", gap: 20 }}>
-          {/* Left Column */}
-          <div style={{ flex: 1 }}>
-            {step === "template" ? (
-              <>
-                <CustomHeader Header="Select Template" />
-                <div className="newstemplateContainer">
-                  <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-                    {templates.map((tmpl) => (
-                      <div
-                        key={tmpl.Id}
-                        className="card"
-                        style={{
-                          border: selectedTemplate
-                            ? "2px solid #0471af"
-                            : "none !important",
-                          padding: 8,
-                          cursor: "pointer",
-                          width: "30%",
-                        }}
-                        onClick={() => setSelectedTemplate(tmpl)}
-                      >
-                        <div>
-                          <div style={{ width: "100%", height: "110px" }}>
-                            <img
-                              src={tmpl?.Thumbnail?.url}
-                              width="100%"
-                              height="100%"
-                            />
+    <>
+      <Toast ref={toastRef} position="top-left" baseZIndex={9999} />
+      <Sidebar
+        position="right"
+        visible
+        onHide={onClose}
+        style={{ width: "90vw" }}
+      >
+        {loading ? (
+          <div
+            style={{
+              display: "flex",
+              height: "100%",
+              justifyContent: "center",
+              marginTop: 16,
+              alignItems: "center",
+            }}
+          >
+            <ProgressSpinner />
+          </div>
+        ) : (
+          <div style={{ display: "flex", gap: 20 }}>
+            {/* Left Column */}
+            <div style={{ flex: 1 }}>
+              {step === "template" ? (
+                <>
+                  <CustomHeader Header="Select Template" />
+                  <div className="newstemplateContainer">
+                    <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+                      {templates.map((tmpl) => (
+                        <div
+                          key={tmpl.Id}
+                          className="card"
+                          style={{
+                            border: selectedTemplate
+                              ? "2px solid #0471af"
+                              : "none !important",
+                            padding: 8,
+                            cursor: "pointer",
+                            width: "30%",
+                          }}
+                          onClick={() => setSelectedTemplate(tmpl)}
+                        >
+                          <div>
+                            <div style={{ width: "100%", height: "110px" }}>
+                              <img
+                                src={tmpl?.Thumbnail?.url}
+                                width="100%"
+                                height="100%"
+                              />
+                            </div>
+                            <div className="title">{tmpl.Title}</div>
                           </div>
-                          <div className="title">{tmpl.Title}</div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="buttonFooter">
-                    <DefaultButton
-                      text="Next"
-                      btnType="primaryBtn"
-                      disabled={!selectedTemplate}
-                      onClick={() => setStep("form")}
-                    />
-                  </div>
-                </div>
-              </>
-            ) : (
-              <>
-                <CustomHeader Header="Fill News Details" />
-                <div className="newstemplateContainer">
-                  <div className="p-fluid">
-                    <CustomInputField
-                      label="Title*"
-                      value={newsForm?.Title || ""}
-                      placeholder="Enter Title"
-                      onChange={(e) =>
-                        setNewsForm((prev) => ({
-                          ...prev,
-                          Title: e.target.value,
-                        }))
-                      }
-                    />
-                    <CustomDateTimePicker
-                      value={newsForm?.StartDate}
-                      onChange={(date) =>
-                        setNewsForm((prev: any) => ({
-                          ...prev,
-                          StartDate: date || "",
-                        }))
-                      }
-                      label="Start Date"
-                      withLabel={true}
-                    />
-
-                    <CustomDateTimePicker
-                      value={newsForm?.EndDate}
-                      onChange={(date) =>
-                        setNewsForm((prev: any) => ({
-                          ...prev,
-                          EndDate: date || "",
-                        }))
-                      }
-                      label="End Date*"
-                      withLabel={true}
-                    />
-
-                    <CustomFileUpload
-                      accept="image/*"
-                      label="Upload Thumbnail*"
-                      onFileSelect={(file: File | null) => {
-                        if (!file) return;
-
-                        setNewsForm((prev) => ({
-                          ...prev!,
-                          Thumbnail: {
-                            ...prev?.Thumbnail,
-                            fileName: file.name,
-                            url: URL.createObjectURL(file),
-                            file: file,
-                          },
-                        }));
-                      }}
-                    />
-
-                    {newsForm?.Thumbnail?.fileName && (
-                      <div style={{ marginTop: 8 }}>
-                        <i className="pi pi-image" />{" "}
-                        {newsForm.Thumbnail.fileName}
-                      </div>
-                    )}
-
-                    {error && (
-                      <Message
-                        severity="error"
-                        text={error}
-                        style={{ marginTop: 10 }}
+                      ))}
+                    </div>
+                    <div className="buttonFooter">
+                      <DefaultButton
+                        text="Next"
+                        btnType="primaryBtn"
+                        disabled={!selectedTemplate}
+                        onClick={() => setStep("form")}
                       />
-                    )}
+                    </div>
                   </div>
-                  <div className="buttonFooter">
-                    <DefaultButton
-                      text="Back"
-                      btnType="closeBtn"
-                      onClick={() => {
-                        setStep("template");
-                        setNewsForm({
-                          Title: "",
-                          StartDate: new Date(),
-                          EndDate: new Date(),
-                          Thumbnail: { fileName: "", url: "", file: null },
-                        });
-                      }}
-                    />
-                    <DefaultButton
-                      text="Submit"
-                      btnType="primaryBtn"
-                      onClick={createPage}
-                    />
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
+                </>
+              ) : (
+                <>
+                  <CustomHeader Header="Fill News Details" />
+                  <div className="newstemplateContainer">
+                    <div className="p-fluid">
+                      <CustomInputField
+                        label="Title*"
+                        value={newsForm?.Title || ""}
+                        placeholder="Enter Title"
+                        onChange={(e) =>
+                          setNewsForm((prev) => ({
+                            ...prev,
+                            Title: e.target.value,
+                          }))
+                        }
+                      />
+                      <CustomDateTimePicker
+                        value={newsForm?.StartDate}
+                        onChange={(date) =>
+                          setNewsForm((prev: any) => ({
+                            ...prev,
+                            StartDate: date || "",
+                          }))
+                        }
+                        label="Start Date"
+                        withLabel={true}
+                      />
 
-          {/* Right Column - Template Preview */}
-          <div style={{ flex: 1.5, height: "88vh" }}>
-            {selectedTemplate ? (
-              <>
-                <CustomHeader Header="Template Preview" />
-                <iframe
-                  src={selectedTemplate.EncodedAbsUrl}
-                  title="Template Preview"
-                  className="iframeContainer"
-                />
-              </>
-            ) : (
-              <div
-                style={{
-                  height: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#888",
-                  border: "1px dashed #ccc",
-                }}
-              >
-                No template selected
-              </div>
-            )}
+                      <CustomDateTimePicker
+                        value={newsForm?.EndDate}
+                        onChange={(date) =>
+                          setNewsForm((prev: any) => ({
+                            ...prev,
+                            EndDate: date || "",
+                          }))
+                        }
+                        label="End Date*"
+                        withLabel={true}
+                      />
+
+                      <CustomFileUpload
+                        accept="image/*"
+                        label="Upload Thumbnail*"
+                        onFileSelect={(file: File | null) => {
+                          if (!file) return;
+
+                          setNewsForm((prev) => ({
+                            ...prev!,
+                            Thumbnail: {
+                              ...prev?.Thumbnail,
+                              fileName: file.name,
+                              url: URL.createObjectURL(file),
+                              file: file,
+                            },
+                          }));
+                        }}
+                      />
+
+                      {newsForm?.Thumbnail?.fileName && (
+                        <div style={{ marginTop: 8 }}>
+                          <i className="pi pi-image" />{" "}
+                          {newsForm.Thumbnail.fileName}
+                        </div>
+                      )}
+
+                      {error && (
+                        <Message
+                          severity="error"
+                          text={error}
+                          style={{ marginTop: 10 }}
+                        />
+                      )}
+                    </div>
+                    <div className="buttonFooter">
+                      <DefaultButton
+                        text="Back"
+                        btnType="closeBtn"
+                        onClick={() => {
+                          setError("");
+                          setStep("template");
+                          setNewsForm({
+                            Title: "",
+                            StartDate: new Date(),
+                            EndDate: new Date(),
+                            Thumbnail: { fileName: "", url: "", file: null },
+                          });
+                        }}
+                      />
+                      <DefaultButton
+                        text="Submit"
+                        btnType="primaryBtn"
+                        onClick={createPage}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Right Column - Template Preview */}
+            <div style={{ flex: 1.5, height: "88vh" }}>
+              {selectedTemplate ? (
+                <>
+                  <CustomHeader Header="Template Preview" />
+                  <iframe
+                    src={selectedTemplate.EncodedAbsUrl}
+                    title="Template Preview"
+                    className="iframeContainer"
+                  />
+                </>
+              ) : (
+                <div
+                  style={{
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#888",
+                    border: "1px dashed #ccc",
+                  }}
+                >
+                  No template selected
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
-    </Sidebar>
+        )}
+      </Sidebar>
+    </>
   );
 };

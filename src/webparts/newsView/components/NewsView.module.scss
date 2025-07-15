@@ -1,11 +1,11 @@
 .newsContainer {
   display: flex;
-  height: 100vh;
   padding: 20px;
   border-radius: 7px;
   background-color: #eaeaea;
   margin: 10px;
   flex-direction: column;
+  height: 85vh;
 }
 .seeMoreWrapper {
   display: flex;
@@ -37,6 +37,7 @@
   margin-top: 10px;
   text-align: center;
   position: relative;
+  overflow: auto;
   .newscardsContainer {
     display: flex;
     flex-direction: column;
@@ -59,7 +60,7 @@
         font-size: 17px;
       }
       img {
-        width: 100%;
+        width: 200px;
         height: 100%;
         border-radius: 5px;
       }

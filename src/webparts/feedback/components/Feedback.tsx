@@ -25,7 +25,7 @@ import {
   updateFeedback,
 } from "../../../Services/FeedbackService/FeedbackService";
 import { setFeedbacksdata as setFeedbacksAction } from "../../../Redux/Features/FeedbackSlice";
-
+import { Toast } from "primereact/toast";
 import CustomHeader from "../../../CommonComponents/webpartsHeader/CustomerHeader/CustomHeader";
 import CustomaddBtn from "../../../CommonComponents/webpartsHeader/CustomaddBtn/CustomaddBtn";
 import {
@@ -41,12 +41,13 @@ import CustomInputField from "../../../CommonComponents/CustomInputField/CustomI
 import CustomMultiInputField from "../../../CommonComponents/CustomMultiInputField/CustomMultiInputField";
 import Popup from "../../../CommonComponents/CustomPopup/Popup";
 import { Avatar } from "primereact/avatar";
-
+import "../../../Config/style.css";
 const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
   const dispatch = useDispatch();
   const currentuser = useSelector(
     (state: any) => state.MainSPContext.currentUserDetails
   );
+  const toastRef = React.useRef<any>(null);
   const [feedbacks, setFeedbacks] = useState<IFeedbacktype[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = React.useState(0);
@@ -57,7 +58,7 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
     description: "",
   });
   const [conversations, setConversations] = useState<IConversationType[]>([]);
-  console.log(conversations);
+  // console.log(conversations);
   const itemsPerPage = 3;
   const webUrl = context?.pageContext?.web?.absoluteUrl;
   const siteUrl = context?.pageContext?.site?.serverRelativeUrl;
@@ -119,7 +120,12 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
   const handleSubmitFuction = async () => {
     const { title, description, CommentsCount } = formData;
     if (!title || !description) {
-      console.error("All fields are required.");
+      toastRef.current?.show({
+        severity: "warn",
+        summary: "Missing Fields",
+        detail: "Please fill the required fields before submitting",
+        life: 3000,
+      });
       return;
     }
     try {
@@ -129,33 +135,40 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
         Description: description,
         CommentCount: CommentsCount,
       };
-      await addFeedbacks(payload, setFeedbacks, dispatch);
+      await addFeedbacks(payload, setFeedbacks, dispatch, toastRef);
       handleClosePopup(0);
-      setFormData({
-        title: "",
-        description: "",
-        CommentsCount: 0,
-      });
+      setFormData({ title: "", description: "", CommentsCount: 0 });
     } catch (err) {
+      toastRef.current?.show({
+        severity: "error",
+        summary: "Failed",
+        detail: "Something went wrong while submitting feedback",
+        life: 3000,
+      });
       console.error("Upload failed:", err);
     } finally {
       setIsLoading(false);
     }
   };
+
   const handleCommentSubmit = async () => {
     if (!comments.trim()) {
-      alert("Please enter a comment before sending.");
+      toastRef.current?.show({
+        severity: "warn",
+        summary: "Empty Comment",
+        detail: "Please enter a comment before sending.",
+        life: 3000,
+      });
       return;
     }
     await addConversations(
-      selectedFeedback?.Id,
+      selectedFeedback.Id,
       comments,
       conversations,
       setConversations,
       currentuser
     );
     await onCommentClose("onSubmit");
-    console.log("Sending comment:", comments);
     setComments("");
   };
 
@@ -165,7 +178,7 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
         <div className={styles.inputWrapper}>
           <div className={styles.customwrapper}>
             <CustomInputField
-              label="Title"
+              label="Title*"
               value={formData.title}
               onChange={(e: any) => handleFormChange("title", e.target.value)}
               placeholder="Title"
@@ -173,7 +186,7 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
           </div>
           <div className={styles.customwrapper}>
             <CustomMultiInputField
-              label="Description"
+              label="Description*"
               value={formData.description}
               onChange={(e: any) =>
                 handleFormChange("description", e.target.value)
@@ -229,12 +242,11 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
                         />
                       </div>
                     </div>
-                    <div className={styles.dateTimeWrapper}>
-                      <img
-                        src={require("../assets/Date.png")}
-                        width="12px"
-                        height="12px"
-                      />
+                    <div
+                      className={styles.dateTimeWrapper}
+                      style={{ justifyContent: "flex-start" }}
+                    >
+                      <i className="pi pi-clock" />
                       <span>{comment.CreatedOn}</span>
                     </div>
                   </div>
@@ -251,11 +263,7 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
                       <span>{comment.comments}</span>
                     </div>
                     <div className={styles.dateTimeWrapper}>
-                      <img
-                        src={require("../assets/Date.png")}
-                        width="12px"
-                        height="12px"
-                      />
+                      <i className="pi pi-clock" />
                       <span>{comment.CreatedOn}</span>
                     </div>
                   </div>
@@ -376,109 +384,112 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
     }
   };
   return (
-    <div className={styles.feedbackContainer}>
-      <div className={styles.headerWrapper}>
-        <CustomHeader Header="Feedback" />
-        <CustomaddBtn
-          onClick={() => {
-            togglePopupVisibility(
-              setPopupController,
-              0,
-              "open",
-              `Feedback`,
-              "30%"
-            );
-          }}
-        />
-      </div>
-
-      {feedbacks.length > 0 ? (
-        <div className={styles.carouselWrapper}>
-          <div className={styles.cardsContainer}>
-            {paginatedData.map((item, index) => (
-              <div className={styles.card} key={index}>
-                <div className={styles.title}>{item.Title}</div>
-                <TooltipHost
-                  content={item.Description}
-                  tooltipProps={{
-                    directionalHint: DirectionalHint.bottomCenter,
-                  }}
-                >
-                  <p>{item.Description}</p>
-                </TooltipHost>
-                <div
-                  className={styles.commentCount}
-                  onClick={() => {
-                    togglePopupVisibility(
-                      setPopupController,
-                      1,
-                      "open",
-                      `Conversation`,
-                      "42%",
-                      true
-                    );
-                    setSelectedFeedback({
-                      Id: item.Id ? item.Id : 0,
-                      title: item.Title,
-                      description: item.Description,
-                    });
-                    FetchConversations(item.Id, setConversations);
-                  }}
-                >
-                  <i
-                    className="fa-regular fa-comment-dots"
-                    style={{ color: "green", fontSize: "14px" }}
-                  />{" "}
-                  {item.CommentsCount}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className={styles.paginationDots}>
-            {Array.from({ length: totalPages }).map((_, idx) => (
-              <div
-                key={idx}
-                className={`${styles.dot} ${
-                  idx === currentPage ? styles.active : ""
-                }`}
-                onClick={() => handlePageChange(idx)}
-              />
-            ))}
-          </div>
-
-          <button onClick={nextSlide} className={styles.nextBtn}>
-            Next
-          </button>
-        </div>
-      ) : (
-        <div className={styles.noRecords}>No Records Found</div>
-      )}
-      <div>
-        {popupController?.map((popupData: any, index: number) => (
-          <Popup
-            key={index}
-            isLoading={isLoading}
-            PopupType={popupData.popupType}
-            onHide={() => {
-              if (selectedFeedback) {
-                onCommentClose("onClose");
-              }
-              togglePopupVisibility(setPopupController, index, "close");
+    <>
+      <Toast ref={toastRef} position="top-right" baseZIndex={1} />
+      <div className={styles.feedbackContainer}>
+        <div className={styles.headerWrapper}>
+          <CustomHeader Header="Feedback" />
+          <CustomaddBtn
+            onClick={() => {
+              togglePopupVisibility(
+                setPopupController,
+                0,
+                "open",
+                `Feedback`,
+                "30%"
+              );
             }}
-            popupTitle={popupData.popupTitle}
-            popupActions={popupActions[index]}
-            visibility={popupData.open}
-            content={popupInputs[index]}
-            popupWidth={popupData.popupWidth}
-            defaultCloseBtn={popupData.defaultCloseBtn || false}
-            confirmationTitle={
-              popupData.popupType !== "custom" ? popupData.popupTitle : ""
-            }
           />
-        ))}
+        </div>
+
+        {feedbacks.length > 0 ? (
+          <div className={styles.carouselWrapper}>
+            <div className={styles.cardsContainer}>
+              {paginatedData.map((item, index) => (
+                <div className={styles.card} key={index}>
+                  <div className={styles.title}>{item.Title}</div>
+                  <TooltipHost
+                    content={item.Description}
+                    tooltipProps={{
+                      directionalHint: DirectionalHint.bottomCenter,
+                    }}
+                  >
+                    <p>{item.Description}</p>
+                  </TooltipHost>
+                  <div
+                    className={styles.commentCount}
+                    onClick={() => {
+                      togglePopupVisibility(
+                        setPopupController,
+                        1,
+                        "open",
+                        `Conversation`,
+                        "42%",
+                        true
+                      );
+                      setSelectedFeedback({
+                        Id: item.Id ? item.Id : 0,
+                        title: item.Title,
+                        description: item.Description,
+                      });
+                      FetchConversations(item.Id, setConversations);
+                    }}
+                  >
+                    <i
+                      className="fa-regular fa-comment-dots"
+                      style={{ color: "green", fontSize: "14px" }}
+                    />{" "}
+                    {item.CommentsCount}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className={styles.paginationDots}>
+              {Array.from({ length: totalPages }).map((_, idx) => (
+                <div
+                  key={idx}
+                  className={`${styles.dot} ${
+                    idx === currentPage ? styles.active : ""
+                  }`}
+                  onClick={() => handlePageChange(idx)}
+                />
+              ))}
+            </div>
+
+            <button onClick={nextSlide} className={styles.nextBtn}>
+              Next
+            </button>
+          </div>
+        ) : (
+          <div className={styles.noRecords}>No Records Found</div>
+        )}
+        <div>
+          {popupController?.map((popupData: any, index: number) => (
+            <Popup
+              key={index}
+              isLoading={isLoading}
+              PopupType={popupData.popupType}
+              onHide={() => {
+                if (selectedFeedback) {
+                  onCommentClose("onClose");
+                }
+                togglePopupVisibility(setPopupController, index, "close");
+              }}
+              popupTitle={popupData.popupTitle}
+              popupActions={popupActions[index]}
+              visibility={popupData.open}
+              content={popupInputs[index]}
+              popupWidth={popupData.popupWidth}
+              defaultCloseBtn={popupData.defaultCloseBtn || false}
+              confirmationTitle={
+                popupData.popupType !== "custom" ? popupData.popupTitle : ""
+              }
+            />
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

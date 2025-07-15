@@ -40,7 +40,7 @@ const fetchNewsItems = async (setNewsItems: any, Type?: any) => {
       .get();
   }
 
-  console.log("items of sitepages", pages);
+  // console.log("items of sitepages", pages);
   const items: INewsItem[] = await pages.map((page) => ({
     id: page.Id,
     title: page.Title,

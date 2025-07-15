@@ -2,18 +2,23 @@
   max-width: 100%;
   margin: 0 auto;
 }
-.root-154.root-154.root-154.root-154.root-154 {
+/* .e_a_cb6f7c2e [class*="root-"],
+.f_a_cb6f7c2e [class*="root-"],
+.t_e_cb6f7c2e [class*="root-"] {
   color: rgb(50, 49, 48);
   position: relative;
-  background: #b5dee2;
-}
-@media screen and (min-width: 1024px) {
+  background-image: url("../../../../assets/background.png") !important;
+} */
+
+/* @media screen and (min-width: 1024px) {
   .a_e_cb6f7c2e:not(.h_e_cb6f7c2e) .t_e_cb6f7c2e {
     display: flex;
+    flex-direction: column;
     max-width: 95% !important;
     margin: 0 auto;
   }
-}
+} */
+
 .sp-appBar {
   display: none !important;
 }
@@ -49,7 +54,7 @@
 }
 
 .p-dialog .p-dialog-footer {
-  padding: 10px 4px !important;
+  padding: 10px 18px !important;
   border: unset !important;
   background-color: transparent !important;
 }

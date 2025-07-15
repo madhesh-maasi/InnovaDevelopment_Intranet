@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, Provider } from "react-redux";
 import { sp } from "@pnp/sp/presets/all";
 import CustomHeader from "../../../CommonComponents/webpartsHeader/CustomerHeader/CustomHeader";
-import CustomaddBtn from "../../../CommonComponents/webpartsHeader/CustomaddBtn/CustomaddBtn";
+// import CustomaddBtn from "../../../CommonComponents/webpartsHeader/CustomaddBtn/CustomaddBtn";
 import { store } from "../../../Redux/Store/Store";
 import {
   setCurrentUserDetails,
@@ -91,7 +91,7 @@ const News: React.FC<INewsViewProps> = ({ context }) => {
     <div className={styles.newsContainer}>
       <div className={styles.headerWrapper}>
         <CustomHeader Header="News" />
-        <CustomaddBtn onClick={() => setShowPanel(true)} />
+        {/* <CustomaddBtn onClick={() => setShowPanel(true)} /> */}
       </div>
       <div className={styles.newsWrapper}>
         {newsItems.length > 0 ? (
@@ -105,7 +105,7 @@ const News: React.FC<INewsViewProps> = ({ context }) => {
                 <div className={styles.imgWrapper}>
                   <img src={item.thumbnail?.url} />
                 </div>
-                <div style={{ width: "80%" }}>
+                <div style={{ width: "85%" }}>
                   <div className={styles.title}>{item.title}</div>
                   <TooltipHost
                     content={item.description}
