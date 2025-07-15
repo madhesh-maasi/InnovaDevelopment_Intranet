@@ -13,6 +13,9 @@
   position: relative;
   background-image: url("../assets/background.png") !important;
 }
+[data-automation-id="CanvasZone-SectionContainer"] {
+  max-width: 95% !important;
+}
 #workbenchPageContent {
   max-width: 100%;
   margin: 0 auto;
@@ -77,4 +80,114 @@
 .p-dialog .p-dialog-content {
   background-color: transparent !important;
   padding: 0.25rem !important;
+}
+.p-avatar.p-avatar-circle img {
+  border-radius: 50%;
+  width: fit-content;
+}
+.p-toast {
+  opacity: 0.9;
+}
+
+.p-toast .p-toast-message {
+  margin: 0 0 1rem 0;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14),
+    0 1px 10px 0 rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+}
+
+.p-toast .p-toast-message .p-toast-message-content {
+  padding: 1rem;
+  border-width: 0 0 0 6px;
+}
+
+.p-toast .p-toast-message .p-toast-message-content .p-toast-message-text {
+  margin: 0 0 0 1rem;
+}
+
+.p-toast .p-toast-message .p-toast-message-content .p-toast-message-icon {
+  font-size: 2rem;
+}
+
+.p-toast
+  .p-toast-message
+  .p-toast-message-content
+  .p-toast-message-icon.p-icon {
+  width: 2rem;
+  height: 2rem;
+}
+
+.p-toast .p-toast-message .p-toast-message-content .p-toast-summary {
+  font-weight: 600;
+}
+
+.p-toast .p-toast-message .p-toast-message-content .p-toast-detail {
+  margin: 0.5rem 0 0 0;
+}
+
+.p-toast .p-toast-message .p-toast-icon-close {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+
+  background: rgba(0, 0, 0, 0);
+  transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+.p-toast .p-toast-message .p-toast-icon-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.p-toast .p-toast-message .p-toast-icon-close:focus {
+  outline: 0 none;
+  outline-offset: 0;
+  box-shadow: 0 0 0 0.1rem #8db1e2;
+}
+
+.p-toast .p-toast-message.p-toast-message-info {
+  background: #c9e7f9;
+  border: 4px solid #3b82f6;
+  border-width: 0 0 0 6px;
+  color: #3b82f6;
+}
+
+.p-toast .p-toast-message.p-toast-message-info .p-toast-message-icon,
+.p-toast .p-toast-message.p-toast-message-info .p-toast-icon-close {
+  color: #3b82f6;
+}
+
+.p-toast .p-toast-message.p-toast-message-success {
+  background: #e7f6f0;
+  border: 4px solid #3f9f4e;
+  border-width: 0 0 0 6px;
+  color: #3f9f4e;
+}
+
+.p-toast .p-toast-message.p-toast-message-success .p-toast-message-icon,
+.p-toast .p-toast-message.p-toast-message-success .p-toast-icon-close {
+  color: var(--Green);
+}
+
+.p-toast .p-toast-message.p-toast-message-warn {
+  background: #e5eee6;
+  border: 4px solid #cc8925;
+  border-width: 0 0 0 6px;
+  color: #cc8925;
+}
+
+.p-toast .p-toast-message.p-toast-message-warn .p-toast-message-icon,
+.p-toast .p-toast-message.p-toast-message-warn .p-toast-icon-close {
+  color: #cc8925;
+}
+
+.p-toast .p-toast-message.p-toast-message-error {
+  background: #faeae9;
+  border: 4px solid #ff5757;
+  border-width: 0 0 0 6px;
+  color: #ff5757;
+}
+
+.p-toast .p-toast-message.p-toast-message-error .p-toast-message-icon,
+.p-toast .p-toast-message.p-toast-message-error .p-toast-icon-close {
+  color: #ff5757;
 }

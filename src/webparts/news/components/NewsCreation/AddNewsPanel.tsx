@@ -114,7 +114,7 @@ export const AddNewsPanel: React.FC<IProps> = ({
         !newsForm?.EndDate ||
         !newsForm?.Thumbnail
       ) {
-        setError("Please fill out all required fields before submitting.");
+        // setError("Please fill out all required fields before submitting.");
         toastRef.current?.show({
           severity: "warn",
           summary: "Missing Fields",
@@ -128,7 +128,7 @@ export const AddNewsPanel: React.FC<IProps> = ({
 
       if (start >= end) {
         console.warn("Start Date must be before End Date.");
-        setError("Start Date must be before End Date.");
+        // setError("Start Date must be before End Date.");
         toastRef.current?.show({
           severity: "warn",
           summary: "Wrong details",
@@ -141,7 +141,7 @@ export const AddNewsPanel: React.FC<IProps> = ({
       // Upload thumbnail
       const thumbId = await uploadThumbnail(newsForm.Thumbnail);
       if (!thumbId) {
-        setError("Failed to upload thumbnail");
+        // setError("Failed to upload thumbnail");
         toastRef.current?.show({
           severity: "error",
           summary: "Failed",
@@ -257,13 +257,13 @@ export const AddNewsPanel: React.FC<IProps> = ({
 
   return (
     <>
-      <Toast ref={toastRef} position="top-left" baseZIndex={9999} />
       <Sidebar
         position="right"
         visible
         onHide={onClose}
         style={{ width: "90vw" }}
       >
+        <Toast ref={toastRef} baseZIndex={999} />
         {loading ? (
           <div
             style={{
@@ -346,7 +346,7 @@ export const AddNewsPanel: React.FC<IProps> = ({
                             StartDate: date || "",
                           }))
                         }
-                        label="Start Date"
+                        label="Start Date*"
                         withLabel={true}
                       />
 

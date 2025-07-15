@@ -231,10 +231,8 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
                       className={styles.commentContentWrapper}
                       style={{ justifyContent: "end" }}
                     >
-                      <span style={{ fontWeight: "500" }}>
-                        {comment.comments}
-                      </span>
-                      <div>
+                      <div className={styles.profileWrappper}>
+                        <span>Me</span>
                         <Avatar
                           image={comment?.CreatedBy?.ImgUrl}
                           size="normal"
@@ -242,10 +240,12 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
                         />
                       </div>
                     </div>
-                    <div
-                      className={styles.dateTimeWrapper}
-                      style={{ justifyContent: "flex-start" }}
-                    >
+                    <div>
+                      <span style={{ fontWeight: "400" }}>
+                        {comment.comments}
+                      </span>
+                    </div>
+                    <div className={styles.dateTimeWrapper}>
                       <i className="pi pi-clock" />
                       <span>{comment.CreatedOn}</span>
                     </div>
@@ -275,7 +275,7 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
             <CustomInputField
               value={comments}
               onChange={(e: any) => setComments(e.target.value)}
-              placeholder="Type Your Comments here...."
+              placeholder="Type your comments here...."
               onKeyDown={(e: any) => {
                 if (e.key === "Enter") {
                   handleCommentSubmit();
@@ -437,7 +437,11 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
                   >
                     <i
                       className="fa-regular fa-comment-dots"
-                      style={{ color: "green", fontSize: "14px" }}
+                      style={{
+                        color: "green",
+                        fontSize: "14px",
+                        cursor: "pointer",
+                      }}
                     />{" "}
                     {item.CommentsCount}
                   </div>

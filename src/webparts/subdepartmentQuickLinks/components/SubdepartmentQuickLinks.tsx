@@ -29,6 +29,7 @@ import CustomInputField from "../../../CommonComponents/CustomInputField/CustomI
 import CustomMultiInputField from "../../../CommonComponents/CustomMultiInputField/CustomMultiInputField";
 import CustomFileUpload from "../../../CommonComponents/CustomFileUpload/CustomFileUpload";
 import Quicklinks from "../../../CommonComponents/QuickLinks/Quicklinks";
+// import "../../../Config/style.css";
 import "../../../Config/style.css";
 const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
   context,
@@ -214,7 +215,7 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
   }, []);
   return (
     <>
-      <Toast ref={toastRef} position="top-right" baseZIndex={1} />
+      <Toast ref={toastRef} position="top-right" baseZIndex={999} />
       <div className={styles.subQuickLinksContainer}>
         <div className={styles.headerSection}>
           <div style={{ width: "50%" }}>
@@ -227,7 +228,7 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
                   setPopupController,
                   0,
                   "open",
-                  `Table of content`,
+                  `Quick Links`,
                   "30%"
                 );
               }}

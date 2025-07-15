@@ -36,7 +36,7 @@ import {
 import { setTableOfContent } from "../../../Redux/Features/TableOfContentSlice";
 import { DirectionalHint, TooltipHost } from "@fluentui/react";
 import "../../../Config/style.css";
-import "../assets/css/style.css";
+// import "../assets/css/style.css";
 const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
   const dispatch = useDispatch();
   const [input, setInput] = React.useState<any>({
@@ -124,7 +124,7 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
           severity: "warn",
           summary: "Missing Fields",
           detail: "Please fill out all required fields before submitting.",
-          life: 3000,
+          life: 10000,
         });
         return;
       }
@@ -256,7 +256,7 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
 
   return (
     <>
-      <Toast ref={toastRef} position="top-right" baseZIndex={1} />
+      <Toast ref={toastRef} position="top-right" baseZIndex={9999} />
       <div className={styles.TableOfContainer}>
         <div className={styles.headerSection}>
           <div style={{ width: "50%" }}>
