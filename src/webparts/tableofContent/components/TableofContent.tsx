@@ -6,7 +6,7 @@ import styles from "./TableofContent.module.scss";
 import type { ITableofContentProps } from "./ITableofContentProps";
 import { sp } from "@pnp/sp/presets/all";
 // import { graph } from "@pnp/graph/presets/all";
-import { Provider, useDispatch } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import { store } from "../../../Redux/Store/Store";
 import {
   setCurrentUserDetails,
@@ -21,7 +21,7 @@ import CustomaddBtn from "../../../CommonComponents/webpartsHeader/CustomaddBtn/
 import CustomDataTable from "../../../CommonComponents/DataTable/DataTable";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { togglePopupVisibility } from "../../../CommonComponents/CustomPopup/togglePopup";
 import Popup from "../../../CommonComponents/CustomPopup/Popup";
 import CustomInputField from "../../../CommonComponents/CustomInputField/CustomInputField";
@@ -36,9 +36,15 @@ import {
 import { setTableOfContent } from "../../../Redux/Features/TableOfContentSlice";
 import { DirectionalHint, TooltipHost } from "@fluentui/react";
 import "../../../Config/style.css";
+import CustomSearchInput from "../../../CommonComponents/webpartsHeader/CustomSearchInput/CustomSearchInput";
+import { getPermissionLevel } from "../../../Services/CommonService/CommonService";
 // import "../assets/css/style.css";
 const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
   const dispatch = useDispatch();
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const currentuser = useSelector(
+    (state: any) => state.MainSPContext.currentUserDetails
+  );
   const [input, setInput] = React.useState<any>({
     Id: null,
     RoleGuide: "",
@@ -47,6 +53,9 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
   });
   const [deleteItemId, setDeleteItemId] = useState<any>();
   const [allData, setAllData] = React.useState<ITableOfContentType[]>([]);
+  const [filteredData, setfilteredData] = React.useState<ITableOfContentType[]>(
+    []
+  );
   const webUrl = context?.pageContext?.web?.absoluteUrl;
   const siteUrl = context?.pageContext?.site?.serverRelativeUrl;
   const tenantUrl = webUrl?.split("/sites")[0];
@@ -113,18 +122,22 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
     const tabledata = await FetchTableOfContentData();
     dispatch(setTableOfContent(tabledata));
     setAllData(tabledata);
+    setfilteredData(tabledata);
   };
   const handleSubmitFuction = async () => {
     setIsLoading(true);
     const { RoleGuide, DepartmentProcess } = input;
 
     try {
-      if (!RoleGuide || !DepartmentProcess) {
+      const missingFields = [];
+      if (!RoleGuide) missingFields.push("Role guide");
+      if (!DepartmentProcess) missingFields.push("Department process");
+      if (missingFields.length > 0) {
         toastRef.current?.show({
           severity: "warn",
-          summary: "Missing Fields",
-          detail: "Please fill out all required fields before submitting.",
-          life: 10000,
+          summary: "Missing fields",
+          detail: `Please enter ${missingFields.join(", ")} before submitting.`,
+          life: 3000,
         });
         return;
       }
@@ -165,13 +178,13 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
           placeholder="Enter Role Guide"
         />
         <CustomMultiInputField
-          label="Department Process*"
+          label="Department process*"
           value={input.DepartmentProcess}
           onChange={(e: any) =>
             handleInputChange("DepartmentProcess", e.target.value)
           }
           rows={2}
-          placeholder=" Enter Department Process"
+          placeholder=" Enter department process"
           autoResize={false}
         />
       </div>,
@@ -248,12 +261,20 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
       "30%"
     );
   };
-  React.useEffect(() => {
+  const checkPermission = async () => {
+    const result = await getPermissionLevel(currentuser);
+    setIsAdmin(result);
+  };
+  useEffect(() => {
     dispatch(setMainSPContext(context));
     setContext();
     getTableOfContentData();
   }, []);
-
+  useEffect(() => {
+    if (currentuser && currentuser.length > 0) {
+      checkPermission();
+    }
+  }, [currentuser]);
   return (
     <>
       <Toast ref={toastRef} position="top-right" baseZIndex={9999} />
@@ -263,27 +284,45 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
             <CustomHeader Header="Table of content" />
           </div>
           <div className={styles.headerRight}>
-            <CustomaddBtn
-              onClick={() => {
-                setIsEdit(false);
-                togglePopupVisibility(
-                  setPopupController,
-                  0,
-                  "open",
-                  `Table of content`,
-                  "30%"
-                );
+            <CustomSearchInput
+              placeholder="Search by role guide"
+              searchFunction={(value: string) => {
+                let filtered;
+                if (value.trim() === "") {
+                  setfilteredData(allData);
+                } else {
+                  filtered = allData.filter((item) =>
+                    item.RoleGuide.toLowerCase().includes(value.toLowerCase())
+                  );
+                  setfilteredData(filtered);
+                }
               }}
             />
+            {isAdmin ? (
+              <CustomaddBtn
+                onClick={() => {
+                  setIsEdit(false);
+                  togglePopupVisibility(
+                    setPopupController,
+                    0,
+                    "open",
+                    `Table of content`,
+                    "30%"
+                  );
+                }}
+              />
+            ) : (
+              <></>
+            )}
           </div>
         </div>
 
-        <div className={styles.tableContentWrapper}>
+        <div className="tableContentWrapper">
           <CustomDataTable
             table={
               <DataTable
-                value={allData}
-                style={{ width: "100%", padding: "20px" }}
+                value={filteredData}
+                style={{ maxWidth: "100%", padding: "20px 0px" }}
                 tableStyle={{ tableLayout: "fixed" }}
               >
                 <Column
@@ -293,7 +332,7 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
                 />
                 <Column
                   field="DepartmentProcess"
-                  header="Department Process"
+                  header="Department process"
                   style={{ width: "35%" }}
                   body={(rowdata: any) => {
                     return (
@@ -368,6 +407,7 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
                         stroke-width="2"
                         stroke-linecap="round"
                         stroke-linejoin="round"
+                        style={{ cursor: "pointer" }}
                         className="lucide lucide-pencil-icon lucide-pencil"
                         onClick={() => handleEdit(rowData)}
                       >
@@ -384,6 +424,7 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
                         stroke-width="2"
                         stroke-linecap="round"
                         stroke-linejoin="round"
+                        style={{ cursor: "pointer" }}
                         className="lucide lucide-trash2-icon lucide-trash-2"
                         onClick={() => {
                           setDeleteItemId(rowData?.Id);

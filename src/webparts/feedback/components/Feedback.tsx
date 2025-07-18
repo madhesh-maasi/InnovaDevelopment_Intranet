@@ -35,15 +35,17 @@ import {
   setTenantUrl,
   setWebUrl,
 } from "../../../Redux/Features/MainSPContextSlice";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { togglePopupVisibility } from "../../../CommonComponents/CustomPopup/togglePopup";
 import CustomInputField from "../../../CommonComponents/CustomInputField/CustomInputField";
 import CustomMultiInputField from "../../../CommonComponents/CustomMultiInputField/CustomMultiInputField";
 import Popup from "../../../CommonComponents/CustomPopup/Popup";
 import { Avatar } from "primereact/avatar";
 import "../../../Config/style.css";
+import { getPermissionLevel } from "../../../Services/CommonService/CommonService";
 const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
   const dispatch = useDispatch();
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const currentuser = useSelector(
     (state: any) => state.MainSPContext.currentUserDetails
   );
@@ -63,6 +65,7 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
   const webUrl = context?.pageContext?.web?.absoluteUrl;
   const siteUrl = context?.pageContext?.site?.serverRelativeUrl;
   const tenantUrl = webUrl?.split("/sites")[0];
+
   const setContext = async () => {
     try {
       const currentUserDetails = await sp.web.currentUser.get();
@@ -119,11 +122,14 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
 
   const handleSubmitFuction = async () => {
     const { title, description, CommentsCount } = formData;
-    if (!title || !description) {
+    const missingFields = [];
+    if (!title?.trim()) missingFields.push("Title");
+    if (!description?.trim()) missingFields.push("Description");
+    if (missingFields.length > 0) {
       toastRef.current?.show({
         severity: "warn",
-        summary: "Missing Fields",
-        detail: "Please fill the required fields before submitting",
+        summary: "Missing fields",
+        detail: `Please enter ${missingFields.join(", ")} before submitting.`,
         life: 3000,
       });
       return;
@@ -209,7 +215,14 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
           key={1}
           // style={{ backgroundColor: "#ccc" }}
         >
-          <div className={styles.title}>{selectedFeedback.title}</div>
+          <TooltipHost
+            content={selectedFeedback.title}
+            tooltipProps={{
+              directionalHint: DirectionalHint.bottomCenter,
+            }}
+          >
+            <div className={styles.title}>{selectedFeedback.title}</div>
+          </TooltipHost>
           <TooltipHost
             content={selectedFeedback.description}
             tooltipProps={{
@@ -217,7 +230,7 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
             }}
           >
             <div style={{ fontSize: "12px" }}>
-              {selectedFeedback.description}
+              <p>{selectedFeedback.description}</p>
             </div>
           </TooltipHost>
         </div>
@@ -230,16 +243,7 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
                     <div
                       className={styles.commentContentWrapper}
                       style={{ justifyContent: "end" }}
-                    >
-                      <div className={styles.profileWrappper}>
-                        <span>Me</span>
-                        <Avatar
-                          image={comment?.CreatedBy?.ImgUrl}
-                          size="normal"
-                          shape="circle"
-                        />
-                      </div>
-                    </div>
+                    ></div>
                     <div>
                       <span style={{ fontWeight: "400" }}>
                         {comment.comments}
@@ -260,6 +264,9 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
                         size="normal"
                         shape="circle"
                       />
+                      <span>{comment?.CreatedBy?.DisplayName}</span>
+                    </div>
+                    <div>
                       <span>{comment.comments}</span>
                     </div>
                     <div className={styles.dateTimeWrapper}>
@@ -328,12 +335,20 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
     setFeedbacks(list);
     dispatch(setFeedbacksAction(list));
   };
-
-  React.useEffect(() => {
+  const checkPermission = async () => {
+    const result = await getPermissionLevel(currentuser);
+    setIsAdmin(result);
+  };
+  useEffect(() => {
     setContext();
     dispatch(setMainSPContext(context));
     getFeedbackData();
   }, []);
+  useEffect(() => {
+    if (currentuser && currentuser.length > 0) {
+      checkPermission();
+    }
+  }, [currentuser]);
 
   const totalPages = Math.ceil(feedbacks.length / itemsPerPage);
   const paginatedData = feedbacks.slice(
@@ -389,33 +404,49 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
       <div className={styles.feedbackContainer}>
         <div className={styles.headerWrapper}>
           <CustomHeader Header="Feedback" />
-          <CustomaddBtn
-            onClick={() => {
-              togglePopupVisibility(
-                setPopupController,
-                0,
-                "open",
-                `Feedback`,
-                "30%"
-              );
-            }}
-          />
+          {isAdmin ? (
+            <CustomaddBtn
+              onClick={() => {
+                togglePopupVisibility(
+                  setPopupController,
+                  0,
+                  "open",
+                  `Feedback`,
+                  "30%"
+                );
+              }}
+            />
+          ) : (
+            <></>
+          )}
         </div>
 
         {feedbacks.length > 0 ? (
           <div className={styles.carouselWrapper}>
             <div className={styles.cardsContainer}>
               {paginatedData.map((item, index) => (
-                <div className={styles.card} key={index}>
+                <div
+                  className={styles.card}
+                  key={index}
+                  onClick={() => {
+                    togglePopupVisibility(
+                      setPopupController,
+                      1,
+                      "open",
+                      `Conversation`,
+                      "42%",
+                      true
+                    );
+                    setSelectedFeedback({
+                      Id: item.Id ? item.Id : 0,
+                      title: item.Title,
+                      description: item.Description,
+                    });
+                    FetchConversations(item.Id, setConversations);
+                  }}
+                >
                   <div className={styles.title}>{item.Title}</div>
-                  <TooltipHost
-                    content={item.Description}
-                    tooltipProps={{
-                      directionalHint: DirectionalHint.bottomCenter,
-                    }}
-                  >
-                    <p>{item.Description}</p>
-                  </TooltipHost>
+                  <p>{item.Description}</p>
                   <div
                     className={styles.commentCount}
                     onClick={() => {

@@ -26,11 +26,11 @@
   }
 }
 
-.customPickerInput .ms-BasePicker-text:hover,
-.customPickerInput .ms-BasePicker-text:focus-within {
-  border: 1.5px solid var(--input-fields-border-hovor-color) !important;
-  background: var(--input-fields-bg-hovor-color) !important;
-}
+// .customPickerInput .ms-BasePicker-text:hover,
+// .customPickerInput .ms-BasePicker-text:focus-within {
+//   // border: 1.5px solid var(--input-fields-border-hovor-color) !important;
+//   // background: var(--input-fields-bg-hovor-color) !important;
+// }
 
 .customPickerInput .ms-BasePicker-input::placeholder {
   font-weight: 400;

@@ -38,6 +38,9 @@ export default class MeetingViewWebPart extends BaseClientSideWebPart<IMeetingVi
     SPComponentLoader.loadCss(
       "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     );
+    SPComponentLoader.loadCss(
+      "https://fonts.googleapis.com/css2?family=Open+Sans&display=swap"
+    );
     sp.setup({
       spfxContext: this.context as unknown as undefined,
     });

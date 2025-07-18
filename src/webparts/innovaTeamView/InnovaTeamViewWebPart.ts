@@ -12,6 +12,7 @@ import { IInnovaTeamViewProps } from "./components/IInnovaTeamViewProps";
 import { SPComponentLoader } from "@microsoft/sp-loader";
 import { sp } from "@pnp/sp";
 import { graph } from "@pnp/graph";
+require("../../../node_modules/primereact/resources/themes/bootstrap4-light-blue/theme.css");
 export interface IInnovaTeamViewWebPartProps {
   description: string;
 }
@@ -35,6 +36,9 @@ export default class InnovaTeamViewWebPart extends BaseClientSideWebPart<IInnova
     SPComponentLoader.loadCss("https://unpkg.com/primeicons/primeicons.css");
     SPComponentLoader.loadCss(
       "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    );
+    SPComponentLoader.loadCss(
+      "https://fonts.googleapis.com/css2?family=Open+Sans&display=swap"
     );
     sp.setup({
       spfxContext: this.context as unknown as undefined,

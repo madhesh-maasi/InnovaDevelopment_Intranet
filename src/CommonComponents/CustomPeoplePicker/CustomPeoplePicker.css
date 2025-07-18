@@ -3,7 +3,6 @@
   border-radius: 4px !important;
   height: 30px;
   width: 100%;
-  padding-left: 10px;
   border: 1px solid #ced4da !important;
 }
 .customPickerInputForPopup {
@@ -29,6 +28,9 @@
 .ms-BasePicker-text {
   border: none !important;
 }
+.ms-BasePicker-text::after {
+  border: none !important;
+}
 .ms-BasePicker-text.text-77::after {
   pointer-events: none;
   content: "";
@@ -50,4 +52,7 @@
   border: none;
   height: 100%;
   /* padding-left: 10px; */
+}
+.ms-PickerPersona-container:focus {
+  border: none !important;
 }

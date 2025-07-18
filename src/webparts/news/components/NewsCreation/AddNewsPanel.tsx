@@ -75,6 +75,7 @@ export const AddNewsPanel: React.FC<IProps> = ({
             : null;
 
           return {
+            Id: item?.ID,
             Title: item.Title,
             Description: item.Description,
             FileRef: item.FileRef,
@@ -102,27 +103,50 @@ export const AddNewsPanel: React.FC<IProps> = ({
   };
 
   const createPage = async () => {
-    debugger;
     // console.log("news Form Data", newsForm);
 
     try {
+      const missingFields = [];
       setError("");
+
       // Basic validation
-      if (
-        !newsForm?.Title?.trim() ||
-        !newsForm?.StartDate ||
-        !newsForm?.EndDate ||
-        !newsForm?.Thumbnail
-      ) {
-        // setError("Please fill out all required fields before submitting.");
+      const thumbnailField = newsForm.Thumbnail?.file;
+
+      if (!newsForm?.Title?.trim()) missingFields.push("Title");
+      if (!newsForm?.StartDate) missingFields.push("Start date");
+      if (!newsForm?.EndDate) missingFields.push("End date");
+      if (!thumbnailField) missingFields.push("Thumbnail");
+
+      // If only one field is missing, show specific message
+      if (missingFields.length === 1) {
+        const field = missingFields[0];
+        const detailMessage =
+          field === "Thumbnail"
+            ? "Please upload thumbnail before submitting."
+            : `Please enter ${field.toLowerCase()} before submitting.`;
+
         toastRef.current?.show({
           severity: "warn",
-          summary: "Missing Fields",
-          detail: "Please fill out all required fields before submitting.",
+          summary: "Missing field",
+          detail: detailMessage,
           life: 3000,
         });
         return;
       }
+
+      // If more than one field is missing, show combined message
+      if (missingFields.length > 1) {
+        toastRef.current?.show({
+          severity: "warn",
+          summary: "Missing fields",
+          detail: `Please enter/upload ${missingFields.join(
+            ", "
+          )} before submitting.`,
+          life: 3000,
+        });
+        return;
+      }
+
       const start = new Date(newsForm.StartDate);
       const end = new Date(newsForm.EndDate);
 
@@ -282,17 +306,16 @@ export const AddNewsPanel: React.FC<IProps> = ({
             <div style={{ flex: 1 }}>
               {step === "template" ? (
                 <>
-                  <CustomHeader Header="Select Template" />
+                  <CustomHeader Header="Select template" />
                   <div className="newstemplateContainer">
                     <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
                       {templates.map((tmpl) => (
                         <div
                           key={tmpl.Id}
-                          className="card"
+                          className={`card ${
+                            selectedTemplate?.Title === tmpl.Title && "selected"
+                          }`}
                           style={{
-                            border: selectedTemplate
-                              ? "2px solid #0471af"
-                              : "none !important",
                             padding: 8,
                             cursor: "pointer",
                             width: "30%",
@@ -324,69 +347,84 @@ export const AddNewsPanel: React.FC<IProps> = ({
                 </>
               ) : (
                 <>
-                  <CustomHeader Header="Fill News Details" />
+                  <CustomHeader Header="News details" />
                   <div className="newstemplateContainer">
                     <div className="p-fluid">
-                      <CustomInputField
-                        label="Title*"
-                        value={newsForm?.Title || ""}
-                        placeholder="Enter Title"
-                        onChange={(e) =>
-                          setNewsForm((prev) => ({
-                            ...prev,
-                            Title: e.target.value,
-                          }))
-                        }
-                      />
-                      <CustomDateTimePicker
-                        value={newsForm?.StartDate}
-                        onChange={(date) =>
-                          setNewsForm((prev: any) => ({
-                            ...prev,
-                            StartDate: date || "",
-                          }))
-                        }
-                        label="Start Date*"
-                        withLabel={true}
-                      />
+                      <div className="fieldCard">
+                        <CustomInputField
+                          label="Title*"
+                          value={newsForm?.Title || ""}
+                          placeholder="Enter title"
+                          onChange={(e) =>
+                            setNewsForm((prev) => ({
+                              ...prev,
+                              Title: e.target.value,
+                            }))
+                          }
+                        />
+                      </div>
+                      <div className="fieldCard">
+                        <CustomDateTimePicker
+                          value={newsForm?.StartDate}
+                          onChange={(date) =>
+                            setNewsForm((prev: any) => ({
+                              ...prev,
+                              StartDate: date || "",
+                            }))
+                          }
+                          label="Start date*"
+                          withLabel={true}
+                        />
+                      </div>
+                      <div className="fieldCard">
+                        <CustomDateTimePicker
+                          value={newsForm?.EndDate}
+                          onChange={(date) =>
+                            setNewsForm((prev: any) => ({
+                              ...prev,
+                              EndDate: date || "",
+                            }))
+                          }
+                          label="End date*"
+                          withLabel={true}
+                        />
+                      </div>
+                      <div className="fieldCard">
+                        <CustomFileUpload
+                          accept="image/*"
+                          label="Upload thumbnail*"
+                          onFileSelect={(file: File | null) => {
+                            if (!file) {
+                              setNewsForm((prev) => ({
+                                ...prev!,
+                                Thumbnail: {
+                                  ...prev?.Thumbnail,
+                                  fileName: "",
+                                  url: "",
+                                  file: null,
+                                },
+                              }));
+                              return;
+                            }
+                            setNewsForm((prev) => ({
+                              ...prev!,
+                              Thumbnail: {
+                                ...prev?.Thumbnail,
+                                fileName: file.name,
+                                url: URL.createObjectURL(file),
+                                file: file,
+                              },
+                            }));
+                          }}
+                        />
 
-                      <CustomDateTimePicker
-                        value={newsForm?.EndDate}
-                        onChange={(date) =>
-                          setNewsForm((prev: any) => ({
-                            ...prev,
-                            EndDate: date || "",
-                          }))
-                        }
-                        label="End Date*"
-                        withLabel={true}
-                      />
-
-                      <CustomFileUpload
-                        accept="image/*"
-                        label="Upload Thumbnail*"
-                        onFileSelect={(file: File | null) => {
-                          if (!file) return;
-
-                          setNewsForm((prev) => ({
-                            ...prev!,
-                            Thumbnail: {
-                              ...prev?.Thumbnail,
-                              fileName: file.name,
-                              url: URL.createObjectURL(file),
-                              file: file,
-                            },
-                          }));
-                        }}
-                      />
-
-                      {newsForm?.Thumbnail?.fileName && (
-                        <div style={{ marginTop: 8 }}>
-                          <i className="pi pi-image" />{" "}
-                          {newsForm.Thumbnail.fileName}
-                        </div>
-                      )}
-
+                        {newsForm?.Thumbnail?.fileName && (
+                          <div style={{ marginTop: 8 }}>
+                            <i className="pi pi-image" />{" "}
+                            {newsForm.Thumbnail.fileName}
+                          </div>
+                        )}
+                      </div>
                       {error && (
                         <Message
                           severity="error"

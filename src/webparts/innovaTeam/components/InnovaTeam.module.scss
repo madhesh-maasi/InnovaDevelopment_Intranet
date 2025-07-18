@@ -50,3 +50,19 @@
   flex-direction: column;
   justify-content: space-between;
 }
+.jobDescriptionWrapper {
+  width: 100%;
+  padding: "5px 0px";
+  p {
+    margin: 0;
+    color: #333;
+    font-size: 14px;
+    display: -webkit-box;
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    cursor: pointer;
+    height: 2.6em;
+  }
+}

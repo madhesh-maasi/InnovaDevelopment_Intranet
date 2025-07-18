@@ -6,7 +6,7 @@ import * as React from "react";
 import styles from "./News.module.scss";
 import type { INewsProps } from "./INewsProps";
 import { useEffect, useState } from "react";
-import { useDispatch, Provider } from "react-redux";
+import { useDispatch, Provider, useSelector } from "react-redux";
 import { sp } from "@pnp/sp/presets/all";
 import CustomHeader from "../../../CommonComponents/webpartsHeader/CustomerHeader/CustomHeader";
 import CustomaddBtn from "../../../CommonComponents/webpartsHeader/CustomaddBtn/CustomaddBtn";
@@ -23,9 +23,15 @@ import { INewsItem } from "../../../Interface/NewsInterface";
 import { fetchNewsItems } from "../../../Services/NewsService/NewsService";
 import { AddNewsPanel } from "./NewsCreation/AddNewsPanel";
 import "../../../Config/style.css";
+import { getPermissionLevel } from "../../../Services/CommonService/CommonService";
 const News: React.FC<INewsProps> = ({ context }) => {
   const dispatch = useDispatch();
   // const imgUrl = require("../assets/wallpaper.jpg");
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const currentuser = useSelector(
+    (state: any) => state.MainSPContext.currentUserDetails
+  );
+
   const [newsItems, setNewsItems] = useState<INewsItem[]>([]);
   const [showPanel, setShowPanel] = useState(false);
   console.log("newsItems", newsItems);
@@ -81,17 +87,29 @@ const News: React.FC<INewsProps> = ({ context }) => {
       console.error("Error setting context:", err);
     }
   };
+  const checkPermission = async () => {
+    const result = await getPermissionLevel(currentuser);
+    setIsAdmin(result);
+  };
   useEffect(() => {
     setContext();
     fetchNewsItems(setNewsItems);
   }, []);
-
+  useEffect(() => {
+    if (currentuser && currentuser.length > 0) {
+      checkPermission();
+    }
+  }, [currentuser]);
   return (
     <>
       <div className={styles.newsContainer}>
         <div className={styles.headerWrapper}>
           <CustomHeader Header="News" />
-          <CustomaddBtn onClick={() => setShowPanel(true)} />
+          {isAdmin ? (
+            <CustomaddBtn onClick={() => setShowPanel(true)} />
+          ) : (
+            <></>
+          )}
         </div>
         <div className={styles.newsWrapper}>
           {newsItems.length > 0 ? (
@@ -136,7 +154,7 @@ const News: React.FC<INewsProps> = ({ context }) => {
                 )
               }
             >
-              See more
+              see more
             </span>
           </div>
         ) : (

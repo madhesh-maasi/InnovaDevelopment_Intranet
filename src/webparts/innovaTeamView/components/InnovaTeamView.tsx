@@ -9,7 +9,8 @@ import styles from "./InnovaTeamView.module.scss";
 import { sp } from "@pnp/sp/presets/all";
 import { Provider, useDispatch } from "react-redux";
 import { store } from "../../../Redux/Store/Store";
-import "../assets/css/style.css";
+// import "../assets/css/style.css";
+import "../../../Config/style.css";
 import {
   setCurrentUserDetails,
   setMainSPContext,
@@ -39,6 +40,7 @@ import { togglePopupVisibility } from "../../../CommonComponents/CustomPopup/tog
 import Popup from "../../../CommonComponents/CustomPopup/Popup";
 import CustomInputField from "../../../CommonComponents/CustomInputField/CustomInputField";
 import CustomMultiInputField from "../../../CommonComponents/CustomMultiInputField/CustomMultiInputField";
+import { DirectionalHint, TooltipHost } from "@fluentui/react";
 
 const InnovaTeamContent: React.FC<IInnovaTeamViewProps> = ({ context }) => {
   const dispatch = useDispatch();
@@ -275,12 +277,16 @@ const InnovaTeamContent: React.FC<IInnovaTeamViewProps> = ({ context }) => {
         </div>
       </div>
 
-      <div>
+      <div className="viewDatatablewrapper">
         <CustomDataTable
           table={
             <DataTable
               value={tableData}
-              style={{ minWidth: "100%", padding: "20px" }}
+              style={{
+                minWidth: "100%",
+                padding: "20px 0px",
+                maxHeight: "100%",
+              }}
               rows={3}
             >
               <Column
@@ -290,9 +296,22 @@ const InnovaTeamContent: React.FC<IInnovaTeamViewProps> = ({ context }) => {
               />
               <Column field="Role" header="Role" style={{ width: "27%" }} />
               <Column
-                field="JobDescription"
                 header="Job description"
                 style={{ width: "48%" }}
+                body={(rowdata: any) => {
+                  return (
+                    <TooltipHost
+                      content={rowdata.JobDescription}
+                      tooltipProps={{
+                        directionalHint: DirectionalHint.bottomCenter,
+                      }}
+                    >
+                      <div className={styles.jobDescriptionWrapper}>
+                        <p> {rowdata.JobDescription}</p>
+                      </div>
+                    </TooltipHost>
+                  );
+                }}
               />
             </DataTable>
           }

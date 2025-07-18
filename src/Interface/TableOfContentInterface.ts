@@ -1,5 +1,5 @@
 export interface ITableOfContentType {
-  Id?: null | undefined;
+  Id?: number | null | undefined;
   RoleGuide: string;
   DepartmentProcess: string;
   SOP: string;

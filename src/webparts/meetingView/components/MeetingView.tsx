@@ -24,7 +24,8 @@ import CustomFileUpload from "../../../CommonComponents/CustomFileUpload/CustomF
 import CustomHeader from "../../../CommonComponents/webpartsHeader/CustomerHeader/CustomHeader";
 // import CustomaddBtn from "../../../CommonComponents/webpartsHeader/CustomaddBtn/CustomaddBtn";
 import { useEffect, useState } from "react";
-import "../assets/css/style.css";
+// import "../assets/css/style.css";
+import "../../../Config/style.css";
 import {
   addToMeetingList,
   FetchMeetingsData,
@@ -280,9 +281,21 @@ const MeetingContent: React.FC<IMeetingViewProps> = ({ context }) => {
       <div className={styles.meetingCardsContainer}>
         {meetingData.length > 0 ? (
           <>
-            <div style={{ overflow: "auto" }}>
+            <div>
               {meetingData.map((item, index) => (
-                <div key={index} className={styles.meetingCard}>
+                <div
+                  key={index}
+                  className={styles.meetingCard}
+                  onClick={() => {
+                    if (item?.FileUrl) {
+                      window.open(
+                        item.FileUrl,
+                        "_blank",
+                        "noopener,noreferrer"
+                      );
+                    }
+                  }}
+                >
                   <div className={styles.img}>
                     {item.Type === "Video" ? (
                       <img
@@ -302,11 +315,9 @@ const MeetingContent: React.FC<IMeetingViewProps> = ({ context }) => {
                   </div>
                   <div className={styles.details}>
                     <div className={styles.type}>
-                      <a href={item?.FileUrl} target="_blank" rel="noreferrer">
-                        {item.Type === "Video"
-                          ? item?.FileName || "Video"
-                          : item.FileName || "Link"}
-                      </a>
+                      {item.Type === "Video"
+                        ? item?.FileName || "Video"
+                        : item.FileName || "Link"}
                     </div>
                     <div className={styles.date}>
                       {moment(item?.Date).format("YYYY-MM-DD HH:mm:ss")}

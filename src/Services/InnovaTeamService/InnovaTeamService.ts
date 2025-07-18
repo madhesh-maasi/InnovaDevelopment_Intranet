@@ -41,7 +41,7 @@ const FetchInnovaTeamData = async (Type?: any) => {
     Select: "*,TeamMember/ID,TeamMember/EMail,TeamMember/Title",
     Orderby: "ID",
     Orderbydecorasc: false,
-    Topcount: isView ? 5000 : 3,
+    Topcount: isView ? 5000 : 5000,
   });
   const formatted = TeamData.map((data: any) => {
     return {

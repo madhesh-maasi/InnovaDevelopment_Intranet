@@ -19,7 +19,7 @@ const Quicklinks: React.FC<IQuickLink> = (props: any) => {
           className={styles.quickLinkcard}
         >
           <div className={styles.imageTag}>
-            <img src={imgUrl} width="60px" height="60px" alt={props.Title} />
+            <img src={imgUrl} width="40px" height="40px" alt={props.Title} />
           </div>
           <div className={styles.titleTagforDept}>{props.Title}</div>
         </a>

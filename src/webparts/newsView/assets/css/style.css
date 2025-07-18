@@ -47,3 +47,33 @@
   background-color: transparent !important;
   padding: 0.25rem !important;
 }
+.ms-CommandBar[role="menubar"] {
+  display: none !important;
+}
+#CommentsWrapper {
+  display: none !important;
+}
+/* site navigation & header hidden */
+/* [data-automationid="SiteHeader"] {
+  display: none !important;
+}
+[role="listbox"] .ms-CommandBar {
+  display: none !important;
+}
+#sbcId {
+  display: none !important;
+}
+#spCommandBar {
+  display: none !important;
+}
+#sp-appBar {
+  display: none !important;
+}
+#CommentsWrapper {
+  display: none !important;
+}
+#spPageChromeAppDiv {
+  background: #075bb71c !important; 
+   background: #f4f4f4 !important;
+} 
+*/
