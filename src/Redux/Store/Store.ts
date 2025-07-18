@@ -5,6 +5,7 @@ import FeedbackSlice from "../Features/FeedbackSlice";
 import InnovaTeamSlice from "../Features/InnovaTeamSlice";
 import MeetingSlice from "../Features/MeetingSlice";
 import TableOfContentSlice from "../Features/TableOfContentSlice";
+import TrainingSlice from "../Features/TrainingSlice";
 const store = configureStore({
   reducer: {
     MainSPContext: MainSPContext,
@@ -13,6 +14,7 @@ const store = configureStore({
     InnovaTeamSlice: InnovaTeamSlice,
     MeetingSlice: MeetingSlice,
     TableOfContent: TableOfContentSlice,
+    Training: TrainingSlice,
   },
 });
 

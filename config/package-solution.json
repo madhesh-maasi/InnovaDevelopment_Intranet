@@ -18,6 +18,10 @@
       {
         "resource": "Microsoft Graph",
         "scope": "User.Read.All"
+      },
+      {
+        "resource": "Microsoft Graph",
+        "scope": "GroupMember.Read.All"
       }
     ],
     "metadata": {
@@ -38,10 +42,7 @@
         "id": "0be0d4bd-56cb-49c0-b0a1-e38ad3bb08f2",
         "version": "1.0.0.0",
         "assets": {
-          "elementManifests": [
-            "elements.xml",
-            "ClientSideInstance.xml"
-          ]
+          "elementManifests": ["elements.xml", "ClientSideInstance.xml"]
         }
       }
     ]

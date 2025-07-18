@@ -22,7 +22,8 @@ import { INewsItem } from "../../../Interface/NewsInterface";
 import { fetchNewsItems } from "../../../Services/NewsService/NewsService";
 import { AddNewsPanel } from "../../news/components/NewsCreation/AddNewsPanel";
 import { INewsViewProps } from "./INewsViewProps";
-import "../assets/css/style.css";
+// import "../assets/css/style.css";
+import "../../../Config/style.css";
 
 const News: React.FC<INewsViewProps> = ({ context }) => {
   const dispatch = useDispatch();

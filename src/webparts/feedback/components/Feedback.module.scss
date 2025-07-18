@@ -51,6 +51,13 @@
     font-weight: 500;
     padding-bottom: 5px;
     font-size: 15px;
+    display: -webkit-box;
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    cursor: pointer;
+    // height: 2.6em;
   }
   p {
     margin: 0;
@@ -62,7 +69,7 @@
     -webkit-line-clamp: 2;
     overflow: hidden;
     cursor: pointer;
-    height: 2.6em;
+    // height: 2.6em;
   }
 }
 
@@ -87,12 +94,16 @@
       padding: 10px;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
       text-align: left;
+      cursor: pointer;
 
       .title {
         color: #1470af;
         font-weight: 500;
         padding-bottom: 5px;
         font-size: 17px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       p {
@@ -151,50 +162,93 @@
 .commentsWrapper {
   width: 100%;
   height: 87%;
-  overflow: auto;
-  .currentuser {
-    // .card {
+  overflow-y: auto;
+  &::-webkit-scrollbar {
+    width: 8px;
+    background-color: transparent;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    //  background-color: #1470af;
     border-radius: 4px;
-    padding: 10px;
-    // box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+  }
+  scrollbar-width: thin;
+  scrollbar-color: #75717154 transparent;
+
+  .currentuser {
+    max-width: 75%;
+    margin-left: auto;
+    border-radius: 4px;
+    padding: 16px;
     text-align: left;
     margin-top: 5px;
-    background-color: #ddf1e1b5 !important;
-    // }
+    background-color: #2b7eb7 !important;
+    border: 1px solid #b9dfc1;
     .profileWrappper {
       display: flex;
       justify-content: flex-end;
       gap: 5px;
+      align-items: center;
+      span {
+        font-size: 14px !important;
+      }
+    }
+    span {
+      font-size: 10px !important;
+      color: #fff;
+      line-height: 1;
+    }
+    .dateTimeWrapper {
+      display: flex;
+      justify-content: end;
+      gap: 5px;
+      align-items: center;
+      span {
+        font-size: 10px;
+        color: #fff;
+      }
+      i {
+        font-size: 10px;
+        color: #fff;
+      }
     }
   }
   .card {
+    max-width: 75%;
     border-radius: 4px;
     padding: 10px;
     // box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     text-align: left;
     margin-top: 5px;
     background: #ffffffb3;
+    span {
+      font-size: 10px !important;
+      line-height: 1;
+    }
   }
   .dateTimeWrapper {
     display: flex;
     justify-content: end;
-    gap: 1%;
+    gap: 5px;
     align-items: center;
     span {
-      font-size: 12px;
-      color: #4e4e4e;
+      font-size: 10px;
+      color: #1470af;
     }
     i {
-      font-size: 12px;
+      font-size: 10px;
       color: #1470af;
     }
   }
   .commentContentWrapper {
     display: flex;
-    gap: 2%;
-    span {
-      font-size: 14px;
-    }
+    gap: 5px;
+    align-items: center;
   }
 }
 .commentInputBar {

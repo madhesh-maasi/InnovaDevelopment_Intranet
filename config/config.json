@@ -105,6 +105,14 @@
           "manifest": "./src/webparts/subdepartmentQuickLinks/SubdepartmentQuickLinksWebPart.manifest.json"
         }
       ]
+    },
+    "training-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/training/TrainingWebPart.js",
+          "manifest": "./src/webparts/training/TrainingWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
@@ -122,6 +130,7 @@
     "NavigationExtensionApplicationCustomizerStrings": "lib/extensions/navigationExtension/loc/{locale}.js",
     "DepartmentBannerWebPartStrings": "lib/webparts/departmentBanner/loc/{locale}.js",
     "TableofContentWebPartStrings": "lib/webparts/tableofContent/loc/{locale}.js",
-    "SubdepartmentQuickLinksWebPartStrings": "lib/webparts/subdepartmentQuickLinks/loc/{locale}.js"
+    "SubdepartmentQuickLinksWebPartStrings": "lib/webparts/subdepartmentQuickLinks/loc/{locale}.js",
+    "TrainingWebPartStrings": "lib/webparts/training/loc/{locale}.js"
   }
 }

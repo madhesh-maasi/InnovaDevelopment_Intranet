@@ -1,6 +1,7 @@
 .customInputWrapper {
   width: 100%;
   display: flex;
+  font-family: "Open Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   flex-direction: column;
   // row-gap: 2px;
   background-color: #ffffff;
@@ -11,9 +12,11 @@
 .label {
   color: #a4a4a4;
   font-size: 12px;
+  font-family: "Open Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .inputText {
+  font-family: "Open Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   width: 100%;
   font-size: 14px;
   border: unset !important;

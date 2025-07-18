@@ -6,7 +6,7 @@ import * as React from "react";
 import type { IMeetingProps } from "./IMeetingProps";
 import { sp } from "@pnp/sp";
 import { graph } from "@pnp/graph";
-import { Provider, useDispatch } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import { store } from "../../../Redux/Store/Store";
 import {
   setCurrentUserDetails,
@@ -34,8 +34,13 @@ import { setMeetingItem } from "../../../Redux/Features/MeetingSlice";
 import { IMeetingItem } from "../../../Interface/MeetingInterface";
 import * as moment from "moment";
 import { Toast } from "primereact/toast";
+import { getPermissionLevel } from "../../../Services/CommonService/CommonService";
 const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
   const dispatch = useDispatch();
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const currentuser = useSelector(
+    (state: any) => state.MainSPContext.currentUserDetails
+  );
   const webUrl = context?.pageContext?.web?.absoluteUrl;
   const siteUrl = context?.pageContext?.site?.serverRelativeUrl;
   const tenantUrl = webUrl?.split("/sites")[0];
@@ -124,6 +129,15 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
     const { fileType, videoFile, linkName, linkUrl } = formData;
 
     try {
+      if (!fileType) {
+        toastRef.current?.show({
+          severity: "warn",
+          summary: "Missing Fields",
+          detail: " Please select the type  first",
+          life: 3000,
+        });
+        return;
+      }
       if (fileType === "Video") {
         if (!videoFile) {
           console.error("No video file selected.");
@@ -145,11 +159,16 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
           console.error("Upload failed - file metadata not returned.");
         }
       } else if (fileType === "Link") {
-        if (!linkUrl || !linkName) {
+        const missingFields = [];
+        if (!linkName) missingFields.push("Link name");
+        if (!linkUrl) missingFields.push("Link url");
+        if (missingFields.length > 0) {
           toastRef.current?.show({
             severity: "warn",
-            summary: "Missing Fields",
-            detail: " Link name or URL is missing,please fill required fields.",
+            summary: "Missing fields",
+            detail: `Please enter ${missingFields.join(
+              ", "
+            )} before submitting.`,
             life: 3000,
           });
           return;
@@ -186,8 +205,15 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
           <CustomDropdown
             value={formData.fileType}
             options={getOptions().map((type) => ({ label: type, value: type }))}
-            onChange={(value: any) => handleFormChange("fileType", value)}
-            placeholder="Select Type"
+            onChange={(value: any) => {
+              setFormData({
+                fileType: value,
+                videoFile: null,
+                linkName: "",
+                linkUrl: "",
+              });
+            }}
+            placeholder="Select type"
           />
         </div>
 
@@ -195,23 +221,23 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
           <div className={styles.linkWrapper}>
             <div className={styles.customwrapper}>
               <CustomInputField
-                label="Link Name*"
+                label="Link name*"
                 value={formData.linkName}
                 onChange={(e: any) =>
                   handleFormChange("linkName", e.target.value)
                 }
-                placeholder="Link Name"
+                placeholder="Link name"
               />
             </div>
             <div className={styles.customwrapper}>
               <CustomMultiInputField
-                label="Link URL*"
+                label="Link url*"
                 value={formData.linkUrl}
                 onChange={(e: any) =>
                   handleFormChange("linkUrl", e.target.value)
                 }
                 rows={2}
-                placeholder="Link Url"
+                placeholder="Link url"
                 autoResize={false}
               />
             </div>
@@ -222,7 +248,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
           <div className={styles.customwrapper}>
             <CustomFileUpload
               accept="video/*"
-              label="Upload Video"
+              label="Upload video"
               onFileSelect={(file: File) => handleFormChange("videoFile", file)}
             />
             {formData.videoFile && (
@@ -266,37 +292,60 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
       },
     ],
   ];
-
+  const checkPermission = async () => {
+    const result = await getPermissionLevel(currentuser);
+    setIsAdmin(result);
+  };
   useEffect(() => {
     setContext();
     dispatch(setMainSPContext(context));
     loadMeetings();
   }, []);
-
+  useEffect(() => {
+    if (currentuser && currentuser.length > 0) {
+      checkPermission();
+    }
+  }, [currentuser]);
   return (
     <>
       <Toast ref={toastRef} position="top-right" baseZIndex={1} />
       <div className={styles.meetingContainer}>
         <div className={styles["header-wrapper"]}>
           <CustomHeader Header={"Meeting"} />
-          <CustomaddBtn
-            onClick={() => {
-              togglePopupVisibility(
-                setPopupController,
-                0,
-                "open",
-                `Meeting`,
-                "30%"
-              );
-            }}
-          />
+          {isAdmin ? (
+            <CustomaddBtn
+              onClick={() => {
+                togglePopupVisibility(
+                  setPopupController,
+                  0,
+                  "open",
+                  `Meeting`,
+                  "30%"
+                );
+              }}
+            />
+          ) : (
+            <></>
+          )}
         </div>
         <div className={styles.meetingCardsContainer}>
           {meetingData.length > 0 ? (
             <>
               <div style={{ overflow: "auto" }}>
                 {meetingData.map((item, index) => (
-                  <div key={index} className={styles.meetingCard}>
+                  <div
+                    key={index}
+                    className={styles.meetingCard}
+                    onClick={() => {
+                      if (item?.FileUrl) {
+                        window.open(
+                          item.FileUrl,
+                          "_blank",
+                          "noopener,noreferrer"
+                        );
+                      }
+                    }}
+                  >
                     <div className={styles.img}>
                       {item.Type === "Video" ? (
                         <img
@@ -316,15 +365,9 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
                     </div>
                     <div className={styles.details}>
                       <div className={styles.type}>
-                        <a
-                          href={item?.FileUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          {item.Type === "Video"
-                            ? item?.FileName || "Video"
-                            : item.FileName || "Link"}
-                        </a>
+                        {item.Type === "Video"
+                          ? item?.FileName || "Video"
+                          : item.FileName || "Link"}
                       </div>
                       <div className={styles.date}>
                         {moment(item?.Date).format("YYYY-MM-DD HH:mm:ss")}
@@ -345,7 +388,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
                     )
                   }
                 >
-                  See more
+                  see more
                 </span>
               </div>
             </>

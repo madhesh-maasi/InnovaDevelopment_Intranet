@@ -7,7 +7,7 @@ import type { ISubdepartmentQuickLinksProps } from "./ISubdepartmentQuickLinksPr
 import CustomHeader from "../../../CommonComponents/webpartsHeader/CustomerHeader/CustomHeader";
 import CustomaddBtn from "../../../CommonComponents/webpartsHeader/CustomaddBtn/CustomaddBtn";
 import { togglePopupVisibility } from "../../../CommonComponents/CustomPopup/togglePopup";
-import { Provider, useDispatch } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import { store } from "../../../Redux/Store/Store";
 import Popup from "../../../CommonComponents/CustomPopup/Popup";
 import {
@@ -23,7 +23,7 @@ import {
   setWebUrl,
 } from "../../../Redux/Features/MainSPContextSlice";
 import { Toast } from "primereact/toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IQuickLink } from "../../../Interface/BannerInterface";
 import CustomInputField from "../../../CommonComponents/CustomInputField/CustomInputField";
 import CustomMultiInputField from "../../../CommonComponents/CustomMultiInputField/CustomMultiInputField";
@@ -31,10 +31,15 @@ import CustomFileUpload from "../../../CommonComponents/CustomFileUpload/CustomF
 import Quicklinks from "../../../CommonComponents/QuickLinks/Quicklinks";
 // import "../../../Config/style.css";
 import "../../../Config/style.css";
+import { getPermissionLevel } from "../../../Services/CommonService/CommonService";
 const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
   context,
 }) => {
   const dispatch = useDispatch();
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const currentuser = useSelector(
+    (state: any) => state.MainSPContext.currentUserDetails
+  );
   const [subDepartmentQuickLinks, setSubDepartmentQuickLinks] = React.useState<
     IQuickLink[]
   >([]);
@@ -101,11 +106,32 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
   const handleQuickLinkSubmit = async () => {
     const { Title, Link, Logo } = quickLinkForm;
 
-    if (!Title || !Link || !Logo) {
+    const missingFields = [];
+    if (!Title?.trim()) missingFields.push("Link name");
+    if (!Link?.trim()) missingFields.push("Link url");
+    if (!Logo) missingFields.push("Logo");
+
+    if (missingFields.length > 0) {
+      const messageDetails = [];
+      if (missingFields.length === 1 && missingFields[0] === "Link name") {
+        messageDetails.push("please enter link name before submitting");
+      } else if (
+        missingFields.length === 1 &&
+        missingFields[0] === "Link url"
+      ) {
+        messageDetails.push("please enter link url before submitting");
+      } else if (missingFields.length === 1 && missingFields[0] === "Logo") {
+        messageDetails.push("please upload logo before submitting");
+      }
       toastRef.current?.show({
         severity: "warn",
-        summary: "Missing Fields",
-        detail: "Please fill out all required fields before submitting.",
+        summary: "Missing fields",
+        detail:
+          missingFields.length === 1
+            ? messageDetails
+            : `Please enter/upload ${missingFields.join(
+                ", "
+              )} before submitting.`,
         life: 3000,
       });
       return;
@@ -143,7 +169,7 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
       <>
         <div className={styles.customwrapper}>
           <CustomInputField
-            label="Link Name*"
+            label="Link name*"
             value={quickLinkForm.Title}
             onChange={(e: any) =>
               handleQuickLinkChange("Title", e.target.value)
@@ -154,11 +180,11 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
 
         <div className={styles.customwrapper}>
           <CustomMultiInputField
-            label="Link URL*"
+            label="Link url*"
             value={quickLinkForm.Link}
             onChange={(e: any) => handleQuickLinkChange("Link", e.target.value)}
             rows={1}
-            placeholder="Enter link URL"
+            placeholder="Enter link url"
             autoResize={false}
           />
         </div>
@@ -166,7 +192,7 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
         <div className={styles.customwrapper}>
           <CustomFileUpload
             accept="image/*"
-            label="Upload Logo*"
+            label="Upload logo*"
             onFileSelect={(file: File) => handleQuickLinkChange("Logo", file)}
           />
           {quickLinkForm.Logo && (
@@ -208,11 +234,19 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
     const links = await getSubDepartmentQuickLinks();
     setSubDepartmentQuickLinks(links);
   };
-
-  React.useEffect(() => {
+  const checkPermission = async () => {
+    const result = await getPermissionLevel(currentuser);
+    setIsAdmin(result);
+  };
+  useEffect(() => {
     setContext();
     fetchQuickLinks();
   }, []);
+  useEffect(() => {
+    if (currentuser && currentuser.length > 0) {
+      checkPermission();
+    }
+  }, [currentuser]);
   return (
     <>
       <Toast ref={toastRef} position="top-right" baseZIndex={999} />
@@ -222,17 +256,21 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
             <CustomHeader Header="Sub-departments" />
           </div>
           <div className={styles.headerRight}>
-            <CustomaddBtn
-              onClick={() => {
-                togglePopupVisibility(
-                  setPopupController,
-                  0,
-                  "open",
-                  `Quick Links`,
-                  "30%"
-                );
-              }}
-            />
+            {isAdmin ? (
+              <CustomaddBtn
+                onClick={() => {
+                  togglePopupVisibility(
+                    setPopupController,
+                    0,
+                    "open",
+                    `Quick Link`,
+                    "30%"
+                  );
+                }}
+              />
+            ) : (
+              <></>
+            )}
           </div>
         </div>
         <div className={styles.cardsContainer}>

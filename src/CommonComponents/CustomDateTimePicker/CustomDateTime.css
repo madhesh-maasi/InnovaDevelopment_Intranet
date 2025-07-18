@@ -15,3 +15,29 @@
   background-color: transparent;
   border: unset;
 }
+.p-calendar {
+  outline: unset !important;
+}
+
+.p-calendar:focus,
+.p-calendar .p-inputtext:focus {
+  box-shadow: none !important;
+  outline: none !important;
+  border: none !important;
+}
+
+.p-calendar:hover,
+.p-calendar .p-inputtext:hover {
+  border-color: inherit !important;
+}
+
+.p-placeholder {
+  color: #999;
+}
+
+.p-calendar .p-inputtext {
+  margin: 0;
+  border: unset !important;
+  box-shadow: none !important;
+  outline: unset !important;
+}

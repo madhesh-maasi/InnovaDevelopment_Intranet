@@ -4,13 +4,12 @@
 
 import * as React from "react";
 import type { IBannerProps } from "./IBannerProps";
-import "../assets/css/style.css";
 import "../../../Config/style.css";
 import styles from "./BannerComponent.module.scss";
 import { sp } from "@pnp/sp/presets/all";
 import { graph } from "@pnp/graph/presets/all";
 import { store } from "../../../Redux/Store/Store";
-import { Provider, useDispatch } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import { Toast } from "primereact/toast";
 import {
   setCurrentUserDetails,
@@ -23,7 +22,7 @@ import { setQuickLinks as setQuickLinksAction } from "../../../Redux/Features/Qu
 import { IQuickLink } from "../../../Interface/BannerInterface";
 import Quicklinks from "../../../CommonComponents/QuickLinks/Quicklinks";
 import { togglePopupVisibility } from "../../../CommonComponents/CustomPopup/togglePopup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CustomInputField from "../../../CommonComponents/CustomInputField/CustomInputField";
 import CustomMultiInputField from "../../../CommonComponents/CustomMultiInputField/CustomMultiInputField";
 import CustomFileUpload from "../../../CommonComponents/CustomFileUpload/CustomFileUpload";
@@ -32,6 +31,7 @@ import {
   addQuickLinks,
   getQuickLinks,
 } from "../../../Services/QuickLinkService/QuickLinkService";
+import { getPermissionLevel } from "../../../Services/CommonService/CommonService";
 
 const BannerContent: React.FC<IBannerProps> = ({
   context,
@@ -43,6 +43,11 @@ const BannerContent: React.FC<IBannerProps> = ({
   const webUrl = context?.pageContext?.web?.absoluteUrl;
   const siteUrl = context?.pageContext?.site?.serverRelativeUrl;
   const tenantUrl = webUrl?.split("/sites")[0];
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const currentuser = useSelector(
+    (state: any) => state.MainSPContext.currentUserDetails
+  );
+
   const setContext = async () => {
     try {
       const currentUserDetails = await sp.web.currentUser.get();
@@ -88,6 +93,14 @@ const BannerContent: React.FC<IBannerProps> = ({
   const handleClosePopup = (index: number): void => {
     togglePopupVisibility(setPopupController, index, "close");
   };
+  const isValidUrl = (url: string) => {
+    try {
+      new URL(url);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  };
   const [quickLinkForm, setQuickLinkForm] = useState<IQuickLink>({
     Title: "",
     Link: "",
@@ -101,17 +114,73 @@ const BannerContent: React.FC<IBannerProps> = ({
   };
   const handleQuickLinkSubmit = async () => {
     const { Title, Link, Logo } = quickLinkForm;
+    let userInputUrl = Link.trim();
+    if (
+      !userInputUrl.startsWith("http://") &&
+      !userInputUrl.startsWith("https://")
+    ) {
+      userInputUrl = `https://${userInputUrl}`;
+    }
+    if (userInputUrl) {
+      const isValid = isValidUrl(userInputUrl);
+      if (!isValid) {
+        toastRef.current?.show({
+          severity: "warn",
+          summary: "Missing fields",
+          detail: "Please enter a valid URL",
+          life: 3000,
+        });
+        return;
+      }
+    }
+    const missingFields = [];
+    if (!Title?.trim()) missingFields.push("Link name");
+    if (!Link?.trim()) missingFields.push("Link url");
+    if (!Logo) missingFields.push("Logo");
 
-    if (!Title || !Link || !Logo) {
-      console.error("All fields are required.");
+    if (missingFields.length > 0) {
+      const messageDetails = [];
+      if (missingFields.length === 1 && missingFields[0] === "Link name") {
+        messageDetails.push("please enter link name before submitting");
+      } else if (
+        missingFields.length === 1 &&
+        missingFields[0] === "Link url"
+      ) {
+        messageDetails.push("please enter link url before submitting");
+      } else if (missingFields.length === 1 && missingFields[0] === "Logo") {
+        messageDetails.push("please upload logo before submitting");
+      }
       toastRef.current?.show({
         severity: "warn",
-        summary: "Missing Fields",
-        detail: " please fill all the required fields before submitting",
+        summary: "Missing fields",
+        detail:
+          missingFields.length === 1
+            ? messageDetails
+            : `Please enter/upload ${missingFields.join(
+                ", "
+              )} before submitting.`,
         life: 3000,
       });
       return;
     }
+    // if (!Title && !Link && !Logo) {
+    //   toastRef.current?.show({
+    //     severity: "warn",
+    //     summary: "Missing fields",
+    //     detail: `Please enter Title,Link and Upload logo before submitting`,
+    //     life: 3000,
+    //   });
+    //   return;
+    // }
+    // if (!Logo) {
+    //   toastRef.current?.show({
+    //     severity: "warn",
+    //     summary: "Missing fields",
+    //     detail: `Please upload logo before submitting`,
+    //     life: 3000,
+    //   });
+    //   return;
+    // }
 
     try {
       setIsLoading(true);
@@ -140,7 +209,7 @@ const BannerContent: React.FC<IBannerProps> = ({
       <>
         <div className={styles.customwrapper}>
           <CustomInputField
-            label="Link Name*"
+            label="Link name*"
             value={quickLinkForm.Title}
             onChange={(e: any) =>
               handleQuickLinkChange("Title", e.target.value)
@@ -151,11 +220,11 @@ const BannerContent: React.FC<IBannerProps> = ({
 
         <div className={styles.customwrapper}>
           <CustomMultiInputField
-            label="Link URL*"
+            label="Link url*"
             value={quickLinkForm.Link}
             onChange={(e: any) => handleQuickLinkChange("Link", e.target.value)}
             rows={1}
-            placeholder="Enter link URL"
+            placeholder="Enter link url"
             autoResize={false}
           />
         </div>
@@ -163,7 +232,7 @@ const BannerContent: React.FC<IBannerProps> = ({
         <div className={styles.customwrapper}>
           <CustomFileUpload
             accept="image/*"
-            label="Upload Logo*"
+            label="Upload logo*"
             onFileSelect={(file: File) => handleQuickLinkChange("Logo", file)}
           />
           {quickLinkForm.Logo && (
@@ -206,11 +275,20 @@ const BannerContent: React.FC<IBannerProps> = ({
     setQuickLinks(links);
     dispatch(setQuickLinksAction(links));
   };
-
-  React.useEffect(() => {
+  const checkPermission = async () => {
+    const result = await getPermissionLevel(currentuser);
+    setIsAdmin(result);
+  };
+  useEffect(() => {
     setContext();
     fetchQuickLinks();
   }, []);
+
+  useEffect(() => {
+    if (currentuser && currentuser.length > 0) {
+      checkPermission();
+    }
+  }, [currentuser]);
 
   const description =
     "We're glad to have you here. Explore, collaborate, and stay connected with everything you need in one place. If you need help, feel free to reach out!";
@@ -231,22 +309,26 @@ const BannerContent: React.FC<IBannerProps> = ({
             <div>
               <u>Quick links</u>
             </div>
-            <div
-              className={styles.addbtn}
-              onClick={() => {
-                togglePopupVisibility(
-                  setPopupController,
-                  0,
-                  "open",
-                  `Quick Link`,
-                  "30%"
-                );
-              }}
-            >
-              <i className="fa-solid fa-plus"></i>
-            </div>
+            {isAdmin ? (
+              <div
+                className={styles.addbtn}
+                onClick={() => {
+                  togglePopupVisibility(
+                    setPopupController,
+                    0,
+                    "open",
+                    `Quick Link`,
+                    "30%"
+                  );
+                }}
+              >
+                <i className="fa-solid fa-plus"></i>
+              </div>
+            ) : (
+              <></>
+            )}
           </div>
-          <div className={styles.quickLinkcardsContainer}>
+          <div className="quickLinkcardsContainer">
             {quickLinks.length > 0 ? (
               quickLinks.map((link, i) => (
                 <div key={i} className={styles.quickLinksCard}>

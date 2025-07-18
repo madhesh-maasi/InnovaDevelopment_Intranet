@@ -6,7 +6,7 @@ import * as React from "react";
 import type { IInnovaTeamProps } from "./IInnovaTeamProps";
 import styles from "./InnovaTeam.module.scss";
 import { sp } from "@pnp/sp/presets/all";
-import { Provider, useDispatch } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import { store } from "../../../Redux/Store/Store";
 import { Toast } from "primereact/toast";
 import {
@@ -24,7 +24,6 @@ import FetchInnovaTeamData, {
 } from "../../../Services/InnovaTeamService/InnovaTeamService";
 import { IInnovaTeamType } from "../../../Interface/InnovaTeamInterface";
 import { IUserDetails } from "../../../Interface/CommonInterface";
-
 import CustomHeader from "../../../CommonComponents/webpartsHeader/CustomerHeader/CustomHeader";
 import CustomDropdown from "../../../CommonComponents/CustomDropdown/CustomDropdown";
 import CustomPeoplePicker from "../../../CommonComponents/CustomPeoplePicker/CustomPeoplePicker";
@@ -33,14 +32,21 @@ import CustomDataTable from "../../../CommonComponents/DataTable/DataTable";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import Profile from "../../../CommonComponents/Profile/Profile";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { togglePopupVisibility } from "../../../CommonComponents/CustomPopup/togglePopup";
 import Popup from "../../../CommonComponents/CustomPopup/Popup";
 import CustomInputField from "../../../CommonComponents/CustomInputField/CustomInputField";
 import CustomMultiInputField from "../../../CommonComponents/CustomMultiInputField/CustomMultiInputField";
-
+import "../../../Config/style.css";
+import { DirectionalHint, TooltipHost } from "@fluentui/react";
+import { getPermissionLevel } from "../../../Services/CommonService/CommonService";
 const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
   const dispatch = useDispatch();
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const currentuser = useSelector(
+    (state: any) => state.MainSPContext.currentUserDetails
+  );
+
   const toastRef = React.useRef<any>(null);
   const [role, setRole] = React.useState<string | undefined>();
   const [input, setInput] = React.useState<any>({
@@ -92,6 +98,8 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
 
   const onUserSelect = async (users: any, filter: boolean) => {
     const user = users?.[0];
+    if (!user) return;
+
     if (filter) {
       setSelectedUser(users);
       if (user?.Email) {
@@ -103,9 +111,25 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
         setTableData(allData);
       }
     } else {
+      const isDuplicate = allData.some(
+        (item) =>
+          item?.TeamMember?.Email?.toLowerCase() === user.Email?.toLowerCase()
+      );
+
+      if (isDuplicate) {
+        toastRef.current?.show({
+          severity: "warn",
+          summary: "Duplicate User",
+          detail: "User is already in the team.",
+          life: 3000,
+        });
+        setSelectedUser([]);
+        return;
+      }
       await _getUserDetails(user, setInput, context);
     }
   };
+
   const handleInputChange = (field: string, value: any) => {
     setInput((prev: any) => ({
       ...prev,
@@ -148,20 +172,37 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
     setTableData(teamdata);
   };
   const handleSubmitFuction = async () => {
-    setIsLoading(true);
     const { selectedUser, role, jobDescription } = input;
+    const missingFields = [];
+    if (!selectedUser) missingFields.push("Team member");
+    if (!jobDescription) missingFields.push("Job description");
+    if (missingFields.length === 1) {
+      const field = missingFields[0];
+      const detailMessage =
+        field === "Team member"
+          ? "Please select team member before submitting."
+          : `Please enter ${field.toLowerCase()} before submitting.`;
+
+      toastRef.current?.show({
+        severity: "warn",
+        summary: "Missing field",
+        detail: detailMessage,
+        life: 3000,
+      });
+      return;
+    }
+    if (missingFields.length > 0) {
+      toastRef.current?.show({
+        severity: "warn",
+        summary: "Missing fields",
+        detail: `Please enter ${missingFields.join(", ")} before submitting.`,
+        life: 3000,
+      });
+      return;
+    }
     // console.log(selectedUser, "user");
     try {
-      if (!selectedUser?.Id || !role) {
-        console.error("Missing required fields");
-        toastRef.current?.show({
-          severity: "warn",
-          summary: "Missing Fields",
-          detail: "Please fill out all required fields before submitting.",
-          life: 3000,
-        });
-        return;
-      }
+      setIsLoading(true);
       const payload = {
         Title: role,
         TeamMember: selectedUser,
@@ -185,12 +226,12 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
     [
       <div className={styles.popupCustomWrapper} key={0}>
         <CustomPeoplePicker
-          label="Team Member*"
+          label="Team member*"
           selectedItem={selectedUser}
           personSelectionLimit={1}
           onChange={onUserSelect}
           filter={false}
-          placeholder="Select User"
+          placeholder="Select user"
         />
         <CustomInputField
           label="Role*"
@@ -200,13 +241,13 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
           placeholder="Role"
         />
         <CustomMultiInputField
-          label="Job Description*"
+          label="Job description*"
           value={input.jobDescription}
           onChange={(e: any) =>
             handleInputChange("jobDescription", e.target.value)
           }
           rows={3}
-          placeholder="Job Description"
+          placeholder="Job description"
           autoResize={false}
         />
       </div>,
@@ -236,19 +277,27 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
       },
     ],
   ];
-  React.useEffect(() => {
+  const checkPermission = async () => {
+    const result = await getPermissionLevel(currentuser);
+    setIsAdmin(result);
+  };
+  useEffect(() => {
     dispatch(setMainSPContext(context));
     setContext();
     getInnovaTeamData();
   }, []);
-
+  useEffect(() => {
+    if (currentuser && currentuser.length > 0) {
+      checkPermission();
+    }
+  }, [currentuser]);
   return (
     <>
       <Toast ref={toastRef} position="top-right" baseZIndex={1} />
       <div className={styles.innovaTeamContainer}>
         <div className={styles.headerSection}>
           <div style={{ width: "50%" }}>
-            <CustomHeader Header="Innova Team" />
+            <CustomHeader Header="Innova team" />
           </div>
           <div className={styles.headerRight}>
             <div style={{ width: "180px" }}>
@@ -265,34 +314,38 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
                 personSelectionLimit={1}
                 onChange={onUserSelect}
                 filter={true}
-                placeholder="Search By User"
+                placeholder="Search by user"
               />
             </div>
-
-            <CustomaddBtn
-              onClick={() => {
-                togglePopupVisibility(
-                  setPopupController,
-                  0,
-                  "open",
-                  `Add Role`,
-                  "30%"
-                );
-              }}
-            />
+            {isAdmin ? (
+              <CustomaddBtn
+                onClick={() => {
+                  setSelectedUser([]);
+                  togglePopupVisibility(
+                    setPopupController,
+                    0,
+                    "open",
+                    `Add Role`,
+                    "30%"
+                  );
+                }}
+              />
+            ) : (
+              <></>
+            )}
           </div>
         </div>
 
-        <div>
+        <div className="dataTablewrapper" style={{ maxHeight: "87%" }}>
           <CustomDataTable
             table={
               <DataTable
                 value={tableData}
-                style={{ minWidth: "100%", padding: "20px" }}
+                style={{ minWidth: "100%", padding: "20px 0px" }}
                 rows={3}
               >
                 <Column
-                  header="Team Member"
+                  header="Team member"
                   style={{ width: "25%" }}
                   body={(rowData) => (
                     <Profile TeamMember={rowData?.TeamMember} />
@@ -300,9 +353,22 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
                 />
                 <Column field="Role" header="Role" style={{ width: "27%" }} />
                 <Column
-                  field="JobDescription"
                   header="Job description"
                   style={{ width: "48%" }}
+                  body={(rowdata: any) => {
+                    return (
+                      <TooltipHost
+                        content={rowdata.JobDescription}
+                        tooltipProps={{
+                          directionalHint: DirectionalHint.bottomCenter,
+                        }}
+                      >
+                        <div className={styles.jobDescriptionWrapper}>
+                          <p> {rowdata.JobDescription}</p>
+                        </div>
+                      </TooltipHost>
+                    );
+                  }}
                 />
               </DataTable>
             }
@@ -319,7 +385,7 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
                 )
               }
             >
-              See more
+              see more
             </span>
           </div>
         </div>

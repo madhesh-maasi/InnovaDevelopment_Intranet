@@ -27,7 +27,7 @@ const CustomPeoplePicker: React.FC<ICustomPeoplePickerProps> = ({
   label,
   selectedItem = [],
   onChange,
-  placeholder = "Search by User",
+  placeholder = "Search by user",
   filter,
   personSelectionLimit = 1,
   disabled = false,

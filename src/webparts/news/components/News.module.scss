@@ -3,7 +3,6 @@
   display: flex;
   flex-direction: column;
   height: 500px;
-  justify-content: space-between;
   margin: 10px;
   max-width: 100%;
   padding: 20px;
@@ -41,10 +40,11 @@
 }
 .newsWrapper {
   width: 100%;
-  margin-top: 10px;
+  margin-top: 5px;
   text-align: center;
   position: relative;
   overflow: auto;
+  height: 100%;
   .newscardsContainer {
     display: flex;
     flex-direction: column;
@@ -57,17 +57,17 @@
       text-align: left;
       width: 100%;
       .imgWrapper {
-        width: 30%;
+        width: 200px;
         max-height: 110px;
       }
       .title {
         color: #1470af;
-        font-weight: 500;
+        font-weight: 550;
         padding-bottom: 5px;
         font-size: 17px;
       }
       img {
-        width: 200px;
+        width: 100%;
         height: 100%;
         border-radius: 5px;
       }
@@ -77,6 +77,8 @@
         font-size: 14px;
         display: -webkit-box;
         overflow: hidden;
+        font-family: "Open Sans", "Segoe UI", Tahoma, Geneva, Verdana,
+          sans-serif;
       }
     }
   }

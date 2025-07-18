@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable no-useless-escape */
+
 import { sp } from "@pnp/sp";
 import { SPLists } from "../../Config/config";
 import { ITableOfContentType } from "../../Interface/TableOfContentInterface";
@@ -25,7 +27,10 @@ const FetchTableOfContentData = async () => {
   return formattedData;
 };
 const createSitePage = async (roleGuide: string): Promise<string> => {
-  const pageName = roleGuide; // sanitize filename
+  const pageName = roleGuide
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-zA-Z0-9\-]/g, ""); // sanitize filename
   const web = sp.web;
   try {
     const file = await web

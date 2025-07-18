@@ -1,0 +1,27 @@
+.search_input_wrapper {
+  display: flex;
+  align-items: center;
+  max-width: 200px;
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  background-color: #fff;
+}
+
+.iconField {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.p-inputtext {
+  width: 80%;
+  border: none;
+  outline: none;
+  padding: 0px 5px;
+  font-size: 14px;
+  transition: none;
+}
+.p-inputtext:focus {
+  border: none !important;
+  outline: none !important;
+}
