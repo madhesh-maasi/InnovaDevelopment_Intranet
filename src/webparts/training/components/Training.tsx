@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable no-unused-expressions */
 import * as React from "react";
 import styles from "./Training.module.scss";
 import type { ITrainingProps } from "./ITrainingProps";
@@ -118,9 +120,17 @@ const Training: React.FC<ITrainingProps> = ({ context }) => {
     setfilteredData(tabledata);
   };
   const handleSubmitFuction = async () => {
-    setIsLoading(true);
     const { Name, URL } = input;
-
+    const duplicate = allData?.some((data: any) => data.Name === Name);
+    if (duplicate) {
+      toastRef.current?.show({
+        severity: "warn",
+        summary: "Duplicate Found!",
+        detail: `File aldready exists `,
+        life: 3000,
+      });
+      return;
+    }
     try {
       const missingFields = [];
       if (!Name) missingFields.push("Name");
@@ -134,6 +144,7 @@ const Training: React.FC<ITrainingProps> = ({ context }) => {
         });
         return;
       }
+      setIsLoading(true);
       const payload = {
         Name: Name,
         URL: URL,
@@ -185,7 +196,7 @@ const Training: React.FC<ITrainingProps> = ({ context }) => {
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          handleClosePopup(0);
+          !isLoading && handleClosePopup(0);
         },
       },
       {
@@ -195,7 +206,7 @@ const Training: React.FC<ITrainingProps> = ({ context }) => {
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          handleSubmitFuction();
+          !isLoading && handleSubmitFuction();
         },
       },
     ],
@@ -207,7 +218,7 @@ const Training: React.FC<ITrainingProps> = ({ context }) => {
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          handleClosePopup(1);
+          !isLoading && handleClosePopup(1);
         },
       },
       {
@@ -217,13 +228,12 @@ const Training: React.FC<ITrainingProps> = ({ context }) => {
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          handleDelete();
+          !isLoading && handleDelete();
         },
       },
     ],
   ];
   const handleEdit = (rowData: any) => {
-    console.log("✅ Received rowData:", rowData);
     setIsEdit(true);
     setInput({
       Id: rowData?.Id,
@@ -246,7 +256,9 @@ const Training: React.FC<ITrainingProps> = ({ context }) => {
       checkPermission();
     }
   }, [currentuser]);
-
+  useEffect(() => {
+    setfilteredData(allData);
+  }, [allData]);
   return (
     <>
       <Toast ref={toastRef} position="top-right" baseZIndex={9999} />
@@ -333,60 +345,62 @@ const Training: React.FC<ITrainingProps> = ({ context }) => {
                     );
                   }}
                 />
-                <Column
-                  header="Action"
-                  style={{ width: "10%" }}
-                  body={(rowData: any) => (
-                    <div style={{ display: "flex", gap: "10%" }}>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="#1470af"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        style={{ cursor: "pointer" }}
-                        className="lucide lucide-pencil-icon lucide-pencil"
-                        onClick={() => handleEdit(rowData)}
-                      >
-                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
-                        <path d="m15 5 4 4" />
-                      </svg>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="red"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        className="lucide lucide-trash2-icon lucide-trash-2"
-                        onClick={() => {
-                          setDeleteItemId(rowData?.Id);
-                          togglePopupVisibility(
-                            setPopupController,
-                            1,
-                            "open",
-                            `Delete`,
-                            "30%"
-                          );
-                        }}
-                        style={{ cursor: "pointer" }}
-                      >
-                        <path d="M10 11v6" />
-                        <path d="M14 11v6" />
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
-                        <path d="M3 6h18" />
-                        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                      </svg>
-                    </div>
-                  )}
-                />
+                {isAdmin && (
+                  <Column
+                    header="Action"
+                    style={{ width: "10%" }}
+                    body={(rowData: any) => (
+                      <div style={{ display: "flex", gap: "10%" }}>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="#1470af"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          style={{ cursor: "pointer" }}
+                          className="lucide lucide-pencil-icon lucide-pencil"
+                          onClick={() => handleEdit(rowData)}
+                        >
+                          <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                          <path d="m15 5 4 4" />
+                        </svg>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="red"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          style={{ cursor: "pointer" }}
+                          className="lucide lucide-trash2-icon lucide-trash-2"
+                          onClick={() => {
+                            setDeleteItemId(rowData?.Id);
+                            togglePopupVisibility(
+                              setPopupController,
+                              1,
+                              "open",
+                              `Delete`,
+                              "30%"
+                            );
+                          }}
+                        >
+                          <path d="M10 11v6" />
+                          <path d="M14 11v6" />
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                          <path d="M3 6h18" />
+                          <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                      </div>
+                    )}
+                  />
+                )}
               </DataTable>
             }
           />

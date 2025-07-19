@@ -66,24 +66,25 @@ const addTableOfContent = async (
     };
 
     // Step 3: Add item to SharePoint list and get the result (ID)
-    const createdItem = await SpServices.SPAddItem({
+    await SpServices.SPAddItem({
       Listname: SPLists.TableOfContentList,
       RequestJSON: requestPayload,
-    }).then();
-    const newRow = {
-      Id: createdItem?.data?.ID,
-      RoleGuide: payload.RoleGuide,
-      DepartmentProcess: payload.DepartmentProcess,
-      SOP: pageUrl,
-    };
-    toastRef?.current?.show({
-      severity: "success",
-      summary: "Success",
-      detail: "Item added successfully!",
-      life: 3000,
+    }).then((res: any) => {
+      const newRow = {
+        Id: res?.data?.ID,
+        RoleGuide: payload.RoleGuide,
+        DepartmentProcess: payload.DepartmentProcess,
+        SOP: pageUrl,
+      };
+      toastRef?.current?.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Item added successfully!",
+        life: 3000,
+      });
+      setTableData((prev: any[]) => [newRow, ...prev]);
+      dispatch(setTableOfContent(newRow));
     });
-    setTableData((prev: any[]) => [newRow, ...prev]);
-    dispatch(setTableOfContent(newRow));
   } catch (err) {
     console.error("Error while adding the data", err);
   }
@@ -136,12 +137,12 @@ const deleteTableOfContent = async (
     setAllData((prevData: any) =>
       prevData.filter((item: any) => item.Id !== deleteItemId)
     );
-  });
-  toastRef?.current?.show({
-    severity: "success",
-    summary: "Success",
-    detail: "deleted successfully!",
-    life: 3000,
+    toastRef?.current?.show({
+      severity: "success",
+      summary: "Success",
+      detail: "deleted successfully!",
+      life: 3000,
+    });
   });
 };
 export {

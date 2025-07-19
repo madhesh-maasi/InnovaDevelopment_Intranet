@@ -2,7 +2,8 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-use-before-define */
-
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable no-unused-expressions */
 import * as React from "react";
 import type { IFeedbackProps } from "./IFeedbackProps";
 import styles from "./Feedback.module.scss";
@@ -310,7 +311,7 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          handleClosePopup(0);
+          !isLoading && handleClosePopup(0);
           setFormData({
             title: "",
             description: "",
@@ -325,7 +326,7 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          handleSubmitFuction();
+          !isLoading && handleSubmitFuction();
         },
       },
     ],

@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-floating-promises */
-
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable no-unused-expressions */
 import * as React from "react";
 import type { IInnovaTeamProps } from "./IInnovaTeamProps";
 import styles from "./InnovaTeam.module.scss";
@@ -262,7 +263,7 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          handleClosePopup(0);
+          !isLoading && handleClosePopup(0);
         },
       },
       {
@@ -272,7 +273,7 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          handleSubmitFuction();
+          !isLoading && handleSubmitFuction();
         },
       },
     ],

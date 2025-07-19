@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import * as React from "react";
 import type { IBannerProps } from "./IBannerProps";
@@ -114,6 +117,16 @@ const BannerContent: React.FC<IBannerProps> = ({
   };
   const handleQuickLinkSubmit = async () => {
     const { Title, Link, Logo } = quickLinkForm;
+    const duplicate = quickLinks?.some((data: any) => data.Title === Title);
+    if (duplicate) {
+      toastRef.current?.show({
+        severity: "warn",
+        summary: "Duplicate Found!",
+        detail: `Link name aldready exists `,
+        life: 3000,
+      });
+      return;
+    }
     let userInputUrl = Link.trim();
     if (
       !userInputUrl.startsWith("http://") &&
@@ -186,7 +199,7 @@ const BannerContent: React.FC<IBannerProps> = ({
       setIsLoading(true);
       const payload: IQuickLink = {
         Title,
-        Link,
+        Link: userInputUrl,
         Logo,
       };
       // console.log("Submitting QuickLink:", payload);
@@ -251,7 +264,7 @@ const BannerContent: React.FC<IBannerProps> = ({
         btnType: "closeBtn",
         disabled: false,
         onClick: () => {
-          handleClosePopup(0);
+          !isLoading && handleClosePopup(0);
           setQuickLinkForm({
             Title: "",
             Link: "",
@@ -264,7 +277,7 @@ const BannerContent: React.FC<IBannerProps> = ({
         btnType: "primaryBtn",
         disabled: false,
         onClick: () => {
-          handleQuickLinkSubmit();
+          !isLoading && handleQuickLinkSubmit();
         },
       },
     ],
@@ -297,7 +310,7 @@ const BannerContent: React.FC<IBannerProps> = ({
     <div className={styles.bannerContainer}>
       <Toast ref={toastRef} />
       <div className={styles.welcomeCardContainer}>
-        <div style={{ width: "5%" }}></div>
+        <div style={{ width: "5%" }} />
         <div className={styles.welcomeCard}>
           <div className={styles.welcomeNote}>Welcome, {userDisplayName}!</div>
           <div className={styles.description}>{description}</div>
@@ -322,7 +335,7 @@ const BannerContent: React.FC<IBannerProps> = ({
                   );
                 }}
               >
-                <i className="fa-solid fa-plus"></i>
+                <i className="fa-solid fa-plus" />
               </div>
             ) : (
               <></>

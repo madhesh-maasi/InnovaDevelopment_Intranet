@@ -2,6 +2,9 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as React from "react";
 import type { IMeetingProps } from "./IMeetingProps";
 import { sp } from "@pnp/sp";
@@ -123,11 +126,28 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
       console.error("Failed to load meetings:", err);
     }
   };
-
+  const isValidUrl = (url: string) => {
+    try {
+      new URL(url);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  };
   const handleSubmitFuction = async () => {
-    setIsLoading(true);
     const { fileType, videoFile, linkName, linkUrl } = formData;
-
+    const duplicate = meetingData?.some(
+      (data: any) => data.FileName === linkName
+    );
+    if (duplicate) {
+      toastRef.current?.show({
+        severity: "warn",
+        summary: "Duplicate Found!",
+        detail: `File aldready exists `,
+        life: 3000,
+      });
+      return;
+    }
     try {
       if (!fileType) {
         toastRef.current?.show({
@@ -138,6 +158,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
         });
         return;
       }
+
       if (fileType === "Video") {
         if (!videoFile) {
           console.error("No video file selected.");
@@ -149,7 +170,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
           });
           return;
         }
-
+        setIsLoading(true);
         const file = await uploadToMeetingAttachments(videoFile);
         if (file) {
           await addToMeetingList(file, setMeetingsData, dispatch, toastRef);
@@ -159,6 +180,25 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
           console.error("Upload failed - file metadata not returned.");
         }
       } else if (fileType === "Link") {
+        let userInputUrl = linkUrl.trim();
+        if (
+          !userInputUrl.startsWith("http://") &&
+          !userInputUrl.startsWith("https://")
+        ) {
+          userInputUrl = `https://${userInputUrl}`;
+        }
+        if (userInputUrl) {
+          const isValid = isValidUrl(userInputUrl);
+          if (!isValid) {
+            toastRef.current?.show({
+              severity: "warn",
+              summary: "Missing fields",
+              detail: "Please enter a valid URL",
+              life: 3000,
+            });
+            return;
+          }
+        }
         const missingFields = [];
         if (!linkName) missingFields.push("Link name");
         if (!linkUrl) missingFields.push("Link url");
@@ -176,7 +216,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
 
         const payload = {
           FileType: "Link",
-          FileUrl: linkUrl,
+          FileUrl: userInputUrl,
           FileName: linkName,
           Id: null,
         };
@@ -271,7 +311,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          handleClosePopup(0);
+          !isLoading && handleClosePopup(0);
           setFormData({
             fileType: "",
             videoFile: null,
@@ -287,7 +327,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          handleSubmitFuction();
+          !isLoading && handleSubmitFuction();
         },
       },
     ],
