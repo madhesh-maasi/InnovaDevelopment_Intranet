@@ -133,7 +133,7 @@ const Training: React.FC<ITrainingProps> = ({ context }) => {
     }
     try {
       const missingFields = [];
-      if (!Name) missingFields.push("Name");
+      if (!Name.trim()) missingFields.push("Name");
       // if (!URL) missingFields.push("URL");
       if (missingFields.length > 0) {
         toastRef.current?.show({

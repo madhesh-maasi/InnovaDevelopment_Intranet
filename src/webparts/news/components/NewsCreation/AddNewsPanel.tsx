@@ -373,6 +373,7 @@ export const AddNewsPanel: React.FC<IProps> = ({
                             }))
                           }
                           label="Start date*"
+                          placeholder="Select start date"
                           withLabel={true}
                         />
                       </div>
@@ -386,6 +387,7 @@ export const AddNewsPanel: React.FC<IProps> = ({
                             }))
                           }
                           label="End date*"
+                          placeholder="Select end date"
                           withLabel={true}
                         />
                       </div>

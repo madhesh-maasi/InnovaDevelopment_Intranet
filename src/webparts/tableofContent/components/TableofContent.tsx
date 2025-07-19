@@ -129,6 +129,7 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
   };
   const handleSubmitFuction = async () => {
     const { RoleGuide, DepartmentProcess } = input;
+
     const duplicate = allData?.some(
       (data: any) => data.RoleGuide === RoleGuide
     );
@@ -144,8 +145,8 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
     }
     try {
       const missingFields = [];
-      if (!RoleGuide) missingFields.push("Role guide");
-      if (!DepartmentProcess) missingFields.push("Department process");
+      if (!RoleGuide.trim()) missingFields.push("Role guide");
+      if (!DepartmentProcess.trim()) missingFields.push("Department process");
       if (missingFields.length > 0) {
         toastRef.current?.show({
           severity: "warn",

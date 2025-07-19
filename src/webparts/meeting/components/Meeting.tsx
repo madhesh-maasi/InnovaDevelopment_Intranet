@@ -183,11 +183,12 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
         let userInputUrl = linkUrl.trim();
         if (
           !userInputUrl.startsWith("http://") &&
-          !userInputUrl.startsWith("https://")
+          !userInputUrl.startsWith("https://") &&
+          userInputUrl.length >= 6
         ) {
           userInputUrl = `https://${userInputUrl}`;
         }
-        if (userInputUrl) {
+        if (userInputUrl && linkName.trim() !== "") {
           const isValid = isValidUrl(userInputUrl);
           if (!isValid) {
             toastRef.current?.show({
@@ -200,8 +201,8 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
           }
         }
         const missingFields = [];
-        if (!linkName) missingFields.push("Link name");
-        if (!linkUrl) missingFields.push("Link url");
+        if (!linkName.trim()) missingFields.push("Link name");
+        if (!linkUrl.trim()) missingFields.push("Link url");
         if (missingFields.length > 0) {
           toastRef.current?.show({
             severity: "warn",

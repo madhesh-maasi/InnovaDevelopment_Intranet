@@ -127,25 +127,6 @@ const BannerContent: React.FC<IBannerProps> = ({
       });
       return;
     }
-    let userInputUrl = Link.trim();
-    if (
-      !userInputUrl.startsWith("http://") &&
-      !userInputUrl.startsWith("https://")
-    ) {
-      userInputUrl = `https://${userInputUrl}`;
-    }
-    if (userInputUrl) {
-      const isValid = isValidUrl(userInputUrl);
-      if (!isValid) {
-        toastRef.current?.show({
-          severity: "warn",
-          summary: "Missing fields",
-          detail: "Please enter a valid URL",
-          life: 3000,
-        });
-        return;
-      }
-    }
     const missingFields = [];
     if (!Title?.trim()) missingFields.push("Link name");
     if (!Link?.trim()) missingFields.push("Link url");
@@ -194,7 +175,26 @@ const BannerContent: React.FC<IBannerProps> = ({
     //   });
     //   return;
     // }
-
+    let userInputUrl = Link.trim();
+    if (
+      !userInputUrl.startsWith("http://") &&
+      !userInputUrl.startsWith("https://") &&
+      userInputUrl.length >= 6
+    ) {
+      userInputUrl = `https://${userInputUrl}`;
+    }
+    if (userInputUrl && Title.trim() !== "") {
+      const isValid = isValidUrl(userInputUrl);
+      if (!isValid) {
+        toastRef.current?.show({
+          severity: "warn",
+          summary: "Missing fields",
+          detail: "Please enter a valid URL",
+          life: 3000,
+        });
+        return;
+      }
+    }
     try {
       setIsLoading(true);
       const payload: IQuickLink = {
