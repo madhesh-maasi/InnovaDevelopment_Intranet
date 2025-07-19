@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-floating-promises */
-
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable no-unused-expressions */
 import * as React from "react";
 import type { IInnovaTeamProps } from "./IInnovaTeamProps";
 import styles from "./InnovaTeam.module.scss";
@@ -98,7 +99,6 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
 
   const onUserSelect = async (users: any, filter: boolean) => {
     const user = users?.[0];
-    if (!user) return;
 
     if (filter) {
       setSelectedUser(users);
@@ -174,8 +174,17 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
   const handleSubmitFuction = async () => {
     const { selectedUser, role, jobDescription } = input;
     const missingFields = [];
+    if (!role) {
+      toastRef.current?.show({
+        severity: "warn",
+        summary: "Wrong member",
+        detail: "Please select valid member",
+        life: 3000,
+      });
+      return;
+    }
     if (!selectedUser) missingFields.push("Team member");
-    if (!jobDescription) missingFields.push("Job description");
+    if (!jobDescription.trim()) missingFields.push("Job description");
     if (missingFields.length === 1) {
       const field = missingFields[0];
       const detailMessage =
@@ -262,7 +271,12 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          handleClosePopup(0);
+          !isLoading && handleClosePopup(0);
+          setInput({
+            selectedUser: null,
+            role: "",
+            jobDescription: "",
+          });
         },
       },
       {
@@ -272,7 +286,7 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          handleSubmitFuction();
+          !isLoading && handleSubmitFuction();
         },
       },
     ],

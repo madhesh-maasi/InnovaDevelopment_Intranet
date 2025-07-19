@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-new */
 import * as React from "react";
 import styles from "./SubdepartmentQuickLinks.module.scss";
 import type { ISubdepartmentQuickLinksProps } from "./ISubdepartmentQuickLinksProps";
@@ -103,9 +107,28 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
       [field]: value,
     }));
   };
+  const isValidUrl = (url: string) => {
+    try {
+      new URL(url);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  };
   const handleQuickLinkSubmit = async () => {
     const { Title, Link, Logo } = quickLinkForm;
-
+    const duplicate = subDepartmentQuickLinks?.some(
+      (data: any) => data.Title === Title
+    );
+    if (duplicate) {
+      toastRef.current?.show({
+        severity: "warn",
+        summary: "Duplicate Found!",
+        detail: `Link name aldready exists `,
+        life: 3000,
+      });
+      return;
+    }
     const missingFields = [];
     if (!Title?.trim()) missingFields.push("Link name");
     if (!Link?.trim()) missingFields.push("Link url");
@@ -136,12 +159,32 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
       });
       return;
     }
+    let userInputUrl = Link.trim();
+    if (
+      !userInputUrl.startsWith("http://") &&
+      !userInputUrl.startsWith("https://") &&
+      userInputUrl.length >= 6
+    ) {
+      userInputUrl = `https://${userInputUrl}`;
+    }
+    if (userInputUrl && Title.trim() !== "") {
+      const isValid = isValidUrl(userInputUrl);
+      if (!isValid) {
+        toastRef.current?.show({
+          severity: "warn",
+          summary: "Missing fields",
+          detail: "Please enter a valid URL",
+          life: 3000,
+        });
+        return;
+      }
+    }
 
     try {
       setIsLoading(true);
       const payload: IQuickLink = {
         Title,
-        Link,
+        Link: userInputUrl,
         Logo,
       };
       // console.log("Submitting subdepartment QuickLink:", payload);
@@ -211,7 +254,7 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
         btnType: "closeBtn",
         disabled: false,
         onClick: () => {
-          handleClosePopup(0);
+          !isLoading && handleClosePopup(0);
           setQuickLinkForm({
             Title: "",
             Link: "",
@@ -224,7 +267,7 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
         btnType: "primaryBtn",
         disabled: false,
         onClick: () => {
-          handleQuickLinkSubmit();
+          !isLoading && handleQuickLinkSubmit();
         },
       },
     ],
