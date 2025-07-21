@@ -105,6 +105,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
   const [isLoading, setIsLoading] = useState(false);
   const videoImgUrl = require("../assets/Video.png");
   const linkImgUrl = require("../assets/Link.png");
+  console.log("formData", formData);
 
   const handleFormChange = (field: string, value: any) => {
     setFormData((prev) => ({
@@ -136,7 +137,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
   };
   const handleSubmitFuction = async () => {
     const { fileType, videoFile, linkName, linkUrl } = formData;
-    const duplicate = meetingData?.some(
+    let duplicate = meetingData?.some(
       (data: any) => data.FileName === linkName
     );
     if (duplicate) {
@@ -169,6 +170,20 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
             life: 3000,
           });
           return;
+        }
+        if (videoFile) {
+          duplicate = meetingData?.some(
+            (data: any) => data.FileName === videoFile?.name
+          );
+          if (duplicate) {
+            toastRef.current?.show({
+              severity: "warn",
+              summary: "Duplicate Found!",
+              detail: `File aldready exists `,
+              life: 3000,
+            });
+            return;
+          }
         }
         setIsLoading(true);
         const file = await uploadToMeetingAttachments(videoFile);

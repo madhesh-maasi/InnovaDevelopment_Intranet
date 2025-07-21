@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+
 import * as React from "react";
 import styles from "./CustomFileUpload.module.scss";
 
@@ -20,6 +22,8 @@ const CustomFileUpload: React.FC<CustomFileUploadProps> = ({
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("e", e);
+
     const file = e.target.files?.[0] || null;
     setSelectedFile(file);
     onFileSelect(file);

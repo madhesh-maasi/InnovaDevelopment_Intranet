@@ -86,11 +86,18 @@
   position: relative;
   top: 5px;
   flex-grow: 1;
+  max-width: 87%;
 }
 
 .type {
   font-weight: 400;
   color: #000;
+  display: -webkit-box;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  cursor: pointer;
 }
 
 .date {

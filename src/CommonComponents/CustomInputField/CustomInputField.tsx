@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from "react";
 import styles from "./CustomInputField.module.scss";
 import { InputText } from "primereact/inputtext";
-
+import "./CustomInputField.css";
 interface CustomInputFieldProps {
   label?: string;
   value: string | undefined;
@@ -33,7 +34,6 @@ const CustomInputField: React.FC<CustomInputFieldProps> = ({
         readOnly={readonly}
         disabled={disabled}
         maxLength={maxLength}
-        className={styles.inputText}
         onKeyDown={onKeyDown}
       />
     </div>
