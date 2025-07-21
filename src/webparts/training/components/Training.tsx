@@ -120,17 +120,22 @@ const Training: React.FC<ITrainingProps> = ({ context }) => {
     setfilteredData(tabledata);
   };
   const handleSubmitFuction = async () => {
-    const { Name, URL } = input;
-    const duplicate = allData?.some((data: any) => data.Name === Name);
-    if (duplicate) {
-      toastRef.current?.show({
-        severity: "warn",
-        summary: "Duplicate Found!",
-        detail: `File aldready exists `,
+    const { Id, Name, URL } = input;
+    const sameUpdate =
+      isEdit &&
+      allData.some((data: any) => data.Id === Id && data.Name === Name.trim());
+
+    if (sameUpdate) {
+      toastRef?.current?.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Item updated successfully!",
         life: 3000,
       });
+      handleClosePopup(0);
       return;
     }
+
     try {
       const missingFields = [];
       if (!Name.trim()) missingFields.push("Name");
@@ -140,6 +145,16 @@ const Training: React.FC<ITrainingProps> = ({ context }) => {
           severity: "warn",
           summary: "Missing fields",
           detail: `Please enter ${missingFields.join(", ")} before submitting.`,
+          life: 3000,
+        });
+        return;
+      }
+      const isDuplicate = allData?.some((data: any) => data.Name === Name);
+      if (isDuplicate) {
+        toastRef.current?.show({
+          severity: "warn",
+          summary: "Duplicate Found!",
+          detail: `File aldready exists `,
           life: 3000,
         });
         return;

@@ -36,7 +36,9 @@
   height: 100% !important;
 }
 .tableContentWrapper .p-datatable-wrapper {
-  height: 380px !important;
+  height: 337px !important;
+  scrollbar-width: thin;
+  scrollbar-color: #75717154 transparent;
 }
 .p-datatable .p-datatable-thead > tr > th {
   text-align: left;

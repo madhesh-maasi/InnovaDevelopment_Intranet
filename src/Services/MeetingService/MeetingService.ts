@@ -1,3 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { sp } from "@pnp/sp";
 import { SPLibrary, SPLists } from "../../Config/config";
 import { IMeetingItem } from "../../Interface/MeetingInterface";
@@ -23,10 +30,9 @@ const uploadToMeetingAttachments = async (videoFile: any) => {
   try {
     const fileAddResult = await sp.web
       .getFolderByServerRelativePath("MeetingAttachments")
-      .files.addUsingPath(videoFile.name, videoFile.content, {
+      .files.addUsingPath(videoFile.name, videoFile, {
         Overwrite: true,
       });
-
     // Await the metadata directly, no mixing of .then()
     const item = await (await fileAddResult.file.getItem())(); // Await the proxy call
     // console.log("Uploaded Data", item);

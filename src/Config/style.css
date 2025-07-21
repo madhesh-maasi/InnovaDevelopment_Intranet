@@ -31,7 +31,9 @@
 [class^="titleSubcell"] {
   display: none !important;
 }
-
+.ms-HorizontalNavItem-Edit {
+  display: none !important;
+}
 [class^="mainHeader"] {
   align-items: center !important;
   background: #fff;
@@ -40,6 +42,9 @@
   display: none !important;
 }
 #HorizontalNav0EditLink {
+  display: none !important;
+}
+[data-automation-id="HorizontalNav-edit"] {
   display: none !important;
 }
 [class^="siteNavLink-"]:focus {
@@ -222,12 +227,18 @@ span[data-automationid="SiteHeaderTitle"] a {
   overflow: hidden !important;
   height: 250px !important;
 }
+.dataTablewrapper .p-datatable-thead > tr > th:first-child {
+  padding-left: 40px;
+}
+
 .tableContentWrapper {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
   overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #75717154 transparent;
 }
 
 /* site navigation & header hidden */

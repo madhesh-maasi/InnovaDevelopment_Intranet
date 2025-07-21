@@ -128,42 +128,72 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
     setfilteredData(tabledata);
   };
   const handleSubmitFuction = async () => {
-    const { RoleGuide, DepartmentProcess } = input;
+    const { Id, RoleGuide, DepartmentProcess } = input;
 
-    const duplicate = allData?.some(
-      (data: any) => data.RoleGuide === RoleGuide
-    );
+    // Trim inputs to ensure accurate comparisons
+    const trimmedRoleGuide = RoleGuide.trim();
+    const trimmedDepartmentProcess = DepartmentProcess.trim();
 
-    if (duplicate) {
+    // Step 1: Check if it's an update with no changes
+    const sameUpdate =
+      isEdit &&
+      allData.some(
+        (data: any) =>
+          data.Id === Id &&
+          data.RoleGuide === trimmedRoleGuide &&
+          data.DepartmentProcess === trimmedDepartmentProcess
+      );
+
+    if (sameUpdate) {
+      toastRef?.current?.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Item updated successfully!",
+        life: 3000,
+      });
+      handleClosePopup(0);
+      return;
+    }
+
+    // Step 2: Validate input
+    const missingFields = [];
+    if (!trimmedRoleGuide) missingFields.push("Role guide");
+    if (!trimmedDepartmentProcess) missingFields.push("Department process");
+
+    if (missingFields.length > 0) {
       toastRef.current?.show({
         severity: "warn",
-        summary: "Duplicate Found!",
-        detail: `File aldready exists `,
+        summary: "Missing fields",
+        detail: `Please enter ${missingFields.join(", ")} before submitting.`,
         life: 3000,
       });
       return;
     }
+
+    const isDuplicate = allData.some(
+      (data: any) => data.RoleGuide === trimmedRoleGuide
+    );
+
+    if (isDuplicate) {
+      toastRef.current?.show({
+        severity: "warn",
+        summary: "Duplicate Found!",
+        detail: "File already exists",
+        life: 3000,
+      });
+      return;
+    }
+
     try {
-      const missingFields = [];
-      if (!RoleGuide.trim()) missingFields.push("Role guide");
-      if (!DepartmentProcess.trim()) missingFields.push("Department process");
-      if (missingFields.length > 0) {
-        toastRef.current?.show({
-          severity: "warn",
-          summary: "Missing fields",
-          detail: `Please enter ${missingFields.join(", ")} before submitting.`,
-          life: 3000,
-        });
-        return;
-      }
       setIsLoading(true);
       const payload = {
-        RoleGuide: RoleGuide,
-        DepartmentProcess: DepartmentProcess,
+        RoleGuide: trimmedRoleGuide,
+        DepartmentProcess: trimmedDepartmentProcess,
       };
+
       if (isEdit) {
         await updateTableOfContent(
-          input?.Id,
+          Id,
           payload,
           getTableOfContentData,
           toastRef
@@ -171,6 +201,7 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
       } else {
         await addTableOfContent(payload, setAllData, dispatch, toastRef);
       }
+
       handleClosePopup(0);
       setInput({
         Id: null,
@@ -179,11 +210,12 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
         SOP: "",
       });
     } catch (err) {
-      console.error("add failed:", err);
+      console.error("Submit failed:", err);
     } finally {
       setIsLoading(false);
     }
   };
+
   const popupInputs: any[] = [
     [
       <div className={styles.popupCustomWrapper} key={0}>
@@ -200,7 +232,7 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
             handleInputChange("DepartmentProcess", e.target.value)
           }
           rows={2}
-          placeholder=" Enter department process"
+          placeholder="Enter department process"
           autoResize={false}
         />
       </div>,
