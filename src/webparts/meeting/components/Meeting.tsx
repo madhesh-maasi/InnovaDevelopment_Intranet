@@ -137,18 +137,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
   };
   const handleSubmitFuction = async () => {
     const { fileType, videoFile, linkName, linkUrl } = formData;
-    let duplicate = meetingData?.some(
-      (data: any) => data.FileName === linkName
-    );
-    if (duplicate) {
-      toastRef.current?.show({
-        severity: "warn",
-        summary: "Duplicate Found!",
-        detail: `File aldready exists `,
-        life: 3000,
-      });
-      return;
-    }
+
     try {
       if (!fileType) {
         toastRef.current?.show({
@@ -172,7 +161,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
           return;
         }
         if (videoFile) {
-          duplicate = meetingData?.some(
+          const duplicate = meetingData?.some(
             (data: any) => data.FileName === videoFile?.name
           );
           if (duplicate) {
@@ -195,26 +184,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
           console.error("Upload failed - file metadata not returned.");
         }
       } else if (fileType === "Link") {
-        let userInputUrl = linkUrl.trim();
-        if (
-          !userInputUrl.startsWith("http://") &&
-          !userInputUrl.startsWith("https://") &&
-          userInputUrl.length >= 6
-        ) {
-          userInputUrl = `https://${userInputUrl}`;
-        }
-        if (userInputUrl && linkName.trim() !== "") {
-          const isValid = isValidUrl(userInputUrl);
-          if (!isValid) {
-            toastRef.current?.show({
-              severity: "warn",
-              summary: "Missing fields",
-              detail: "Please enter a valid URL",
-              life: 3000,
-            });
-            return;
-          }
-        }
+        const userInputUrl = linkUrl.trim();
         const missingFields = [];
         if (!linkName.trim()) missingFields.push("Link name");
         if (!linkUrl.trim()) missingFields.push("Link url");
@@ -229,7 +199,32 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
           });
           return;
         }
-
+        if (userInputUrl && linkName.trim() !== "") {
+          const isValid = isValidUrl(userInputUrl);
+          if (!isValid) {
+            toastRef.current?.show({
+              severity: "warn",
+              summary: "Missing fields",
+              detail: "Please enter a valid URL",
+              life: 3000,
+            });
+            return;
+          }
+        }
+        const duplicateLink = meetingData?.some(
+          (data: any) =>
+            data.FileName === linkName || data.linkUrl === userInputUrl
+        );
+        if (duplicateLink) {
+          toastRef.current?.show({
+            severity: "warn",
+            summary: "Duplicate Found!",
+            detail: `Link name or url aldready exists `,
+            life: 3000,
+          });
+          return;
+        }
+        setIsLoading(true);
         const payload = {
           FileType: "Link",
           FileUrl: userInputUrl,
@@ -327,7 +322,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          !isLoading && handleClosePopup(0);
+          handleClosePopup(0);
           setFormData({
             fileType: "",
             videoFile: null,
@@ -420,7 +415,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
                       )}
                     </div>
                     <div className={styles.details}>
-                      <div className={styles.type}>
+                      <div className={styles.type} title={item?.FileName}>
                         {item.Type === "Video"
                           ? item?.FileName || "Video"
                           : item.FileName || "Link"}

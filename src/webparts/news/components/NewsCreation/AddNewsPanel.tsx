@@ -419,14 +419,13 @@ export const AddNewsPanel: React.FC<IProps> = ({
                             }));
                           }}
                         />
-
-                        {newsForm?.Thumbnail?.fileName && (
-                          <div style={{ marginTop: 8 }}>
-                            <i className="pi pi-image" />{" "}
-                            {newsForm.Thumbnail.fileName}
-                          </div>
-                        )}
                       </div>
+                      {newsForm?.Thumbnail?.fileName && (
+                        <div style={{ marginTop: 8 }}>
+                          <i className="pi pi-image" />{" "}
+                          {newsForm.Thumbnail.fileName}
+                        </div>
+                      )}
                       {error && (
                         <Message
                           severity="error"

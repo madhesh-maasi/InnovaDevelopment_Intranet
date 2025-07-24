@@ -51,6 +51,19 @@
   background: transparent;
   transition: box-shadow 0.15s;
 }
+.viewDatatablewrapper .p-datatable .p-datatable-tbody > tr > td {
+  text-align: left;
+  border: 1px solid #dee2e6;
+  border-width: 1px 0 0 0;
+  padding: 0.7rem 0.75rem;
+  background-color: #fff !important;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  font-size: 14px !important;
+}
+.viewDatatablewrapper .p-datatable-thead > tr > th:first-child {
+  padding-left: 40px;
+}
 .p-datatable .p-datatable-thead > tr > td {
   padding: 0.5rem 1rem;
 }

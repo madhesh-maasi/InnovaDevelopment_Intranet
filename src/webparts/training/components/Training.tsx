@@ -211,7 +211,7 @@ const Training: React.FC<ITrainingProps> = ({ context }) => {
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          !isLoading && handleClosePopup(0);
+          handleClosePopup(0);
         },
       },
       {
@@ -233,7 +233,7 @@ const Training: React.FC<ITrainingProps> = ({ context }) => {
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          !isLoading && handleClosePopup(1);
+          handleClosePopup(1);
         },
       },
       {

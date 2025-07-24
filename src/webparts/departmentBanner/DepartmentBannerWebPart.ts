@@ -27,6 +27,7 @@ export default class DepartmentBannerWebPart extends BaseClientSideWebPart<IDepa
         // hasTeamsContext: !!this.context.sdks.microsoftTeams,
         // userDisplayName: this.context.pageContext.user.displayName
         context: this.context,
+        title: this.properties.description,
       });
 
     ReactDom.render(element, this.domElement);
