@@ -311,7 +311,7 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          !isLoading && handleClosePopup(0);
+          handleClosePopup(0);
           setFormData({
             title: "",
             description: "",
@@ -380,6 +380,7 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
         setFeedbacks(updatedData);
         await updateFeedback(selectedFeedback.Id, conversations.length);
         setConversations([]);
+        setComments("");
       }
     }
     if (type === "onSubmit") {

@@ -256,7 +256,7 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          !isLoading && handleClosePopup(0);
+          handleClosePopup(0);
         },
       },
       {
@@ -278,7 +278,7 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          !isLoading && handleClosePopup(1);
+          handleClosePopup(1);
         },
       },
       {

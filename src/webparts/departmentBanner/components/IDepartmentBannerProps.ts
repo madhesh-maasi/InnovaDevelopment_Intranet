@@ -7,4 +7,5 @@ export interface IDepartmentBannerProps {
   // hasTeamsContext: boolean;
   // userDisplayName: string;
   context: WebPartContext;
+  title: string;
 }

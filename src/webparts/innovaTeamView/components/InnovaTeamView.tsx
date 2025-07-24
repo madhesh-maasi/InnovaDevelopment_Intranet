@@ -90,7 +90,7 @@ const InnovaTeamContent: React.FC<IInnovaTeamViewProps> = ({ context }) => {
       .filter(
         (role): role is string => typeof role === "string" && role.trim() !== ""
       );
-    return ["Role", ...Array.from(new Set(roles))];
+    return ["All", ...Array.from(new Set(roles))];
   };
 
   const onUserSelect = async (users: any, filter: boolean) => {
@@ -117,7 +117,7 @@ const InnovaTeamContent: React.FC<IInnovaTeamViewProps> = ({ context }) => {
   };
   const onChangeFunction = (selectedRole: string) => {
     setRole(selectedRole);
-    if (!selectedRole || selectedRole === "Role") {
+    if (!selectedRole || selectedRole === "All") {
       setTableData(allData);
       return;
     }

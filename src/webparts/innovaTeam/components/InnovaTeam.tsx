@@ -99,6 +99,17 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
 
   const onUserSelect = async (users: any, filter: boolean) => {
     const user = users?.[0];
+    console.log(user);
+
+    if (!user) {
+      setSelectedUser([]);
+      setInput({
+        ...input,
+        selectedUser: null,
+        role: "",
+        // jobDescription: "",
+      });
+    }
 
     if (filter) {
       setSelectedUser(users);
@@ -173,6 +184,8 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
   };
   const handleSubmitFuction = async () => {
     const { selectedUser, role, jobDescription } = input;
+    console.log("Input", input);
+
     const missingFields = [];
     if (!role) {
       toastRef.current?.show({
@@ -183,8 +196,10 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
       });
       return;
     }
+    const trimmedJobDescription = jobDescription.trim();
+
     if (!selectedUser) missingFields.push("Team member");
-    if (!jobDescription.trim()) missingFields.push("Job description");
+    if (!trimmedJobDescription) missingFields.push("Job description");
     if (missingFields.length === 1) {
       const field = missingFields[0];
       const detailMessage =
@@ -271,7 +286,7 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          !isLoading && handleClosePopup(0);
+          handleClosePopup(0);
           setInput({
             selectedUser: null,
             role: "",

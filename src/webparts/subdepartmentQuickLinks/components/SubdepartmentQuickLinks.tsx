@@ -117,18 +117,8 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
   };
   const handleQuickLinkSubmit = async () => {
     const { Title, Link, Logo } = quickLinkForm;
-    const duplicate = subDepartmentQuickLinks?.some(
-      (data: any) => data.Title === Title
-    );
-    if (duplicate) {
-      toastRef.current?.show({
-        severity: "warn",
-        summary: "Duplicate Found!",
-        detail: `Link name aldready exists `,
-        life: 3000,
-      });
-      return;
-    }
+    const userInputUrl = Link.trim();
+
     const missingFields = [];
     if (!Title?.trim()) missingFields.push("Link name");
     if (!Link?.trim()) missingFields.push("Link url");
@@ -159,14 +149,6 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
       });
       return;
     }
-    let userInputUrl = Link.trim();
-    if (
-      !userInputUrl.startsWith("http://") &&
-      !userInputUrl.startsWith("https://") &&
-      userInputUrl.length >= 6
-    ) {
-      userInputUrl = `https://${userInputUrl}`;
-    }
     if (userInputUrl && Title.trim() !== "") {
       const isValid = isValidUrl(userInputUrl);
       if (!isValid) {
@@ -179,7 +161,18 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
         return;
       }
     }
-
+    const duplicate = subDepartmentQuickLinks?.some(
+      (data: any) => data.Title === Title || data.Link === userInputUrl
+    );
+    if (duplicate) {
+      toastRef.current?.show({
+        severity: "warn",
+        summary: "Duplicate Found!",
+        detail: `Link name or url aldready exists `,
+        life: 3000,
+      });
+      return;
+    }
     try {
       setIsLoading(true);
       const payload: IQuickLink = {
@@ -254,7 +247,7 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
         btnType: "closeBtn",
         disabled: false,
         onClick: () => {
-          !isLoading && handleClosePopup(0);
+          handleClosePopup(0);
           setQuickLinkForm({
             Title: "",
             Link: "",

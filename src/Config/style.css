@@ -19,6 +19,9 @@
   scrollbar-width: thin;
   scrollbar-color: #75717154 transparent;
 }
+.ms-HorizontalNavItem-label:focus {
+  display: none !important;
+}
 .CanvasZone--noMargin {
   background: transparent !important;
 }
@@ -314,4 +317,7 @@ span[data-automationid="SiteHeaderTitle"] a {
 .search_input_wrapper .p-icon-field-left > .p-input-icon:first-of-type {
   color: #495057;
   left: 0;
+}
+.p-dialog-header-close:focus-visible {
+  display: none !important;
 }

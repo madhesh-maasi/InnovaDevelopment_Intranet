@@ -117,16 +117,6 @@ const BannerContent: React.FC<IBannerProps> = ({
   };
   const handleQuickLinkSubmit = async () => {
     const { Title, Link, Logo } = quickLinkForm;
-    const duplicate = quickLinks?.some((data: any) => data.Title === Title);
-    if (duplicate) {
-      toastRef.current?.show({
-        severity: "warn",
-        summary: "Duplicate Found!",
-        detail: `Link name aldready exists `,
-        life: 3000,
-      });
-      return;
-    }
     const missingFields = [];
     if (!Title?.trim()) missingFields.push("Link name");
     if (!Link?.trim()) missingFields.push("Link url");
@@ -157,6 +147,33 @@ const BannerContent: React.FC<IBannerProps> = ({
       });
       return;
     }
+    const userInputUrl = Link.trim();
+    const duplicate = quickLinks?.some(
+      (data: any) => data.Title === Title || data.Link === userInputUrl
+    );
+
+    if (userInputUrl && Title.trim() !== "") {
+      const isValid = isValidUrl(userInputUrl);
+      if (!isValid) {
+        toastRef.current?.show({
+          severity: "warn",
+          summary: "Missing fields",
+          detail: "Please enter a valid URL",
+          life: 3000,
+        });
+        return;
+      }
+    }
+    if (duplicate) {
+      toastRef.current?.show({
+        severity: "warn",
+        summary: "Duplicate Found!",
+        detail: `Link name or url aldready exists `,
+        life: 3000,
+      });
+      return;
+    }
+
     // if (!Title && !Link && !Logo) {
     //   toastRef.current?.show({
     //     severity: "warn",
@@ -175,26 +192,7 @@ const BannerContent: React.FC<IBannerProps> = ({
     //   });
     //   return;
     // }
-    let userInputUrl = Link.trim();
-    if (
-      !userInputUrl.startsWith("http://") &&
-      !userInputUrl.startsWith("https://") &&
-      userInputUrl.length >= 6
-    ) {
-      userInputUrl = `https://${userInputUrl}`;
-    }
-    if (userInputUrl && Title.trim() !== "") {
-      const isValid = isValidUrl(userInputUrl);
-      if (!isValid) {
-        toastRef.current?.show({
-          severity: "warn",
-          summary: "Missing fields",
-          detail: "Please enter a valid URL",
-          life: 3000,
-        });
-        return;
-      }
-    }
+
     try {
       setIsLoading(true);
       const payload: IQuickLink = {
@@ -264,7 +262,7 @@ const BannerContent: React.FC<IBannerProps> = ({
         btnType: "closeBtn",
         disabled: false,
         onClick: () => {
-          !isLoading && handleClosePopup(0);
+          handleClosePopup(0);
           setQuickLinkForm({
             Title: "",
             Link: "",
