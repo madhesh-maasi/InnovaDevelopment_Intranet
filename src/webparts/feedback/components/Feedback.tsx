@@ -36,7 +36,7 @@ import {
   setTenantUrl,
   setWebUrl,
 } from "../../../Redux/Features/MainSPContextSlice";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { togglePopupVisibility } from "../../../CommonComponents/CustomPopup/togglePopup";
 import CustomInputField from "../../../CommonComponents/CustomInputField/CustomInputField";
 import CustomMultiInputField from "../../../CommonComponents/CustomMultiInputField/CustomMultiInputField";
@@ -105,6 +105,8 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
   const [popupController, setPopupController] = useState(
     initialPopupController
   );
+  const commentsEndRef = useRef<HTMLDivElement | null>(null);
+
   const handleClosePopup = (index: number): void => {
     togglePopupVisibility(setPopupController, index, "close");
   };
@@ -114,6 +116,11 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
     description: "",
     CommentsCount: 0,
   });
+  const scrollToBottom = () => {
+    if (commentsEndRef.current) {
+      commentsEndRef.current.scrollTop = commentsEndRef.current.scrollHeight;
+    }
+  };
   const handleFormChange = (field: string, value: any) => {
     setFormData((prev) => ({
       ...prev,
@@ -236,19 +243,19 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
           </TooltipHost>
         </div>
         <div style={{ height: "65vh" }}>
-          <div className={styles.commentsWrapper}>
+          <div className={styles.commentsWrapper} ref={commentsEndRef}>
             {conversations.map((comment: any, i: any) => {
               if (comment?.CreatedBy?.Email === currentuser[0]?.Email) {
                 return (
-                  <div key={i} className={styles.currentuser}>
-                    <div
-                      className={styles.commentContentWrapper}
-                      style={{ justifyContent: "end" }}
-                    ></div>
-                    <div>
-                      <span style={{ fontWeight: "400" }}>
-                        {comment.comments}
-                      </span>
+                  <div className={styles.currentuserWrapper}>
+                    <div key={i} className={styles.currentuser}>
+                      <div className={styles.commentContentWrapper}>
+                        <div>
+                          <span style={{ fontWeight: "400" }}>
+                            {comment.comments}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                     <div className={styles.dateTimeWrapper}>
                       <i className="pi pi-clock" />
@@ -258,21 +265,27 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
                 );
               } else {
                 return (
-                  <div key={i} className={styles.card}>
-                    <div className={styles.commentContentWrapper}>
+                  <div style={{ display: "flex", width: "100%" }}>
+                    <div className={styles.avatarWrapper}>
                       <Avatar
                         image={comment?.CreatedBy?.ImgUrl}
                         size="normal"
                         shape="circle"
                       />
-                      <span>{comment?.CreatedBy?.DisplayName}</span>
                     </div>
-                    <div>
-                      <span>{comment.comments}</span>
-                    </div>
-                    <div className={styles.dateTimeWrapper}>
-                      <i className="pi pi-clock" />
-                      <span>{comment.CreatedOn}</span>
+                    <div className={styles.cardWrapper}>
+                      <div key={i} className={styles.card}>
+                        <div className={styles.commentContentWrapper}>
+                          <div>
+                            <span>{comment.comments}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className={styles.dateTimeWrapper}>
+                        <div>{comment?.CreatedBy?.DisplayName}</div>
+                        <i className="pi pi-clock" />
+                        <span>{comment.CreatedOn}</span>
+                      </div>
                     </div>
                   </div>
                 );
@@ -289,6 +302,7 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
                   handleCommentSubmit();
                 }
               }}
+              isChat={true}
             />
             <div style={{ padding: "0 10px" }} onClick={handleCommentSubmit}>
               <img
@@ -350,6 +364,9 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
       checkPermission();
     }
   }, [currentuser]);
+  useEffect(() => {
+    scrollToBottom();
+  }, [conversations]);
 
   const totalPages = Math.ceil(feedbacks.length / itemsPerPage);
   const paginatedData = feedbacks.slice(

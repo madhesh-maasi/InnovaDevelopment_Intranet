@@ -7,6 +7,7 @@ import { AvatarGroup } from "primereact/avatargroup";
 import * as React from "react";
 import "./Profile.css";
 const Profile = (props: any) => {
+  console.log("Props Data", props);
   return (
     <div>
       <AvatarGroup>
@@ -16,8 +17,8 @@ const Profile = (props: any) => {
             size="large"
             shape="circle"
           />
-          <div className="userName">{props?.TeamMember?.DisplayName}</div>
         </div>
+        <div className="userName">{props?.TeamMember?.DisplayName}</div>
       </AvatarGroup>
     </div>
   );

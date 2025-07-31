@@ -12,6 +12,7 @@ interface CustomInputFieldProps {
   disabled?: boolean;
   maxLength?: number;
   onKeyDown?: any;
+  isChat?: boolean;
 }
 
 const CustomInputField: React.FC<CustomInputFieldProps> = ({
@@ -23,9 +24,10 @@ const CustomInputField: React.FC<CustomInputFieldProps> = ({
   disabled = false,
   maxLength,
   onKeyDown,
+  isChat,
 }) => {
   return (
-    <div className={styles.customInputWrapper}>
+    <div className={isChat ? styles.sendBox : styles.customInputWrapper}>
       <label className={styles.label}>{label}</label>
       <InputText
         value={value}
