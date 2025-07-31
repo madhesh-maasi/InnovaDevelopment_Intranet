@@ -1,3 +1,12 @@
+.bubble {
+  position: relative;
+  padding: 12px 16px;
+  border-radius: 18px;
+  margin: 8px 0;
+  max-width: 75%;
+  word-wrap: break-word;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
 .feedbackContainer {
   display: flex;
   max-width: 100%;
@@ -181,14 +190,27 @@
   scrollbar-color: #75717154 transparent;
 
   .currentuser {
+    @extend .bubble;
     max-width: 75%;
     margin-left: auto;
-    border-radius: 4px;
-    padding: 16px;
+    // border-radius: 4px;
+    padding: 6px;
     text-align: left;
     margin-top: 5px;
+    margin-bottom: 0;
     background-color: #2b7eb7 !important;
-    border: 1px solid #b9dfc1;
+    // border: 1px solid #b9dfc1;
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: -7px;
+      right: 0px;
+      width: 20px;
+      height: 25px;
+      background-color: #2b7eb7;
+      border-bottom-left-radius: 16px;
+      z-index: 1;
+    }
     .profileWrappper {
       display: flex;
       justify-content: flex-end;
@@ -199,7 +221,7 @@
       }
     }
     span {
-      font-size: 10px !important;
+      font-size: 12px !important;
       color: #fff;
       line-height: 1;
     }
@@ -211,50 +233,24 @@
       align-items: center;
       span {
         font-size: 10px;
-        color: #fff;
+        color: grey;
       }
       i {
         font-size: 10px;
-        color: #fff;
+        color: grey;
       }
-    }
-  }
-  .card {
-    max-width: 75%;
-    border-radius: 4px;
-    padding: 10px;
-    // box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    text-align: left;
-    margin-top: 5px;
-    background: #ffffffb3;
-    span {
-      font-size: 10px !important;
-      line-height: 1;
-    }
-  }
-  .dateTimeWrapper {
-    display: flex;
-    justify-content: end;
-    gap: 5px;
-    align-items: center;
-    padding-top: 5px;
-    span {
-      font-size: 10px;
-      color: #1470af;
-    }
-    i {
-      font-size: 10px;
-      color: #1470af;
     }
   }
   .commentContentWrapper {
     display: flex;
     gap: 5px;
     align-items: center;
+    text-align: left;
   }
 }
 .commentInputBar {
   width: 100%;
+  height: 45px;
   display: flex;
   background-color: #fff;
   align-items: center;
@@ -265,4 +261,103 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+.currentuserWrapper {
+  .commentContentWrapper {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    text-align: left;
+    padding: 0 5px 5px 5px;
+    justify-content: flex-start;
+  }
+  .dateTimeWrapper {
+    display: flex;
+    justify-content: end;
+    gap: 5px;
+    align-items: center;
+    margin-right: 0px;
+    padding: 4px 0;
+    div {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    span {
+      font-size: 10px;
+      color: grey;
+      position: relative;
+      top: 2px;
+    }
+    i {
+      font-size: 10px;
+      color: grey;
+      position: relative;
+      top: 3px;
+    }
+  }
+}
+.avatarWrapper {
+  width: 7%;
+  display: flex;
+  align-items: end;
+  padding-bottom: 18px;
+}
+.cardWrapper {
+  width: 90%;
+  .card {
+    @extend .bubble;
+    width: 100%;
+    // border-radius: 4px;
+    padding: 10px;
+    // box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    // box-shadow: none !important;
+    box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset;
+    text-align: left;
+    margin-top: 5px;
+    background: #ffffff;
+
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -7px;
+      width: 20px;
+      height: 25px;
+      background: #ffffff;
+      // border: 8px solid transparent;
+      // border-right-color: #ffffff;
+      border-bottom-right-radius: 16px;
+      z-index: -1;
+      box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+        rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+    }
+    span {
+      font-size: 12px !important;
+      line-height: 1;
+    }
+  }
+  .dateTimeWrapper {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    margin-right: 15px;
+    padding: 0 !important;
+    div {
+      font-size: 12px;
+      font-weight: 500;
+      color: #545454;
+    }
+    span {
+      font-size: 10px;
+      color: grey;
+      position: relative;
+      top: 2px;
+    }
+    i {
+      font-size: 10px;
+      color: grey;
+      position: relative;
+      top: 3px;
+    }
+  }
 }

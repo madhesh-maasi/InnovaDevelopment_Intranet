@@ -1,7 +1,7 @@
 .innovaTeamContainer {
   display: flex;
   max-width: 100%;
-  height: 380px;
+  height: 450px;
   padding: 20px;
   border-radius: 7px;
   margin: 10px;
@@ -56,7 +56,7 @@
   p {
     margin: 0;
     color: #333;
-    font-size: 14px;
+    font-size: 12px;
     display: -webkit-box;
     text-overflow: ellipsis;
     -webkit-box-orient: vertical;
@@ -65,4 +65,7 @@
     cursor: pointer;
     height: fit-content;
   }
+}
+.bodyWrapper {
+  font-size: 12px !important;
 }

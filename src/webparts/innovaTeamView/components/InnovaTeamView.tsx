@@ -282,22 +282,43 @@ const InnovaTeamContent: React.FC<IInnovaTeamViewProps> = ({ context }) => {
           table={
             <DataTable
               value={tableData}
-              style={{
-                minWidth: "100%",
-                padding: "20px 0px",
-                maxHeight: "100%",
-              }}
+              style={{ minWidth: "100%", padding: "20px 0px" }}
               rows={3}
             >
               <Column
-                header="Team Member"
+                header="Team member"
                 style={{ width: "25%" }}
                 body={(rowData) => <Profile TeamMember={rowData?.TeamMember} />}
               />
-              <Column field="Role" header="Role" style={{ width: "27%" }} />
+              <Column
+                header="E-Mail"
+                style={{ width: "25%", fontSize: "12px" }}
+                body={(rowData: any) => {
+                  const email = rowData?.TeamMember?.Email;
+                  return (
+                    <div className={styles.bodyWrapper}>
+                      <a
+                        href={`mailto:${email}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {email}
+                      </a>
+                    </div>
+                  );
+                }}
+              />
+
+              <Column
+                header="Role"
+                style={{ width: "25%" }}
+                body={(rowData: any) => (
+                  <div className={styles.bodyWrapper}>{rowData?.Role}</div>
+                )}
+              />
               <Column
                 header="Job description"
-                style={{ width: "48%" }}
+                style={{ width: "25%" }}
                 body={(rowdata: any) => {
                   return (
                     <TooltipHost
