@@ -12,6 +12,7 @@ import { IMeetingViewProps } from "./components/IMeetingViewProps";
 import { SPComponentLoader } from "@microsoft/sp-loader";
 import { sp } from "@pnp/sp";
 import { graph } from "@pnp/graph";
+require("../../../node_modules/primereact/resources/themes/bootstrap4-light-blue/theme.css");
 export interface IMeetingViewWebPartProps {
   description: string;
 }

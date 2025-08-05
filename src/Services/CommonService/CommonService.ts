@@ -16,12 +16,12 @@ const peopleHandler = (Users: any[]): IUserDetails => {
 };
 const getPermissionLevel = async (currentuser: any): Promise<boolean> => {
   try {
-    console.log("graph", graph);
+    // console.log("graph", graph);
 
     const response = await graph.groups
       .getById(GraphId.AdminGroupMembers)
       .members.get();
-    console.log("response", response);
+    // console.log("response", response);
 
     const isAdmin = response.some(
       (res: any) =>

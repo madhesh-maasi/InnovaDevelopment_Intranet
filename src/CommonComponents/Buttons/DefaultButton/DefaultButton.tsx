@@ -25,7 +25,7 @@ const DefaultButton = ({
   endIcon,
   startIcon,
   disabled = false,
-  title = "",
+  title,
   onlyIcon = false,
   onClick,
   type = "button",
@@ -42,7 +42,7 @@ const DefaultButton = ({
 
   return (
     <Button
-      tooltip={title}
+      title={title}
       tooltipOptions={{ position: "top" }}
       className={buttonClass}
       onClick={onClick}

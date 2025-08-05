@@ -99,7 +99,7 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
 
   const onUserSelect = async (users: any, filter: boolean) => {
     const user = users?.[0];
-    console.log(user);
+    // console.log(user);
 
     if (!user) {
       setSelectedUser([]);
@@ -184,14 +184,14 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
   };
   const handleSubmitFuction = async () => {
     const { selectedUser, role, jobDescription } = input;
-    console.log("Input", input);
+    // console.log("Input", input);
 
     const missingFields = [];
     if (!role) {
       toastRef.current?.show({
         severity: "warn",
         summary: "Wrong member",
-        detail: "Please select valid member",
+        detail: "Please select valid Team member",
         life: 3000,
       });
       return;
@@ -204,8 +204,8 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
       const field = missingFields[0];
       const detailMessage =
         field === "Team member"
-          ? "Please select team member before submitting."
-          : `Please enter ${field.toLowerCase()} before submitting.`;
+          ? "Please select team member ."
+          : `Please enter ${field.toLowerCase()} .`;
 
       toastRef.current?.show({
         severity: "warn",
@@ -219,7 +219,7 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
       toastRef.current?.show({
         severity: "warn",
         summary: "Missing fields",
-        detail: `Please enter ${missingFields.join(", ")} before submitting.`,
+        detail: `Please enter ${missingFields.join(", ")}.`,
         life: 3000,
       });
       return;
@@ -250,7 +250,8 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
     [
       <div className={styles.popupCustomWrapper} key={0}>
         <CustomPeoplePicker
-          label="Team member*"
+          label="Team member"
+          required={true}
           selectedItem={selectedUser}
           personSelectionLimit={1}
           onChange={onUserSelect}
@@ -258,14 +259,16 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
           placeholder="Select user"
         />
         <CustomInputField
-          label="Role*"
+          label="Role"
+          required={true}
           value={input.role}
           readonly={true}
           disabled={true}
           placeholder="Role"
         />
         <CustomMultiInputField
-          label="Job description*"
+          label="Job description"
+          required={true}
           value={input.jobDescription}
           onChange={(e: any) =>
             handleInputChange("jobDescription", e.target.value)
@@ -371,7 +374,10 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
               <DataTable
                 value={tableData}
                 style={{ minWidth: "100%", padding: "20px 0px" }}
-                rows={3}
+                // emptyMessage={"No data found!"}
+                emptyMessage={
+                  <div className={styles.emptyMessage}>No data found!</div>
+                }
               >
                 <Column
                   header="Team member"
@@ -427,21 +433,23 @@ const InnovaTeamContent: React.FC<IInnovaTeamProps> = ({ context }) => {
               </DataTable>
             }
           />
-          <div className={styles.seeMoreWrapper}>
-            <span
-              onClick={() =>
-                window.open(
-                  `${
-                    window.location.origin
-                  }${"/sites/InnovaDevelopments/SitePages/InnovaTeamView.aspx"}`,
-                  "_blank",
-                  "noopener,noreferrer"
-                )
-              }
-            >
-              see more
-            </span>
-          </div>
+          {tableData.length > 4 && (
+            <div className={styles.seeMoreWrapper}>
+              <span
+                onClick={() =>
+                  window.open(
+                    `${
+                      window.location.origin
+                    }${"/sites/InnovaDevelopments/SitePages/InnovaTeamView.aspx"}`,
+                    "_blank",
+                    "noopener,noreferrer"
+                  )
+                }
+              >
+                see more
+              </span>
+            </div>
+          )}
         </div>
         <div>
           {popupController?.map((popupData: any, index: number) => (

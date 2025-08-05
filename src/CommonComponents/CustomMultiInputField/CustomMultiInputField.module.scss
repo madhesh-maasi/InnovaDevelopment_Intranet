@@ -2,7 +2,6 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  font-family: "Open Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   // row-gap: 2px;
   background-color: #ffffff;
   padding: 12px;
@@ -12,7 +11,6 @@
 .label {
   color: #a4a4a4;
   font-size: 12px;
-  font-family: "Open Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .textarea {
@@ -23,5 +21,4 @@
   border: unset !important;
   outline: none !important;
   box-shadow: none !important;
-  font-family: "Open Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }

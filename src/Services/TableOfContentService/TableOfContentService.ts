@@ -26,7 +26,10 @@ const FetchTableOfContentData = async () => {
   });
   return formattedData;
 };
-const createSitePage = async (roleGuide: string): Promise<string> => {
+const createSitePage = async (
+  roleGuide: string,
+  context: any
+): Promise<string> => {
   const pageName = roleGuide
     .trim()
     .replace(/\s+/g, "-")
@@ -43,20 +46,19 @@ const createSitePage = async (roleGuide: string): Promise<string> => {
   const page = await web.addClientsidePage(pageName, roleGuide, "Article"); // or "Home"
   await page.save();
 
-  const url = `${
-    window.location.origin
-  }${"/sites/InnovaDevelopments"}/SitePages/${pageName}.aspx`;
+  const url = `${context.pageContext._site.absoluteUrl}/SitePages/${pageName}.aspx`;
   return url;
 };
 const addTableOfContent = async (
   payload: any,
   setTableData: any,
   dispatch: any,
-  toastRef?: any
+  toastRef?: any,
+  context?: any
 ) => {
   try {
     // Step 1: Create site page and get its URL
-    const pageUrl = await createSitePage(payload.RoleGuide);
+    const pageUrl = await createSitePage(payload.RoleGuide, context);
 
     // Step 2: Prepare list payload
     const requestPayload = {
@@ -109,7 +111,7 @@ const updateTableOfContent = async (
   })
     .then((res: any) => {
       getTableOfContentData();
-      console.log("Succesfully updated");
+      // console.log("Succesfully updated");
       toastRef?.current?.show({
         severity: "success",
         summary: "Success",
@@ -118,7 +120,7 @@ const updateTableOfContent = async (
       });
     })
     .catch((err: any) => {
-      console.log("Error while updating", err);
+      // console.log("Error while updating", err);
     });
 };
 const deleteTableOfContent = async (

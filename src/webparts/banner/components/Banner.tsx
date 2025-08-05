@@ -96,14 +96,19 @@ const BannerContent: React.FC<IBannerProps> = ({
   const handleClosePopup = (index: number): void => {
     togglePopupVisibility(setPopupController, index, "close");
   };
-  const isValidUrl = (url: string) => {
+
+  const isValidUrl = (URL: string) => {
     try {
-      new URL(url);
-      return true;
+      const regexQuery =
+        "^(https?:\\/\\/)?((([-a-z0-9]{1,63}\\.)*?[a-z0-9]([-a-z0-9]{0,253}[a-z0-9])?\\.[a-z]{2,63})|((\\d{1,3}\\.){3}\\d{1,3}))(:\\d{1,5})?((\\/|\\?)((%[0-9a-f]{2})|[-\\w\\+\\.\\?\\/@~#&=])*)?$";
+      const url = new RegExp(regexQuery, "i");
+
+      return url.test(URL);
     } catch (_) {
       return false;
     }
   };
+
   const [quickLinkForm, setQuickLinkForm] = useState<IQuickLink>({
     Title: "",
     Link: "",
@@ -115,9 +120,109 @@ const BannerContent: React.FC<IBannerProps> = ({
       [field]: value,
     }));
   };
+  // const handleQuickLinkSubmit = async () => {
+  //   const { Title, Link, Logo } = quickLinkForm;
+  //   const missingFields = [];
+  //   if (!Title?.trim()) missingFields.push("Link name");
+  //   if (!Link?.trim()) missingFields.push("Link url");
+  //   if (!Logo) missingFields.push("Logo");
+
+  //   if (missingFields.length > 0) {
+  //     const messageDetails = [];
+  //     if (missingFields.length === 1 && missingFields[0] === "Link name") {
+  //       messageDetails.push("please enter link name before submitting");
+  //     } else if (
+  //       missingFields.length === 1 &&
+  //       missingFields[0] === "Link url"
+  //     ) {
+  //       messageDetails.push("please enter link url before submitting");
+  //     } else if (missingFields.length === 1 && missingFields[0] === "Logo") {
+  //       messageDetails.push("please upload logo before submitting");
+  //     }
+  //     toastRef.current?.show({
+  //       severity: "warn",
+  //       summary: "Missing fields",
+  //       detail:
+  //         missingFields.length === 1
+  //           ? messageDetails
+  //           : `Please enter/upload ${missingFields.join(
+  //               ", "
+  //             )} before submitting.`,
+  //       life: 3000,
+  //     });
+  //     return;
+  //   }
+  //   const userInputUrl = Link.trim();
+  //   const duplicate = quickLinks?.some(
+  //     (data: any) => data.Title === Title || data.Link === userInputUrl
+  //   );
+
+  //   if (userInputUrl && Title.trim() !== "") {
+  //     const isValid = isValidUrl(userInputUrl);
+  //     if (!isValid) {
+  //       toastRef.current?.show({
+  //         severity: "warn",
+  //         summary: "Missing fields",
+  //         detail: "Please enter a valid URL",
+  //         life: 3000,
+  //       });
+  //       return;
+  //     }
+  //   }
+  //   if (duplicate) {
+  //     toastRef.current?.show({
+  //       severity: "warn",
+  //       summary: "Duplicate Found!",
+  //       detail: `Link name or url aldready exists `,
+  //       life: 3000,
+  //     });
+  //     return;
+  //   }
+
+  //   // if (!Title && !Link && !Logo) {
+  //   //   toastRef.current?.show({
+  //   //     severity: "warn",
+  //   //     summary: "Missing fields",
+  //   //     detail: `Please enter Title,Link and Upload logo before submitting`,
+  //   //     life: 3000,
+  //   //   });
+  //   //   return;
+  //   // }
+  //   // if (!Logo) {
+  //   //   toastRef.current?.show({
+  //   //     severity: "warn",
+  //   //     summary: "Missing fields",
+  //   //     detail: `Please upload logo before submitting`,
+  //   //     life: 3000,
+  //   //   });
+  //   //   return;
+  //   // }
+
+  //   try {
+  //     setIsLoading(true);
+  //     const payload: IQuickLink = {
+  //       Title,
+  //       Link: userInputUrl,
+  //       Logo,
+  //     };
+  //     // console.log("Submitting QuickLink:", payload);
+  //     await addQuickLinks(payload, setQuickLinks, dispatch, toastRef);
+  //     handleClosePopup(0);
+  //     setQuickLinkForm({
+  //       Title: "",
+  //       Link: "",
+  //       Logo: null,
+  //     });
+  //   } catch (err) {
+  //     console.error("QuickLink submission failed:", err);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
   const handleQuickLinkSubmit = async () => {
     const { Title, Link, Logo } = quickLinkForm;
     const missingFields = [];
+
     if (!Title?.trim()) missingFields.push("Link name");
     if (!Link?.trim()) missingFields.push("Link url");
     if (!Logo) missingFields.push("Logo");
@@ -125,82 +230,81 @@ const BannerContent: React.FC<IBannerProps> = ({
     if (missingFields.length > 0) {
       const messageDetails = [];
       if (missingFields.length === 1 && missingFields[0] === "Link name") {
-        messageDetails.push("please enter link name before submitting");
+        messageDetails.push("Please enter link name.");
       } else if (
         missingFields.length === 1 &&
         missingFields[0] === "Link url"
       ) {
-        messageDetails.push("please enter link url before submitting");
+        messageDetails.push("Please enter link url.");
       } else if (missingFields.length === 1 && missingFields[0] === "Logo") {
-        messageDetails.push("please upload logo before submitting");
+        messageDetails.push("Please upload logo.");
       }
+
       toastRef.current?.show({
         severity: "warn",
         summary: "Missing fields",
         detail:
           missingFields.length === 1
-            ? messageDetails
-            : `Please enter/upload ${missingFields.join(
-                ", "
-              )} before submitting.`,
+            ? messageDetails[0]
+            : `Please enter/upload ${missingFields.join(", ")}.`,
         life: 3000,
       });
       return;
     }
+
     const userInputUrl = Link.trim();
-    const duplicate = quickLinks?.some(
-      (data: any) => data.Title === Title || data.Link === userInputUrl
+    const inputTitle = Title.trim();
+
+    // Validate URL format
+    const isValid = isValidUrl(userInputUrl);
+    if (!isValid) {
+      toastRef.current?.show({
+        severity: "warn",
+        summary: "Invalid URL",
+        detail: "Please enter a valid URL.",
+        life: 3000,
+      });
+      return;
+    }
+
+    // Check for duplicates
+    const titleExists = quickLinks?.some(
+      (item: any) => item.Title?.toLowerCase() === inputTitle.toLowerCase()
+    );
+    const linkExists = quickLinks?.some(
+      (item: any) =>
+        item.Link?.trim().toLowerCase() === userInputUrl.toLowerCase()
     );
 
-    if (userInputUrl && Title.trim() !== "") {
-      const isValid = isValidUrl(userInputUrl);
-      if (!isValid) {
-        toastRef.current?.show({
-          severity: "warn",
-          summary: "Missing fields",
-          detail: "Please enter a valid URL",
-          life: 3000,
-        });
-        return;
+    if (titleExists || linkExists) {
+      let detailMessage = "";
+
+      if (titleExists && linkExists) {
+        detailMessage = "Link name and URL already exist.";
+      } else if (titleExists) {
+        detailMessage = "Link name already exists.";
+      } else {
+        detailMessage = "Link URL already exists.";
       }
-    }
-    if (duplicate) {
+
       toastRef.current?.show({
         severity: "warn",
         summary: "Duplicate Found!",
-        detail: `Link name or url aldready exists `,
+        detail: detailMessage,
         life: 3000,
       });
       return;
     }
 
-    // if (!Title && !Link && !Logo) {
-    //   toastRef.current?.show({
-    //     severity: "warn",
-    //     summary: "Missing fields",
-    //     detail: `Please enter Title,Link and Upload logo before submitting`,
-    //     life: 3000,
-    //   });
-    //   return;
-    // }
-    // if (!Logo) {
-    //   toastRef.current?.show({
-    //     severity: "warn",
-    //     summary: "Missing fields",
-    //     detail: `Please upload logo before submitting`,
-    //     life: 3000,
-    //   });
-    //   return;
-    // }
-
+    // Proceed with submission
     try {
       setIsLoading(true);
       const payload: IQuickLink = {
-        Title,
+        Title: inputTitle,
         Link: userInputUrl,
         Logo,
       };
-      // console.log("Submitting QuickLink:", payload);
+
       await addQuickLinks(payload, setQuickLinks, dispatch, toastRef);
       handleClosePopup(0);
       setQuickLinkForm({
@@ -220,7 +324,8 @@ const BannerContent: React.FC<IBannerProps> = ({
       <>
         <div className={styles.customwrapper}>
           <CustomInputField
-            label="Link name*"
+            label="Link name"
+            required={true}
             value={quickLinkForm.Title}
             onChange={(e: any) =>
               handleQuickLinkChange("Title", e.target.value)
@@ -231,7 +336,8 @@ const BannerContent: React.FC<IBannerProps> = ({
 
         <div className={styles.customwrapper}>
           <CustomMultiInputField
-            label="Link url*"
+            label="Link url"
+            required={true}
             value={quickLinkForm.Link}
             onChange={(e: any) => handleQuickLinkChange("Link", e.target.value)}
             rows={1}
@@ -243,7 +349,8 @@ const BannerContent: React.FC<IBannerProps> = ({
         <div className={styles.customwrapper}>
           <CustomFileUpload
             accept="image/*"
-            label="Upload logo*"
+            label="Upload logo"
+            required={true}
             onFileSelect={(file: File) => handleQuickLinkChange("Logo", file)}
           />
           {quickLinkForm.Logo && (
@@ -315,7 +422,7 @@ const BannerContent: React.FC<IBannerProps> = ({
         </div>
       </div>
       <div className={styles.quickLinkContainer}>
-        <div style={{ width: "100%" }}>
+        <div style={{ width: "100%", height: "325px" }}>
           <div className={styles.quickLinkHeader}>
             <div>
               <u>Quick links</u>
@@ -351,7 +458,7 @@ const BannerContent: React.FC<IBannerProps> = ({
                 </div>
               ))
             ) : (
-              <div className={styles.noRecords}>No Links Found</div>
+              <div className={styles.noRecords}>No quick links found!</div>
             )}
           </div>
         </div>

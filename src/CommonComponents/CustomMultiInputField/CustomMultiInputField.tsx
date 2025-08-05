@@ -10,6 +10,7 @@ interface CustomMultiInputFieldProps {
   placeholder?: string;
   autoResize?: boolean;
   maxLength?: number;
+  required?: boolean;
 }
 
 const CustomMultiInputField: React.FC<CustomMultiInputFieldProps> = ({
@@ -19,11 +20,17 @@ const CustomMultiInputField: React.FC<CustomMultiInputFieldProps> = ({
   rows = 3,
   placeholder,
   autoResize = true,
-  maxLength = 500,
+  maxLength,
+  required,
 }) => {
   return (
     <div className={styles.customMultiInputWrapper}>
-      <label className={styles.label}>{label}</label>
+      <label className={styles.label}>
+        {label}
+        {required && (
+          <label style={{ color: "red", paddingLeft: "2px" }}>*</label>
+        )}
+      </label>
       <InputTextarea
         value={value}
         onChange={onChange}

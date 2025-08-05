@@ -144,7 +144,7 @@ const Training: React.FC<ITrainingProps> = ({ context }) => {
         toastRef.current?.show({
           severity: "warn",
           summary: "Missing fields",
-          detail: `Please enter ${missingFields.join(", ")} before submitting.`,
+          detail: `Please enter ${missingFields.join(", ")}.`,
           life: 3000,
         });
         return;
@@ -154,7 +154,7 @@ const Training: React.FC<ITrainingProps> = ({ context }) => {
         toastRef.current?.show({
           severity: "warn",
           summary: "Duplicate Found!",
-          detail: `File aldready exists `,
+          detail: `File aldready exists.`,
           life: 3000,
         });
         return;
@@ -185,7 +185,8 @@ const Training: React.FC<ITrainingProps> = ({ context }) => {
     [
       <div className={styles.popupCustomWrapper} key={0}>
         <CustomInputField
-          label="Name*"
+          label="Name"
+          required={true}
           value={input.Name}
           onChange={(e: any) => handleInputChange("Name", e.target.value)}
           placeholder="Enter Name"
@@ -323,8 +324,37 @@ const Training: React.FC<ITrainingProps> = ({ context }) => {
                 value={filteredData}
                 style={{ maxWidth: "100%", padding: "20px 0px" }}
                 tableStyle={{ tableLayout: "fixed" }}
+                emptyMessage={
+                  <div className={styles.emptyMessage}>No data found!</div>
+                }
               >
-                <Column field="Name" header="Name" style={{ width: "25%" }} />
+                <Column
+                  field="Name"
+                  header="Name"
+                  style={{ width: "25%" }}
+                  body={(rowdata: any) => {
+                    return (
+                      <TooltipHost
+                        content={rowdata.Name}
+                        tooltipProps={{
+                          directionalHint: DirectionalHint.bottomLeftEdge,
+                        }}
+                      >
+                        <div
+                          style={{
+                            whiteSpace: "nowrap",
+                            width: "100%",
+                            textOverflow: "ellipsis",
+                            overflow: "hidden",
+                            padding: "5px 0px",
+                          }}
+                        >
+                          {rowdata.Name}
+                        </div>
+                      </TooltipHost>
+                    );
+                  }}
+                />
                 <Column
                   field="URL"
                   header="URL"
@@ -365,7 +395,7 @@ const Training: React.FC<ITrainingProps> = ({ context }) => {
                     header="Action"
                     style={{ width: "10%" }}
                     body={(rowData: any) => (
-                      <div style={{ display: "flex", gap: "10%" }}>
+                      <div style={{ display: "flex", gap: "4%" }}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="18"

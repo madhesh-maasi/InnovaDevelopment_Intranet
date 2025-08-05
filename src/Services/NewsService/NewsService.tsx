@@ -28,10 +28,21 @@ const fetchNewsItems = async (setNewsItems: any, Type?: any) => {
       .top(5000)
       .get();
   } else {
+    // const today = new Date().toISOString();
+    const now = new Date(); // Current date/time
+    // const nowIso = now.toISOString(); // For StartDate
+
+    // Create a new date for "tomorrow at midnight"
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setUTCHours(0, 0, 0, 0);
+    const tomorrowIso = tomorrow.toISOString(); // For EndDate check
     pages = await sp.web.lists
       .getByTitle("Site Pages")
       .items.orderBy("ID", false)
-      .filter("PageType eq 'NewsPage'")
+      .filter(
+        `PageType eq 'NewsPage' and StartDate le datetime'${tomorrowIso}' and EndDate ge datetime'${tomorrowIso}'`
+      )
       .expand("ThumbnailAttachmentsOf")
       .select(
         "*,Title,FileRef,EncodedAbsUrl,ServerRedirectedEmbedUri,UniqueId,ThumbnailAttachmentsOf/ID"

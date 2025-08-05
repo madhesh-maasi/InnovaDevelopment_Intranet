@@ -5,7 +5,7 @@
 import * as React from "react";
 import styles from "./NewsView.module.scss";
 import { useEffect, useState } from "react";
-import { useDispatch, Provider } from "react-redux";
+import { useDispatch, Provider, useSelector } from "react-redux";
 import { sp } from "@pnp/sp/presets/all";
 import CustomHeader from "../../../CommonComponents/webpartsHeader/CustomerHeader/CustomHeader";
 // import CustomaddBtn from "../../../CommonComponents/webpartsHeader/CustomaddBtn/CustomaddBtn";
@@ -17,20 +17,26 @@ import {
   setTenantUrl,
   setWebUrl,
 } from "../../../Redux/Features/MainSPContextSlice";
-import { DirectionalHint, TooltipHost } from "@fluentui/react";
 import { INewsItem } from "../../../Interface/NewsInterface";
 import { fetchNewsItems } from "../../../Services/NewsService/NewsService";
 import { AddNewsPanel } from "../../news/components/NewsCreation/AddNewsPanel";
 import { INewsViewProps } from "./INewsViewProps";
 // import "../assets/css/style.css";
 import "../../../Config/style.css";
+import CustomaddBtn from "../../../CommonComponents/webpartsHeader/CustomaddBtn/CustomaddBtn";
+import { getPermissionLevel } from "../../../Services/CommonService/CommonService";
 
 const News: React.FC<INewsViewProps> = ({ context }) => {
   const dispatch = useDispatch();
   // const imgUrl = require("../assets/wallpaper.jpg");
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const currentuser = useSelector(
+    (state: any) => state.MainSPContext.currentUserDetails
+  );
+
   const [newsItems, setNewsItems] = useState<INewsItem[]>([]);
   const [showPanel, setShowPanel] = useState(false);
-  console.log("newsItems", newsItems);
+  // console.log("newsItems", newsItems);
 
   //   const [news, setNews] = useState<any[]>([
   //     {
@@ -83,16 +89,24 @@ const News: React.FC<INewsViewProps> = ({ context }) => {
       console.error("Error setting context:", err);
     }
   };
+  const checkPermission = async () => {
+    const result = await getPermissionLevel(currentuser);
+    setIsAdmin(result);
+  };
   useEffect(() => {
     setContext();
     fetchNewsItems(setNewsItems, "View");
   }, []);
-
+  useEffect(() => {
+    if (currentuser && currentuser.length > 0) {
+      checkPermission();
+    }
+  }, [currentuser]);
   return (
     <div className={styles.newsContainer}>
       <div className={styles.headerWrapper}>
         <CustomHeader Header="News" />
-        {/* <CustomaddBtn onClick={() => setShowPanel(true)} /> */}
+        {isAdmin ? <CustomaddBtn onClick={() => setShowPanel(true)} /> : <></>}
       </div>
       <div className={styles.newsWrapper}>
         {newsItems.length > 0 ? (
@@ -108,20 +122,13 @@ const News: React.FC<INewsViewProps> = ({ context }) => {
                 </div>
                 <div style={{ width: "85%" }}>
                   <div className={styles.title}>{item.title}</div>
-                  <TooltipHost
-                    content={item.description}
-                    tooltipProps={{
-                      directionalHint: DirectionalHint.bottomCenter,
-                    }}
-                  >
-                    <p>{item.description}</p>
-                  </TooltipHost>
+                  <p>{item.description}</p>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className={styles.noRecords}>No News Record Found</div>
+          <div className={styles.noRecords}>No news found!</div>
         )}
       </div>
 

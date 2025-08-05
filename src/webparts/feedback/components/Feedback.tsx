@@ -137,7 +137,7 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
       toastRef.current?.show({
         severity: "warn",
         summary: "Missing fields",
-        detail: `Please enter ${missingFields.join(", ")} before submitting.`,
+        detail: `Please enter ${missingFields.join(", ")}.`,
         life: 3000,
       });
       return;
@@ -170,7 +170,7 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
       toastRef.current?.show({
         severity: "warn",
         summary: "Empty Comment",
-        detail: "Please enter a comment before sending.",
+        detail: "Please enter a comment.",
         life: 3000,
       });
       return;
@@ -192,7 +192,8 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
         <div className={styles.inputWrapper}>
           <div className={styles.customwrapper}>
             <CustomInputField
-              label="Title*"
+              label="Title"
+              required={true}
               value={formData.title}
               onChange={(e: any) => handleFormChange("title", e.target.value)}
               placeholder="Title"
@@ -200,7 +201,8 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
           </div>
           <div className={styles.customwrapper}>
             <CustomMultiInputField
-              label="Description*"
+              label="Description"
+              required={true}
               value={formData.description}
               onChange={(e: any) =>
                 handleFormChange("description", e.target.value)
@@ -516,7 +518,7 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
             </button>
           </div>
         ) : (
-          <div className={styles.noRecords}>No Records Found</div>
+          <div className={styles.noRecords}>No feedback found!</div>
         )}
         <div>
           {popupController?.map((popupData: any, index: number) => (

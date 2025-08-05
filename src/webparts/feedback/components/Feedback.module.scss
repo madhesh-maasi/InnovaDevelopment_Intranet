@@ -224,6 +224,7 @@
       font-size: 12px !important;
       color: #fff;
       line-height: 1;
+      line-break: anywhere;
     }
     .dateTimeWrapper {
       padding-top: 5px;
@@ -287,6 +288,7 @@
       color: grey;
       position: relative;
       top: 2px;
+      line-break: anywhere;
     }
     i {
       font-size: 10px;
@@ -334,6 +336,7 @@
     span {
       font-size: 12px !important;
       line-height: 1;
+      line-break: anywhere;
     }
   }
   .dateTimeWrapper {

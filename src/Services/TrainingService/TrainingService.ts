@@ -101,7 +101,7 @@ const updateTraining = async (
   })
     .then((res: any) => {
       getTrainingData();
-      console.log("Succesfully updated");
+      // console.log("Succesfully updated");
       toastRef?.current?.show({
         severity: "success",
         summary: "Success",
@@ -128,13 +128,12 @@ const deleteTraining = async (
   }).then(async () => {
     await setAllData((prevData: any) =>
       prevData.filter((item: any) => item.Id !== deleteItemId)
-    ).then(() => {
-      toastRef?.current?.show({
-        severity: "success",
-        summary: "Success",
-        detail: "deleted successfully!",
-        life: 3000,
-      });
+    );
+    toastRef?.current?.show({
+      severity: "success",
+      summary: "Success",
+      detail: "deleted successfully!",
+      life: 3000,
     });
   });
 };

@@ -7,7 +7,7 @@ import { AvatarGroup } from "primereact/avatargroup";
 import * as React from "react";
 import "./Profile.css";
 const Profile = (props: any) => {
-  console.log("Props Data", props);
+  // console.log("Props Data", props);
   return (
     <div>
       <AvatarGroup>

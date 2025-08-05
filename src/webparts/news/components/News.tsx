@@ -18,7 +18,6 @@ import {
   setTenantUrl,
   setWebUrl,
 } from "../../../Redux/Features/MainSPContextSlice";
-import { DirectionalHint, TooltipHost } from "@fluentui/react";
 import { INewsItem } from "../../../Interface/NewsInterface";
 import { fetchNewsItems } from "../../../Services/NewsService/NewsService";
 import { AddNewsPanel } from "./NewsCreation/AddNewsPanel";
@@ -34,7 +33,7 @@ const News: React.FC<INewsProps> = ({ context }) => {
 
   const [newsItems, setNewsItems] = useState<INewsItem[]>([]);
   const [showPanel, setShowPanel] = useState(false);
-  console.log("newsItems", newsItems);
+  // console.log("newsItems", newsItems);
 
   //   const [news, setNews] = useState<any[]>([
   //     {
@@ -125,20 +124,13 @@ const News: React.FC<INewsProps> = ({ context }) => {
                   </div>
                   <div style={{ width: "85%" }}>
                     <div className={styles.title}>{item.title}</div>
-                    <TooltipHost
-                      content={item.description}
-                      tooltipProps={{
-                        directionalHint: DirectionalHint.bottomCenter,
-                      }}
-                    >
-                      <p>{item.description}</p>
-                    </TooltipHost>
+                    <p>{item.description}</p>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className={styles.noRecords}>No News Record Found</div>
+            <div className={styles.noRecords}>No news found!</div>
           )}
         </div>
         {newsItems.length > 0 ? (
