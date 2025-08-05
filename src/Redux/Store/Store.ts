@@ -16,6 +16,7 @@ const store = configureStore({
     TableOfContent: TableOfContentSlice,
     Training: TrainingSlice,
   },
+  devTools: false,
 });
 
 export { store };

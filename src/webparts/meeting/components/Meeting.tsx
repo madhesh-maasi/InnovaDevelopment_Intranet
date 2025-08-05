@@ -105,7 +105,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
   const [isLoading, setIsLoading] = useState(false);
   const videoImgUrl = require("../assets/Video.png");
   const linkImgUrl = require("../assets/Link.png");
-  console.log("formData", formData);
+  // console.log("formData", formData);
 
   const handleFormChange = (field: string, value: any) => {
     setFormData((prev) => ({
@@ -127,14 +127,18 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
       console.error("Failed to load meetings:", err);
     }
   };
-  const isValidUrl = (url: string) => {
+  const isValidUrl = (URL: string) => {
     try {
-      new URL(url);
-      return true;
+      const regexQuery =
+        "^(https?:\\/\\/)?((([-a-z0-9]{1,63}\\.)*?[a-z0-9]([-a-z0-9]{0,253}[a-z0-9])?\\.[a-z]{2,63})|((\\d{1,3}\\.){3}\\d{1,3}))(:\\d{1,5})?((\\/|\\?)((%[0-9a-f]{2})|[-\\w\\+\\.\\?\\/@~#&=])*)?$";
+      const url = new RegExp(regexQuery, "i");
+
+      return url.test(URL);
     } catch (_) {
       return false;
     }
   };
+
   const handleSubmitFuction = async () => {
     const { fileType, videoFile, linkName, linkUrl } = formData;
 
@@ -155,7 +159,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
           toastRef.current?.show({
             severity: "warn",
             summary: "Missing Fields",
-            detail: " please select video file before submitting",
+            detail: " Please select video file ",
             life: 3000,
           });
           return;
@@ -185,6 +189,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
         }
       } else if (fileType === "Link") {
         const userInputUrl = linkUrl.trim();
+        const inputTitle = linkName.trim();
         const missingFields = [];
         if (!linkName.trim()) missingFields.push("Link name");
         if (!linkUrl.trim()) missingFields.push("Link url");
@@ -192,9 +197,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
           toastRef.current?.show({
             severity: "warn",
             summary: "Missing fields",
-            detail: `Please enter ${missingFields.join(
-              ", "
-            )} before submitting.`,
+            detail: `Please enter ${missingFields.join(", ")}.`,
             life: 3000,
           });
           return;
@@ -205,21 +208,39 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
             toastRef.current?.show({
               severity: "warn",
               summary: "Missing fields",
-              detail: "Please enter a valid URL",
+              detail: "Please enter a valid URL.",
               life: 3000,
             });
             return;
           }
         }
-        const duplicateLink = meetingData?.some(
-          (data: any) =>
-            data.FileName === linkName || data.linkUrl === userInputUrl
+        // const duplicateLink = meetingData?.some(
+        //   (data: any) =>
+        //     data.FileName === linkName || data.linkUrl === userInputUrl
+        // );
+        const titleExists = meetingData?.some(
+          (item: any) =>
+            item.FileName?.toLowerCase() === inputTitle.toLowerCase()
         );
-        if (duplicateLink) {
+        const linkExists = meetingData?.some(
+          (item: any) =>
+            item.FileUrl?.trim().toLowerCase() === userInputUrl.toLowerCase()
+        );
+        if (titleExists || linkExists) {
+          let detailMessage = "";
+
+          if (titleExists && linkExists) {
+            detailMessage = "Link name and URL already exist.";
+          } else if (titleExists) {
+            detailMessage = "Link name already exists.";
+          } else {
+            detailMessage = "Link URL already exists.";
+          }
+
           toastRef.current?.show({
             severity: "warn",
             summary: "Duplicate Found!",
-            detail: `Link name or url aldready exists `,
+            detail: detailMessage,
             life: 3000,
           });
           return;
@@ -272,7 +293,8 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
           <div className={styles.linkWrapper}>
             <div className={styles.customwrapper}>
               <CustomInputField
-                label="Link name*"
+                label="Link name"
+                required={true}
                 value={formData.linkName}
                 onChange={(e: any) =>
                   handleFormChange("linkName", e.target.value)
@@ -282,7 +304,8 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
             </div>
             <div className={styles.customwrapper}>
               <CustomMultiInputField
-                label="Link url*"
+                label="Link url"
+                required={true}
                 value={formData.linkUrl}
                 onChange={(e: any) =>
                   handleFormChange("linkUrl", e.target.value)
@@ -300,6 +323,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
             <CustomFileUpload
               accept="video/*"
               label="Upload video"
+              required={true}
               onFileSelect={(file: File) => handleFormChange("videoFile", file)}
             />
             {formData.videoFile && (
@@ -401,15 +425,15 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
                       {item.Type === "Video" ? (
                         <img
                           src={videoImgUrl}
-                          width="35px"
-                          height="35px"
+                          width="45px"
+                          height="45px"
                           alt="Video"
                         />
                       ) : (
                         <img
                           src={linkImgUrl}
-                          width="35px"
-                          height="35px"
+                          width="45px"
+                          height="45px"
                           alt="Link"
                         />
                       )}
@@ -444,7 +468,7 @@ const MeetingContent: React.FC<IMeetingProps> = ({ context }) => {
               </div>
             </>
           ) : (
-            <div className={styles.noRecords}>No Records Found</div>
+            <div className={styles.noRecords}>No data found!</div>
           )}
         </div>
         <div>

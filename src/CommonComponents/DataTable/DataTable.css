@@ -1,7 +1,6 @@
 .p-datatable-table {
   /* border-collapse: separate !important; */
   border-spacing: 0 4px;
-  font-family: "Open Sans", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 .custom-data-table {
   height: 100%;
@@ -35,7 +34,7 @@
   height: 100% !important;
 }
 .tableContentWrapper .p-datatable-wrapper {
-  height: 337px !important;
+  height: 380px !important;
   scrollbar-width: thin;
   scrollbar-color: #75717154 transparent;
 }

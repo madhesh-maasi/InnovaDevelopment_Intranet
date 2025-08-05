@@ -41,7 +41,6 @@
 .welcomeCard {
   display: flex;
   width: 75%;
-  row-gap: 16px;
   flex-direction: column;
 }
 
@@ -54,6 +53,7 @@
 .description {
   font-size: 18px;
   color: #fff;
+  font-weight: 300;
 }
 
 .quickLinkContainer {
@@ -65,11 +65,12 @@
   justify-content: center;
 }
 .noRecords {
+  height: 270px;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  color: black;
+  color: white;
 }
 .quickLinkHeader {
   width: 100%;
@@ -93,16 +94,16 @@
   /* bottom closer */
 }
 
-.quickLinkcardsContainer {
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5%;
-  height: 270px;
-  row-gap: 15px;
-  margin: 16px 0;
-  overflow: auto;
-}
+// .quickLinkcardsContainer {
+//   width: 100%;
+//   display: flex;
+//   flex-wrap: wrap;
+//   gap: 5%;
+//   height: 85% !important;
+//   row-gap: 15px;
+//   margin: 16px 0;
+//   overflow: auto;
+// }
 
 .quickLinksCard {
   width: 30%;

@@ -122,8 +122,8 @@ export const AddNewsPanel: React.FC<IProps> = ({
         const field = missingFields[0];
         const detailMessage =
           field === "Thumbnail"
-            ? "Please upload thumbnail before submitting."
-            : `Please enter ${field.toLowerCase()} before submitting.`;
+            ? "Please upload thumbnail."
+            : `Please enter ${field.toLowerCase()}. `;
 
         toastRef.current?.show({
           severity: "warn",
@@ -139,9 +139,7 @@ export const AddNewsPanel: React.FC<IProps> = ({
         toastRef.current?.show({
           severity: "warn",
           summary: "Missing fields",
-          detail: `Please enter/upload ${missingFields.join(
-            ", "
-          )} before submitting.`,
+          detail: `Please enter/upload ${missingFields.join(", ")}.`,
           life: 3000,
         });
         return;
@@ -336,12 +334,22 @@ export const AddNewsPanel: React.FC<IProps> = ({
                       ))}
                     </div>
                     <div className="buttonFooter">
-                      <DefaultButton
-                        text="Next"
-                        btnType="primaryBtn"
-                        disabled={!selectedTemplate}
-                        onClick={() => setStep("form")}
-                      />
+                      <div
+                        title={!selectedTemplate ? "Select template first" : ""}
+                        style={{
+                          cursor:
+                            selectedTemplate != null
+                              ? "pointer"
+                              : "not-allowed",
+                        }}
+                      >
+                        <DefaultButton
+                          text="Next"
+                          btnType="primaryBtn"
+                          disabled={!selectedTemplate}
+                          onClick={() => setStep("form")}
+                        />
+                      </div>
                     </div>
                   </div>
                 </>
@@ -352,7 +360,8 @@ export const AddNewsPanel: React.FC<IProps> = ({
                     <div className="p-fluid">
                       <div className="fieldCard">
                         <CustomInputField
-                          label="Title*"
+                          label="Title"
+                          required={true}
                           value={newsForm?.Title || ""}
                           placeholder="Enter title"
                           onChange={(e) =>
@@ -365,6 +374,7 @@ export const AddNewsPanel: React.FC<IProps> = ({
                       </div>
                       <div className="fieldCard">
                         <CustomDateTimePicker
+                          required={true}
                           value={newsForm?.StartDate}
                           onChange={(date) =>
                             setNewsForm((prev: any) => ({
@@ -372,13 +382,14 @@ export const AddNewsPanel: React.FC<IProps> = ({
                               StartDate: date || "",
                             }))
                           }
-                          label="Start date*"
+                          label="Start date"
                           placeholder="Select start date"
                           withLabel={true}
                         />
                       </div>
                       <div className="fieldCard">
                         <CustomDateTimePicker
+                          required={true}
                           value={newsForm?.EndDate}
                           onChange={(date) =>
                             setNewsForm((prev: any) => ({
@@ -386,7 +397,7 @@ export const AddNewsPanel: React.FC<IProps> = ({
                               EndDate: date || "",
                             }))
                           }
-                          label="End date*"
+                          label="End date"
                           placeholder="Select end date"
                           withLabel={true}
                         />
@@ -394,7 +405,8 @@ export const AddNewsPanel: React.FC<IProps> = ({
                       <div className="fieldCard">
                         <CustomFileUpload
                           accept="image/*"
-                          label="Upload thumbnail*"
+                          label="Upload thumbnail"
+                          required={true}
                           onFileSelect={(file: File | null) => {
                             if (!file) {
                               setNewsForm((prev) => ({

@@ -13,6 +13,7 @@ interface CustomInputFieldProps {
   maxLength?: number;
   onKeyDown?: any;
   isChat?: boolean;
+  required?: boolean;
 }
 
 const CustomInputField: React.FC<CustomInputFieldProps> = ({
@@ -25,10 +26,16 @@ const CustomInputField: React.FC<CustomInputFieldProps> = ({
   maxLength,
   onKeyDown,
   isChat,
+  required,
 }) => {
   return (
     <div className={isChat ? styles.sendBox : styles.customInputWrapper}>
-      <label className={styles.label}>{label}</label>
+      <label className={styles.label}>
+        {label}
+        {required && (
+          <label style={{ color: "red", paddingLeft: "2px" }}>*</label>
+        )}
+      </label>
       <InputText
         value={value}
         onChange={onChange}

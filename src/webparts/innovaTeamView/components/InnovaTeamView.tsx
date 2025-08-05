@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 
 import * as React from "react";
 import type { IInnovaTeamViewProps } from "./IInnovaTeamViewProps";
 import styles from "./InnovaTeamView.module.scss";
 
 import { sp } from "@pnp/sp/presets/all";
-import { Provider, useDispatch } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import { store } from "../../../Redux/Store/Store";
 // import "../assets/css/style.css";
 import "../../../Config/style.css";
@@ -35,16 +36,24 @@ import CustomDataTable from "../../../CommonComponents/DataTable/DataTable";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import Profile from "../../../CommonComponents/Profile/Profile";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { togglePopupVisibility } from "../../../CommonComponents/CustomPopup/togglePopup";
 import Popup from "../../../CommonComponents/CustomPopup/Popup";
 import CustomInputField from "../../../CommonComponents/CustomInputField/CustomInputField";
 import CustomMultiInputField from "../../../CommonComponents/CustomMultiInputField/CustomMultiInputField";
 import { DirectionalHint, TooltipHost } from "@fluentui/react";
+import CustomaddBtn from "../../../CommonComponents/webpartsHeader/CustomaddBtn/CustomaddBtn";
+import { getPermissionLevel } from "../../../Services/CommonService/CommonService";
+import { Toast } from "primereact/toast";
 
 const InnovaTeamContent: React.FC<IInnovaTeamViewProps> = ({ context }) => {
   const dispatch = useDispatch();
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const currentuser = useSelector(
+    (state: any) => state.MainSPContext.currentUserDetails
+  );
 
+  const toastRef = React.useRef<any>(null);
   const [role, setRole] = React.useState<string | undefined>();
   const [input, setInput] = React.useState<any>({
     selectedUser: null,
@@ -95,6 +104,18 @@ const InnovaTeamContent: React.FC<IInnovaTeamViewProps> = ({ context }) => {
 
   const onUserSelect = async (users: any, filter: boolean) => {
     const user = users?.[0];
+    // console.log(user);
+
+    if (!user) {
+      setSelectedUser([]);
+      setInput({
+        ...input,
+        selectedUser: null,
+        role: "",
+        // jobDescription: "",
+      });
+    }
+
     if (filter) {
       setSelectedUser(users);
       if (user?.Email) {
@@ -106,9 +127,25 @@ const InnovaTeamContent: React.FC<IInnovaTeamViewProps> = ({ context }) => {
         setTableData(allData);
       }
     } else {
+      const isDuplicate = allData.some(
+        (item) =>
+          item?.TeamMember?.Email?.toLowerCase() === user.Email?.toLowerCase()
+      );
+
+      if (isDuplicate) {
+        toastRef.current?.show({
+          severity: "warn",
+          summary: "Duplicate User",
+          detail: "User is already in the team.",
+          life: 3000,
+        });
+        setSelectedUser([]);
+        return;
+      }
       await _getUserDetails(user, setInput, context);
     }
   };
+
   const handleInputChange = (field: string, value: any) => {
     setInput((prev: any) => ({
       ...prev,
@@ -145,26 +182,62 @@ const InnovaTeamContent: React.FC<IInnovaTeamViewProps> = ({ context }) => {
     }
   };
   const getInnovaTeamData = async () => {
-    const teamdata = await FetchInnovaTeamData("View");
+    const teamdata = await FetchInnovaTeamData();
     dispatch(setInnovaTeam(teamdata));
     setAllData(teamdata);
     setTableData(teamdata);
   };
   const handleSubmitFuction = async () => {
-    setIsLoading(true);
     const { selectedUser, role, jobDescription } = input;
+    // console.log("Input", input);
+
+    const missingFields = [];
+    if (!role) {
+      toastRef.current?.show({
+        severity: "warn",
+        summary: "Wrong member",
+        detail: "Please select valid Team member",
+        life: 3000,
+      });
+      return;
+    }
+    const trimmedJobDescription = jobDescription.trim();
+
+    if (!selectedUser) missingFields.push("Team member");
+    if (!trimmedJobDescription) missingFields.push("Job description");
+    if (missingFields.length === 1) {
+      const field = missingFields[0];
+      const detailMessage =
+        field === "Team member"
+          ? "Please select team member ."
+          : `Please enter ${field.toLowerCase()}.`;
+
+      toastRef.current?.show({
+        severity: "warn",
+        summary: "Missing field",
+        detail: detailMessage,
+        life: 3000,
+      });
+      return;
+    }
+    if (missingFields.length > 0) {
+      toastRef.current?.show({
+        severity: "warn",
+        summary: "Missing fields",
+        detail: `Please enter ${missingFields.join(", ")}.`,
+        life: 3000,
+      });
+      return;
+    }
     // console.log(selectedUser, "user");
     try {
-      if (!selectedUser?.Id || !role) {
-        console.error("Missing required fields");
-        return;
-      }
+      setIsLoading(true);
       const payload = {
         Title: role,
         TeamMember: selectedUser,
         JobDescription: jobDescription,
       };
-      await addInnovaTeam(payload, setTableData, dispatch);
+      await addInnovaTeam(payload, setTableData, dispatch, toastRef);
       await getInnovaTeamData();
       handleClosePopup(0);
       setInput({
@@ -182,27 +255,31 @@ const InnovaTeamContent: React.FC<IInnovaTeamViewProps> = ({ context }) => {
     [
       <div className={styles.popupCustomWrapper} key={0}>
         <CustomPeoplePicker
+          label="Team member"
+          required={true}
           selectedItem={selectedUser}
           personSelectionLimit={1}
           onChange={onUserSelect}
           filter={false}
-          placeholder="Select User"
+          placeholder="Select user"
         />
         <CustomInputField
           label="Role"
+          required={true}
           value={input.role}
           readonly={true}
           disabled={true}
           placeholder="Role"
         />
         <CustomMultiInputField
-          label="Job Description"
+          label="Job description"
+          required={true}
           value={input.jobDescription}
           onChange={(e: any) =>
             handleInputChange("jobDescription", e.target.value)
           }
           rows={3}
-          placeholder="Job Description"
+          placeholder="Job description"
           autoResize={false}
         />
       </div>,
@@ -218,6 +295,11 @@ const InnovaTeamContent: React.FC<IInnovaTeamViewProps> = ({ context }) => {
         startIcon: false,
         onClick: () => {
           handleClosePopup(0);
+          setInput({
+            selectedUser: null,
+            role: "",
+            jobDescription: "",
+          });
         },
       },
       {
@@ -227,43 +309,68 @@ const InnovaTeamContent: React.FC<IInnovaTeamViewProps> = ({ context }) => {
         endIcon: false,
         startIcon: false,
         onClick: () => {
-          handleSubmitFuction();
+          !isLoading && handleSubmitFuction();
         },
       },
     ],
   ];
-  React.useEffect(() => {
+  const checkPermission = async () => {
+    const result = await getPermissionLevel(currentuser);
+    setIsAdmin(result);
+  };
+  useEffect(() => {
     dispatch(setMainSPContext(context));
     setContext();
     getInnovaTeamData();
   }, []);
-
+  useEffect(() => {
+    if (currentuser && currentuser.length > 0) {
+      checkPermission();
+    }
+  }, [currentuser]);
   return (
-    <div className={styles.innovaTeamContainer}>
-      <div className={styles.headerSection}>
-        <div style={{ width: "50%" }}>
-          <CustomHeader Header="Innova Team" />
-        </div>
-        <div className={styles.headerRight}>
-          <div style={{ width: "180px" }}>
-            <CustomDropdown
-              value={role}
-              options={getOptions()}
-              onChange={onChangeFunction}
-              placeholder="Role"
-            />
+    <>
+      <Toast ref={toastRef} position="top-right" baseZIndex={1} />
+      <div className={styles.innovaTeamContainer}>
+        <div className={styles.headerSection}>
+          <div style={{ width: "50%" }}>
+            <CustomHeader Header="Innova Team" />
           </div>
-          <div style={{ width: "180px", height: "100%" }}>
-            <CustomPeoplePicker
-              selectedItem={selectedUser}
-              personSelectionLimit={1}
-              onChange={onUserSelect}
-              filter={true}
-              placeholder="Search By User"
-            />
-          </div>
-
-          {/* <CustomaddBtn
+          <div className={styles.headerRight}>
+            <div style={{ width: "180px" }}>
+              <CustomDropdown
+                value={role}
+                options={getOptions()}
+                onChange={onChangeFunction}
+                placeholder="Role"
+              />
+            </div>
+            <div style={{ width: "180px", height: "100%" }}>
+              <CustomPeoplePicker
+                selectedItem={selectedUser}
+                personSelectionLimit={1}
+                onChange={onUserSelect}
+                filter={true}
+                placeholder="Search By User"
+              />
+            </div>
+            {isAdmin ? (
+              <CustomaddBtn
+                onClick={() => {
+                  setSelectedUser([]);
+                  togglePopupVisibility(
+                    setPopupController,
+                    0,
+                    "open",
+                    `Add Role`,
+                    "30%"
+                  );
+                }}
+              />
+            ) : (
+              <></>
+            )}
+            {/* <CustomaddBtn
             onClick={() => {
               togglePopupVisibility(
                 setPopupController,
@@ -274,94 +381,97 @@ const InnovaTeamContent: React.FC<IInnovaTeamViewProps> = ({ context }) => {
               );
             }}
           /> */}
+          </div>
         </div>
-      </div>
 
-      <div className="viewDatatablewrapper">
-        <CustomDataTable
-          table={
-            <DataTable
-              value={tableData}
-              style={{ minWidth: "100%", padding: "20px 0px" }}
-              rows={3}
-            >
-              <Column
-                header="Team member"
-                style={{ width: "25%" }}
-                body={(rowData) => <Profile TeamMember={rowData?.TeamMember} />}
-              />
-              <Column
-                header="E-Mail"
-                style={{ width: "25%", fontSize: "12px" }}
-                body={(rowData: any) => {
-                  const email = rowData?.TeamMember?.Email;
-                  return (
-                    <div className={styles.bodyWrapper}>
-                      <a
-                        href={`mailto:${email}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {email}
-                      </a>
-                    </div>
-                  );
-                }}
-              />
-
-              <Column
-                header="Role"
-                style={{ width: "25%" }}
-                body={(rowData: any) => (
-                  <div className={styles.bodyWrapper}>{rowData?.Role}</div>
-                )}
-              />
-              <Column
-                header="Job description"
-                style={{ width: "25%" }}
-                body={(rowdata: any) => {
-                  return (
-                    <TooltipHost
-                      content={rowdata.JobDescription}
-                      tooltipProps={{
-                        directionalHint: DirectionalHint.bottomCenter,
-                      }}
-                    >
-                      <div className={styles.jobDescriptionWrapper}>
-                        <p> {rowdata.JobDescription}</p>
+        <div className="viewDatatablewrapper">
+          <CustomDataTable
+            table={
+              <DataTable
+                value={tableData}
+                style={{ minWidth: "100%", padding: "20px 0px" }}
+                emptyMessage={"No records found"}
+              >
+                <Column
+                  header="Team member"
+                  style={{ width: "25%" }}
+                  body={(rowData) => (
+                    <Profile TeamMember={rowData?.TeamMember} />
+                  )}
+                />
+                <Column
+                  header="E-Mail"
+                  style={{ width: "25%", fontSize: "12px" }}
+                  body={(rowData: any) => {
+                    const email = rowData?.TeamMember?.Email;
+                    return (
+                      <div className={styles.bodyWrapper}>
+                        <a
+                          href={`mailto:${email}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {email}
+                        </a>
                       </div>
-                    </TooltipHost>
-                  );
-                }}
-              />
-            </DataTable>
-          }
-        />
-      </div>
-      <div>
-        {popupController?.map((popupData: any, index: number) => (
-          <Popup
-            key={index}
-            isLoading={isLoading}
-            PopupType={popupData.popupType}
-            onHide={() => {
-              togglePopupVisibility(setPopupController, index, "close");
-            }}
-            popupTitle={
-              popupData.popupType !== "confimation" && popupData.popupTitle
-            }
-            popupActions={popupActions[index]}
-            visibility={popupData.open}
-            content={popupInputs[index]}
-            popupWidth={popupData.popupWidth}
-            defaultCloseBtn={popupData.defaultCloseBtn || false}
-            confirmationTitle={
-              popupData.popupType !== "custom" ? popupData.popupTitle : ""
+                    );
+                  }}
+                />
+
+                <Column
+                  header="Role"
+                  style={{ width: "25%" }}
+                  body={(rowData: any) => (
+                    <div className={styles.bodyWrapper}>{rowData?.Role}</div>
+                  )}
+                />
+                <Column
+                  header="Job description"
+                  style={{ width: "25%" }}
+                  body={(rowdata: any) => {
+                    return (
+                      <TooltipHost
+                        content={rowdata.JobDescription}
+                        tooltipProps={{
+                          directionalHint: DirectionalHint.bottomCenter,
+                        }}
+                      >
+                        <div className={styles.jobDescriptionWrapper}>
+                          <p> {rowdata.JobDescription}</p>
+                        </div>
+                      </TooltipHost>
+                    );
+                  }}
+                />
+              </DataTable>
             }
           />
-        ))}
+        </div>
+        <div>
+          {popupController?.map((popupData: any, index: number) => (
+            <Popup
+              key={index}
+              isLoading={isLoading}
+              PopupType={popupData.popupType}
+              onHide={() => {
+                togglePopupVisibility(setPopupController, index, "close");
+              }}
+              popupTitle={
+                popupData.popupType !== "confimation" && popupData.popupTitle
+              }
+              popupActions={popupActions[index]}
+              visibility={popupData.open}
+              content={popupInputs[index]}
+              popupWidth={popupData.popupWidth}
+              defaultCloseBtn={popupData.defaultCloseBtn || false}
+              confirmationTitle={
+                popupData.popupType !== "custom" ? popupData.popupTitle : ""
+              }
+            />
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

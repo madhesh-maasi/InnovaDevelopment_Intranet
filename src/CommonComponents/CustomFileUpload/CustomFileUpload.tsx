@@ -7,12 +7,14 @@ interface CustomFileUploadProps {
   label: string;
   accept?: string;
   onFileSelect: (file: File | null) => void;
+  required?: boolean;
 }
 
 const CustomFileUpload: React.FC<CustomFileUploadProps> = ({
   label,
   accept,
   onFileSelect,
+  required,
 }) => {
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -22,7 +24,7 @@ const CustomFileUpload: React.FC<CustomFileUploadProps> = ({
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("e", e);
+    // console.log("e", e);
 
     const file = e.target.files?.[0] || null;
     setSelectedFile(file);
@@ -39,7 +41,20 @@ const CustomFileUpload: React.FC<CustomFileUploadProps> = ({
 
   return (
     <div className={styles.customFileUploadWrapper}>
-      <label className={styles.label}>{label}</label>
+      <label className={styles.label}>
+        {label}
+        {required && (
+          <span
+            style={{
+              color: "red",
+              paddingLeft: "2px",
+              fontWeight: "500",
+            }}
+          >
+            *
+          </span>
+        )}
+      </label>
       <div className={styles.uploadContainer}>
         <button
           type="button"

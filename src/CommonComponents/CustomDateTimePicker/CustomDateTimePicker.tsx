@@ -16,6 +16,7 @@ interface ICustomDateTimePickerProps {
   disabled?: boolean;
   readOnly?: boolean;
   mandatory?: boolean;
+  required?: boolean;
 }
 
 const CustomDateTimePicker: React.FC<ICustomDateTimePickerProps> = ({
@@ -30,6 +31,7 @@ const CustomDateTimePicker: React.FC<ICustomDateTimePickerProps> = ({
   disabled = false,
   readOnly = false,
   mandatory = false,
+  required,
 }) => {
   const [focused, setFocused] = useState(false);
 
@@ -42,7 +44,12 @@ const CustomDateTimePicker: React.FC<ICustomDateTimePickerProps> = ({
 
   return (
     <div className="customDatePickerWrapper">
-      <label className="label">{label}</label>
+      <label className="label">
+        {label}
+        {required && (
+          <label style={{ color: "red", paddingLeft: "2px" }}>*</label>
+        )}
+      </label>
       <Calendar
         value={value ? new Date(value) : null}
         onChange={handleChange}

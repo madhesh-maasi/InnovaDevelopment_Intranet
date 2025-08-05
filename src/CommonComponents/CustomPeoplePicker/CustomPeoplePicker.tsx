@@ -21,6 +21,7 @@ interface ICustomPeoplePickerProps {
   disabled?: boolean;
   minHeight?: string;
   maxHeight?: string;
+  required?: boolean;
 }
 
 const CustomPeoplePicker: React.FC<ICustomPeoplePickerProps> = ({
@@ -31,6 +32,7 @@ const CustomPeoplePicker: React.FC<ICustomPeoplePickerProps> = ({
   filter,
   personSelectionLimit = 1,
   disabled = false,
+  required,
 }) => {
   const context: any = useSelector((state: any) => state.MainSPContext.value);
   const webUrl: string = useSelector(
@@ -59,7 +61,14 @@ const CustomPeoplePicker: React.FC<ICustomPeoplePickerProps> = ({
     <div
       className={label ? "customPickerInputForPopup" : styles.customPickerInput}
     >
-      {label && <label className={styles.label}>{label}</label>}
+      {label && (
+        <label className={styles.label}>
+          {label}
+          {required && (
+            <label style={{ color: "red", paddingLeft: "2px" }}>*</label>
+          )}
+        </label>
+      )}
       <PeoplePicker
         key={pickerKey}
         context={context}

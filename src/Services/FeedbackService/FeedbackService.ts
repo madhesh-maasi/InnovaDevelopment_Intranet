@@ -35,14 +35,9 @@ const addFeedbacks = async (
   await SpServices.SPAddItem({
     Listname: SPLists.FeedbackList,
     RequestJSON: payload,
-  }).then((res: any) => {
-    const tempfeedback = {
-      Id: res?.data?.Id,
-      Title: payload.Title,
-      Description: payload.Description,
-      CommentsCount: payload.CommentCount,
-    };
-    setFeedbacks((prev: any[]) => [tempfeedback, ...prev]);
+  }).then(async () => {
+    const updatedList = await FetchFeedBacks();
+    setFeedbacks(updatedList);
     dispatch(setFeedbacksdata);
     toastRef?.current?.show({
       severity: "success",

@@ -59,7 +59,7 @@ const CompanyValue: React.FC<ICompanyValueProps> = ({ context }) => {
             <img src={value.ImgUrl} alt={value.Title} className={styles.icon} />
           </div>
           <div className={styles.textWrapper}>
-            <span>{value.Title}</span>
+            <div className={styles.title}>{value.Title}</div>
             <p>{value.Description}</p>
           </div>
         </div>

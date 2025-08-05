@@ -31,16 +31,16 @@
 .seeMoreWrapper {
   display: flex;
   justify-content: end;
-  margin-top: 0px;
+  margin-top: 10px;
   padding: 0px;
   font-weight: 500;
   font-size: 16px;
   align-items: flex-end;
 
   span {
+    cursor: pointer;
     color: #1470af !important;
     text-decoration: underline;
-    cursor: pointer;
   }
 }
 .bodyContainer {
@@ -68,4 +68,11 @@
 }
 .bodyWrapper {
   font-size: 12px !important;
+}
+.emptyMessage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
 }

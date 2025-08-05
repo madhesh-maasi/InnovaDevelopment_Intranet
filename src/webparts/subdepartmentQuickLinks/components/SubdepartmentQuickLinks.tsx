@@ -107,17 +107,22 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
       [field]: value,
     }));
   };
-  const isValidUrl = (url: string) => {
+  const isValidUrl = (URL: string) => {
     try {
-      new URL(url);
-      return true;
+      const regexQuery =
+        "^(https?:\\/\\/)?((([-a-z0-9]{1,63}\\.)*?[a-z0-9]([-a-z0-9]{0,253}[a-z0-9])?\\.[a-z]{2,63})|((\\d{1,3}\\.){3}\\d{1,3}))(:\\d{1,5})?((\\/|\\?)((%[0-9a-f]{2})|[-\\w\\+\\.\\?\\/@~#&=])*)?$";
+      const url = new RegExp(regexQuery, "i");
+
+      return url.test(URL);
     } catch (_) {
       return false;
     }
   };
+
   const handleQuickLinkSubmit = async () => {
     const { Title, Link, Logo } = quickLinkForm;
     const userInputUrl = Link.trim();
+    const inputTitle = Title.trim();
 
     const missingFields = [];
     if (!Title?.trim()) missingFields.push("Link name");
@@ -127,14 +132,14 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
     if (missingFields.length > 0) {
       const messageDetails = [];
       if (missingFields.length === 1 && missingFields[0] === "Link name") {
-        messageDetails.push("please enter link name before submitting");
+        messageDetails.push("please enter link name.");
       } else if (
         missingFields.length === 1 &&
         missingFields[0] === "Link url"
       ) {
-        messageDetails.push("please enter link url before submitting");
+        messageDetails.push("please enter link url.");
       } else if (missingFields.length === 1 && missingFields[0] === "Logo") {
-        messageDetails.push("please upload logo before submitting");
+        messageDetails.push("please upload logo ");
       }
       toastRef.current?.show({
         severity: "warn",
@@ -142,33 +147,47 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
         detail:
           missingFields.length === 1
             ? messageDetails
-            : `Please enter/upload ${missingFields.join(
-                ", "
-              )} before submitting.`,
+            : `Please enter/upload ${missingFields.join(", ")}.`,
         life: 3000,
       });
       return;
     }
+
     if (userInputUrl && Title.trim() !== "") {
       const isValid = isValidUrl(userInputUrl);
       if (!isValid) {
         toastRef.current?.show({
           severity: "warn",
           summary: "Missing fields",
-          detail: "Please enter a valid URL",
+          detail: "Please enter a valid URL.",
           life: 3000,
         });
         return;
       }
     }
-    const duplicate = subDepartmentQuickLinks?.some(
-      (data: any) => data.Title === Title || data.Link === userInputUrl
+    const titleExists = subDepartmentQuickLinks?.some(
+      (item: any) => item.Title?.toLowerCase() === inputTitle.toLowerCase()
     );
-    if (duplicate) {
+    const linkExists = subDepartmentQuickLinks?.some(
+      (item: any) =>
+        item.Link?.trim().toLowerCase() === userInputUrl.toLowerCase()
+    );
+
+    if (titleExists || linkExists) {
+      let detailMessage = "";
+
+      if (titleExists && linkExists) {
+        detailMessage = "Link name and URL already exist.";
+      } else if (titleExists) {
+        detailMessage = "Link name already exists.";
+      } else {
+        detailMessage = "Link URL already exists.";
+      }
+
       toastRef.current?.show({
         severity: "warn",
         summary: "Duplicate Found!",
-        detail: `Link name or url aldready exists `,
+        detail: detailMessage,
         life: 3000,
       });
       return;
@@ -205,7 +224,8 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
       <>
         <div className={styles.customwrapper}>
           <CustomInputField
-            label="Link name*"
+            label="Link name"
+            required={true}
             value={quickLinkForm.Title}
             onChange={(e: any) =>
               handleQuickLinkChange("Title", e.target.value)
@@ -216,7 +236,8 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
 
         <div className={styles.customwrapper}>
           <CustomMultiInputField
-            label="Link url*"
+            label="Link url"
+            required={true}
             value={quickLinkForm.Link}
             onChange={(e: any) => handleQuickLinkChange("Link", e.target.value)}
             rows={1}
@@ -228,7 +249,8 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
         <div className={styles.customwrapper}>
           <CustomFileUpload
             accept="image/*"
-            label="Upload logo*"
+            label="Upload logo"
+            required={true}
             onFileSelect={(file: File) => handleQuickLinkChange("Logo", file)}
           />
           {quickLinkForm.Logo && (
@@ -322,7 +344,7 @@ const SubDepartmentQuickLinks: React.FC<ISubdepartmentQuickLinksProps> = ({
               </div>
             ))
           ) : (
-            <div className={styles.noRecords}>No Links Found</div>
+            <div className={styles.noRecords}>No quick links found!</div>
           )}
         </div>
         <div>

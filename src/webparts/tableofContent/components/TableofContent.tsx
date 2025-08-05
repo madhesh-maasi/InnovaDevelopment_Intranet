@@ -139,7 +139,7 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
       isEdit &&
       allData.some(
         (data: any) =>
-          data.Id === Id &&
+          data.Id == Id &&
           data.RoleGuide === trimmedRoleGuide &&
           data.DepartmentProcess === trimmedDepartmentProcess
       );
@@ -164,21 +164,21 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
       toastRef.current?.show({
         severity: "warn",
         summary: "Missing fields",
-        detail: `Please enter ${missingFields.join(", ")} before submitting.`,
+        detail: `Please enter ${missingFields.join(", ")}.`,
         life: 3000,
       });
       return;
     }
 
     const isDuplicate = allData.some(
-      (data: any) => data.RoleGuide === trimmedRoleGuide
+      (data: any) => data.Id != Id && data.RoleGuide === trimmedRoleGuide
     );
 
     if (isDuplicate) {
       toastRef.current?.show({
         severity: "warn",
         summary: "Duplicate Found!",
-        detail: "File already exists",
+        detail: "Item already exists",
         life: 3000,
       });
       return;
@@ -199,7 +199,13 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
           toastRef
         );
       } else {
-        await addTableOfContent(payload, setAllData, dispatch, toastRef);
+        await addTableOfContent(
+          payload,
+          setAllData,
+          dispatch,
+          toastRef,
+          context
+        );
       }
 
       handleClosePopup(0);
@@ -220,13 +226,15 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
     [
       <div className={styles.popupCustomWrapper} key={0}>
         <CustomInputField
-          label="Role guide*"
+          label="Role guide"
+          required={true}
           value={input.RoleGuide}
           onChange={(e: any) => handleInputChange("RoleGuide", e.target.value)}
           placeholder="Enter Role Guide"
         />
         <CustomMultiInputField
-          label="Department process*"
+          label="Department process"
+          required={true}
           value={input.DepartmentProcess}
           onChange={(e: any) =>
             handleInputChange("DepartmentProcess", e.target.value)
@@ -375,11 +383,36 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
                 value={filteredData}
                 style={{ maxWidth: "100%", padding: "20px 0px" }}
                 tableStyle={{ tableLayout: "fixed" }}
+                emptyMessage={
+                  <div className={styles.emptyMessage}>No data found!</div>
+                }
               >
                 <Column
                   field="RoleGuide"
                   header="Role guide"
                   style={{ width: "20%" }}
+                  body={(rowdata: any) => {
+                    return (
+                      <TooltipHost
+                        content={rowdata.RoleGuide}
+                        tooltipProps={{
+                          directionalHint: DirectionalHint.bottomLeftEdge,
+                        }}
+                      >
+                        <div
+                          style={{
+                            whiteSpace: "nowrap",
+                            width: "100%",
+                            textOverflow: "ellipsis",
+                            overflow: "hidden",
+                            padding: "5px 0px",
+                          }}
+                        >
+                          {rowdata.RoleGuide}
+                        </div>
+                      </TooltipHost>
+                    );
+                  }}
                 />
                 <Column
                   field="DepartmentProcess"
@@ -448,7 +481,7 @@ const TableOfContent: React.FC<ITableofContentProps> = ({ context }) => {
                     header="Action"
                     style={{ width: "10%" }}
                     body={(rowData: any) => (
-                      <div style={{ display: "flex", gap: "10%" }}>
+                      <div style={{ display: "flex", gap: "4%" }}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="18"

@@ -39,7 +39,7 @@ const addQuickLinks = async (
     });
     const itemId = addedItem?.data?.Id;
     if (!itemId) throw new Error("Failed to create item");
-    debugger;
+    // debugger;
     await SpServices.SPAddAttachment({
       ListName: SPLists.QuickLinksList,
       ListID: itemId,
