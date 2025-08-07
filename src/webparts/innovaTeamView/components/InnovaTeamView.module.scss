@@ -2,8 +2,9 @@
   display: flex;
   padding: 20px;
   border-radius: 7px;
-  height: calc(93vh - 100px);
-  background-color: #eaeaea;
+  height: calc(88vh - 100px);
+  background-color: rgba(255, 255, 255, 0.6509803922);
+  border: 1px solid #ffffff;
   margin: 10px;
   flex-direction: column;
 }
@@ -51,15 +52,15 @@
     margin: 0;
     color: #333;
     font-size: 14px;
-    display: -webkit-box;
-    text-overflow: ellipsis;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    // display: -webkit-box;
+    // text-overflow: ellipsis;
+    // -webkit-box-orient: vertical;
+    // -webkit-line-clamp: 2;
     overflow: hidden;
     cursor: pointer;
     height: fit-content;
   }
 }
 .bodyWrapper {
-  font-size: 12px !important;
+  font-size: 14px !important;
 }

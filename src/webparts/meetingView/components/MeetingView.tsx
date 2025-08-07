@@ -424,15 +424,15 @@ const MeetingContent: React.FC<IMeetingViewProps> = ({ context }) => {
                       {item.Type === "Video" ? (
                         <img
                           src={videoImgUrl}
-                          width="35px"
-                          height="35px"
+                          width="45px"
+                          height="45px"
                           alt="Video"
                         />
                       ) : (
                         <img
                           src={linkImgUrl}
-                          width="35px"
-                          height="35px"
+                          width="45px"
+                          height="45px"
                           alt="Link"
                         />
                       )}

@@ -314,6 +314,12 @@ const InnovaTeamContent: React.FC<IInnovaTeamViewProps> = ({ context }) => {
       },
     ],
   ];
+  const truncateText = (text: any, maxLength: any) => {
+    if (text.length > maxLength) {
+      return text.substring(0, maxLength - 3) + "...";
+    }
+    return text;
+  };
   const checkPermission = async () => {
     const result = await getPermissionLevel(currentuser);
     setIsAdmin(result);
@@ -437,7 +443,7 @@ const InnovaTeamContent: React.FC<IInnovaTeamViewProps> = ({ context }) => {
                         }}
                       >
                         <div className={styles.jobDescriptionWrapper}>
-                          <p> {rowdata.JobDescription}</p>
+                          <p> {truncateText(rowdata.JobDescription, 85)}</p>
                         </div>
                       </TooltipHost>
                     );
