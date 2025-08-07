@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/no-var-requires */
 import * as React from "react";
 import type { IFeedbackProps } from "./IFeedbackProps";
 import styles from "./Feedback.module.scss";
@@ -47,6 +48,7 @@ import { getPermissionLevel } from "../../../Services/CommonService/CommonServic
 const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
   const dispatch = useDispatch();
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const commentCountImg = require("../assets/chat.png");
   const currentuser = useSelector(
     (state: any) => state.MainSPContext.currentUserDetails
   );
@@ -218,7 +220,8 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
     [
       <div
         key={1}
-        style={{ width: "100%", minHeight: "69vh", padding: "0 10px" }}
+        // style={{ width: "100%", minHeight: "69vh", padding: "0 10px" }}
+        className={styles.containerWrapper}
       >
         <div
           className={styles.card}
@@ -244,7 +247,7 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
             </div>
           </TooltipHost>
         </div>
-        <div style={{ height: "65vh" }}>
+        <div className={styles.chatboxWrapper}>
           <div className={styles.commentsWrapper} ref={commentsEndRef}>
             {conversations.map((comment: any, i: any) => {
               if (comment?.CreatedBy?.Email === currentuser[0]?.Email) {
@@ -419,6 +422,12 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
       }
     }
   };
+  const truncateText = (text: any, maxLength: any) => {
+    if (text.length > maxLength) {
+      return text.substring(0, maxLength - 3) + "...";
+    }
+    return text;
+  };
   return (
     <>
       <Toast ref={toastRef} position="top-right" baseZIndex={1} />
@@ -467,7 +476,7 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
                   }}
                 >
                   <div className={styles.title}>{item.Title}</div>
-                  <p>{item.Description}</p>
+                  <p>{truncateText(item.Description, "100")}</p>
                   <div
                     className={styles.commentCount}
                     onClick={() => {
@@ -487,15 +496,10 @@ const FeedbackContent: React.FC<IFeedbackProps> = ({ context }) => {
                       FetchConversations(item.Id, setConversations);
                     }}
                   >
-                    <i
-                      className="fa-regular fa-comment-dots"
-                      style={{
-                        color: "green",
-                        fontSize: "14px",
-                        cursor: "pointer",
-                      }}
-                    />{" "}
-                    {item.CommentsCount}
+                    <img src={commentCountImg} width="24px" height="24px" />{" "}
+                    <div className={styles.countBubble}>
+                      {item.CommentsCount}
+                    </div>
                   </div>
                 </div>
               ))}

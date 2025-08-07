@@ -3,7 +3,8 @@
   padding: 20px;
   border-radius: 7px;
   height: calc(88vh - 100px);
-  background-color: #eaeaea;
+  background-color: rgba(255, 255, 255, 0.6509803922);
+  border: 1px solid #ffffff;
   margin: 10px;
   flex-direction: column;
 }
@@ -101,6 +102,7 @@
 .type {
   font-weight: 400;
   color: #000;
+  font-size: 14px;
   display: -webkit-box;
   text-overflow: ellipsis;
   -webkit-box-orient: vertical;

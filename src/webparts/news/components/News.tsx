@@ -60,7 +60,12 @@ const News: React.FC<INewsProps> = ({ context }) => {
   //     },
   //   ]);
   // console.log(setNews);
-
+  const truncateText = (text: any, maxLength: any) => {
+    if (text.length > maxLength) {
+      return text.substring(0, maxLength - 3) + "...";
+    }
+    return text;
+  };
   const setContext = async () => {
     try {
       const webUrl = context?.pageContext?.web?.absoluteUrl;
@@ -124,7 +129,7 @@ const News: React.FC<INewsProps> = ({ context }) => {
                   </div>
                   <div style={{ width: "85%" }}>
                     <div className={styles.title}>{item.title}</div>
-                    <p>{item.description}</p>
+                    <p>{truncateText(item.description, 250)}</p>
                   </div>
                 </div>
               ))}

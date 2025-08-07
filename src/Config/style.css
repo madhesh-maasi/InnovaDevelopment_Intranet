@@ -222,10 +222,10 @@ span[data-automationid="SiteHeaderTitle"] a {
 }
 .dataTablewrapper .custom-data-table .p-datatable-wrapper {
   overflow: hidden !important;
-  height: 330px !important;
+  height: 360px !important;
 }
 .dataTablewrapper .p-datatable-thead > tr > th:first-child {
-  padding-left: 50px;
+  padding-left: 12px;
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
 }
