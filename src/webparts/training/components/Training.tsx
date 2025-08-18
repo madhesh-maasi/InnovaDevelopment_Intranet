@@ -167,7 +167,7 @@ const Training: React.FC<ITrainingProps> = ({ context }) => {
       if (isEdit) {
         await updateTraining(input?.Id, payload, getTrainingData, toastRef);
       } else {
-        await addTraining(payload, setAllData, dispatch, toastRef);
+        await addTraining(payload, setAllData, dispatch, toastRef, context);
       }
       handleClosePopup(0);
       setInput({
