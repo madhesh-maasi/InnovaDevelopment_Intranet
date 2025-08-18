@@ -24,7 +24,7 @@ const FetchTrainingData = async () => {
   });
   return formattedData;
 };
-const createSitePage = async (Name: string): Promise<string> => {
+const createSitePage = async (Name: string, context?: any): Promise<string> => {
   const pageName = Name.trim()
     .replace(/\s+/g, "-")
     .replace(/[^a-zA-Z0-9\-]/g, ""); // sanitize filename
@@ -40,20 +40,19 @@ const createSitePage = async (Name: string): Promise<string> => {
   const page = await web.addClientsidePage(pageName, Name, "Article"); // or "Home"
   await page.save();
 
-  const url = `${
-    window.location.origin
-  }${"/sites/InnovaDevelopments"}/SitePages/${pageName}.aspx`;
+  const url = `${context.pageContext._site.absoluteUrl}/SitePages/${pageName}.aspx`;
   return url;
 };
 const addTraining = async (
   payload: any,
   setTableData: any,
   dispatch: any,
-  toastRef?: any
+  toastRef?: any,
+  context?: any
 ) => {
   try {
     // Step 1: Create site page and get its URL
-    const pageUrl = await createSitePage(payload.Name);
+    const pageUrl = await createSitePage(payload.Name, context);
 
     // Step 2: Prepare list payload
     const requestPayload = {
